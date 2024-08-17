@@ -24,6 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'nip',
         'nisn',
         'password',
+        'id_role',
         'otp',
         'otp_expired_at',
     ];

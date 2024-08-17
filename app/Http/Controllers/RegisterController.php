@@ -44,6 +44,7 @@ class RegisterController extends Controller
             'nip' => $request->nip,
             'nisn' => $request->nisn,
             'password' => bcrypt($request->password),
+            'id_role' => $request->id_role,
         ]);
 
         // return response
