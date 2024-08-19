@@ -36,6 +36,11 @@ class AuthControllers extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
+        // Check if user has email
+        if (!$user->email) {
+            return response()->json(['message' => 'Reset Password harus menghubungi Admin!'], 404);
+        }
+
         // Generate a safest random OTP
         $otp = random_int(100000, 999999);
 
