@@ -36,18 +36,22 @@ class AuthControllers extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        // Generate a random OTP
-        $otp = rand(100000, 999999);
+        // Generate a safest random OTP
+        $otp = random_int(100000, 999999);
 
         $user->update([
             'otp' => $otp,
             'otp_expired_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::raw("Your OTP for password reset is: $otp (valid for 5 minutes)", function ($message) use ($user) {
-            $message->to($user->email)
-                ->subject('SchoolTech Password Reset OTP');
-        });
+        try {
+            Mail::raw("Your OTP for password reset is: $otp (valid for 5 minutes)", function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('SchoolTech Password Reset OTP');
+            });
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to send OTP email. Please try again later.'], 500);
+        }
 
         return response()->json(['message' => 'OTP sent to your email'], 200);
     }
