@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Mail\OtpEmail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -36,20 +37,26 @@ class AuthControllers extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        // Generate a random OTP
-        $otp = rand(100000, 999999);
+        // Check if user has email
+        if (!$user->email) {
+            return response()->json(['message' => 'Reset Password harus menghubungi Admin!'], 404);
+        }
+
+        // Generate a safest random OTP
+        $otp = random_int(100000, 999999);
 
         $user->update([
             'otp' => $otp,
             'otp_expired_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::raw("Your OTP for password reset is: $otp (valid for 5 minutes)", function ($message) use ($user) {
-            $message->to($user->email)
-                ->subject('SchoolTech Password Reset OTP');
-        });
-
-        return response()->json(['message' => 'OTP sent to your email'], 200);
+        try {
+            Mail::to($user->email)->send(new OtpEmail($otp, $user->name));
+    
+            return response()->json(['message' => 'OTP sent to your email'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to send OTP email. Please try again later.'], 500);
+        }
     }
 
     public function verifyOtp(Request $request)
