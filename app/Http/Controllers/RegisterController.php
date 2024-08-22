@@ -16,6 +16,11 @@ class RegisterController extends Controller
      */
     public function __invoke(Request $request)
     {
+        // close registration endpoint
+        if (!config('app.registration_open')) {
+            abort(404);
+        }
+
         // set validation
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
