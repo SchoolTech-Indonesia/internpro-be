@@ -20,8 +20,8 @@ class RegisterController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'string|email|max:255|unique:users',
-            'nip' => 'required|integer|digits_between:1,255|unique:users',
-            'nisn' => 'required|integer|digits_between:1,255|unique:users',
+            'nip' => 'required_without:nisn|integer|digits_between:1,255|unique:users',
+            'nisn' => 'required_without:nip|integer|digits_between:1,255|unique:users',
             'password' => [
                 'required',
                 'confirmed',
