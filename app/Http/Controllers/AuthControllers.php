@@ -53,7 +53,7 @@ class AuthControllers extends Controller
 
         try {
             Mail::to($user->email)->send(new OtpEmail($otp, $user->name));
-    
+
             return response()->json(['message' => 'OTP sent to your email'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to send OTP email. Please try again later.'], 500);
@@ -120,7 +120,7 @@ class AuthControllers extends Controller
         if (empty($request->all())) {
             return response()->json(['message' => 'Request body cannot be empty'], 400);
         }
-        
+
         $validator = Validator::make($request->all(), [
             'otp' => 'required|string|filled',
             'password' => [
