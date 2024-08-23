@@ -53,7 +53,7 @@ class AuthControllers extends Controller
 
         try {
             Mail::to($user->email)->send(new OtpEmail($otp, $user->name));
-    
+
             return response()->json(['message' => 'OTP sent to your email'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to send OTP email. Please try again later.'], 500);
@@ -101,18 +101,12 @@ class AuthControllers extends Controller
             ]);
             return response()->json(['message' => 'Expired OTP'], 400);
         } else {
-            // reset the otp if verified
-            $user->update([
-                'otp' => null,
-                'otp_expired_at' => null,
-            ]);
-
             RateLimiter::clear($key); // reset the attempt if verified
             return response()->json([
                 'message' => 'OTP verified',
                 'user' => $user->only('id', 'email'),
             ], 200);
-        } 
+        }
     }
 
     public function resetPassword(Request $request)
@@ -120,7 +114,7 @@ class AuthControllers extends Controller
         if (empty($request->all())) {
             return response()->json(['message' => 'Request body cannot be empty'], 400);
         }
-        
+
         $validator = Validator::make($request->all(), [
             'otp' => 'required|string|filled',
             'password' => [
