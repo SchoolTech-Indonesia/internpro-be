@@ -26,7 +26,7 @@ class ResetPasswordController extends Controller
         return response()->json();
     }
 
-    public function store(ResetPasswordRequest $request) : JsonResponse
+    public function update(ResetPasswordRequest $request) : JsonResponse
     {
         $user = User::where('otp', $request->otp)->first();
 
