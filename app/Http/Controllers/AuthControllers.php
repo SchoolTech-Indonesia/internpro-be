@@ -101,12 +101,18 @@ class AuthControllers extends Controller
             ]);
             return response()->json(['message' => 'Expired OTP'], 400);
         } else {
+            // reset the otp if verified
+            $user->update([
+                'otp' => null,
+                'otp_expired_at' => null,
+            ]);
+
             RateLimiter::clear($key); // reset the attempt if verified
             return response()->json([
                 'message' => 'OTP verified',
                 'user' => $user->only('id', 'email'),
             ], 200);
-        }
+        } 
     }
 
     public function resetPassword(Request $request)
