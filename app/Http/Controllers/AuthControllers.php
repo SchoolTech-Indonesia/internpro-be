@@ -44,7 +44,7 @@ class AuthControllers extends Controller
         }
 
         // Generate a safest random OTP
-        $otp = RandomString::numericSecure(6);
+        $otp = RandomString::numeric(6);
 
         $user->update([
             'otp' => $otp,
@@ -52,7 +52,7 @@ class AuthControllers extends Controller
         ]);
 
         try {
-//            Mail::to($user->email)->send(new OtpEmail($otp, $user->name));
+            Mail::to($user->email)->send(new OtpEmail($otp, $user->name));
 
             return response()->json(['message' => 'OTP sent to your email'], 200);
         } catch (\Exception $e) {
