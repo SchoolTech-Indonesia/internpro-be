@@ -108,5 +108,46 @@ class AuthControllers extends Controller
                 'user' => $user->only('id', 'email'),
             ], 200);
         }
+
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|string|filled',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(6)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $user = User::where('otp', $request->otp)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Invalid OTP'
+            ], 400);
+        }
+
+        if ($user->otp_expired_at < Carbon::now()) {
+            return response()->json([
+                'message' => 'OTP expired'
+            ], 400);
+        }
+
+        $user->update([
+            'password' => bcrypt($request->password),
+            'otp' => null,
+            'otp_expired_at' => null,
+        ]);
+
+        return response()->json(['message' => 'Password reset successful'], 200);
     }
 }
