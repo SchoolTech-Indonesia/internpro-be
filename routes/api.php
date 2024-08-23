@@ -28,7 +28,7 @@ Route::post('/login', LoginController::class)->name('login');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 
-Route::apiResource('/resetpassword', ResetPasswordController::class)->only(['update']);
+Route::apiResource('/resetpassword', ResetPasswordController::class)->only(['store'])->middleware('throttle:resetpassword');
 
 Route::middleware('auth:api')->group(function () {
     /**

@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\RandomString;
-use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Mail\OtpEmail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 
 class AuthControllers extends Controller
