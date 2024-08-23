@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 
 class ResetPasswordController extends Controller
 {
-    private function validateOtp($user): JsonResponse
+    private function validateOtp($user): ?JsonResponse
     {
         if (!$user) {
             return response()->json([
@@ -23,14 +23,23 @@ class ResetPasswordController extends Controller
                 'message' => 'OTP expired'
             ], 400);
         }
-        return response()->json();
+        return null;
     }
 
-    public function update(ResetPasswordRequest $request) : JsonResponse
+
+    public function store(ResetPasswordRequest $request) : JsonResponse
     {
+        // Check if the request is valid
+        if (isset($request->validator) && $request->validator->fails()) {
+            return response()->json($request->validator->messages(), 400);
+        }
+
         $user = User::where('otp', $request->otp)->first();
 
-        $this->validateOtp($user);
+        $validation = $this->validateOtp($user);
+        if($validation) {
+            return $validation;
+        }
 
         $user->update([
             'password' => ($request->password),
