@@ -12,7 +12,7 @@ class ResetPasswordRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -32,11 +32,18 @@ class ResetPasswordRequest extends FormRequest
                     ->symbols(),
             ]];
     }
-
-    // Failed validation method
-    public $validator = null;
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    public function messages()
     {
-        $this->validator = $validator;
+        return [
+            // return custom messages whole Request body cannot be empty
+            'required' => 'The :attribute field is required.',
+            // return if data is invalid
+            'filled' => 'The :attribute field must not be empty.',
+            // return if password is not the right format
+            'password' => 'The :attribute must be at least 6 characters, contain at least one uppercase letter, one number, and one special character.',
+            // return if OTP is not the right format
+            'otp' => 'The :attribute must be a string.',
+            'size' => 'The :attribute must be 6 characters.',
+        ];
     }
 }

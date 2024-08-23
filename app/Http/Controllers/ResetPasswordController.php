@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class ResetPasswordController extends Controller
 {
-    private function validateOtp($user): ?JsonResponse
+    private function validateOtp($user): JsonResponse
     {
         if (!$user) {
             return response()->json([
@@ -22,23 +23,14 @@ class ResetPasswordController extends Controller
                 'message' => 'OTP expired'
             ], 400);
         }
-        return null;
+        return response()->json();
     }
-
 
     public function store(ResetPasswordRequest $request) : JsonResponse
     {
-        // Check if the request is valid
-        if (isset($request->validator) && $request->validator->fails()) {
-            return response()->json($request->validator->messages(), 400);
-        }
-
         $user = User::where('otp', $request->otp)->first();
 
-        $validation = $this->validateOtp($user);
-        if($validation) {
-            return $validation;
-        }
+        $this->validateOtp($user);
 
         $user->update([
             'password' => ($request->password),
