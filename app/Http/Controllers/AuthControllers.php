@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RandomString;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Mail\OtpEmail;
@@ -45,7 +46,7 @@ class AuthControllers extends Controller
         }
 
         // Generate a safest random OTP
-        $otp = random_int(100000, 999999);
+        $otp = RandomString::numeric(6);
 
         $user->update([
             'otp' => $otp,
