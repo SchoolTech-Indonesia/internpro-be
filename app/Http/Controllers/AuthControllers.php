@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RandomString;
 use App\Models\User;
 use App\Mail\OtpEmail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 
 class AuthControllers extends Controller
@@ -44,7 +44,7 @@ class AuthControllers extends Controller
         }
 
         // Generate a safest random OTP
-        $otp = random_int(100000, 999999);
+        $otp = RandomString::numeric(6);
 
         $user->update([
             'otp' => $otp,
@@ -53,7 +53,7 @@ class AuthControllers extends Controller
 
         try {
             Mail::to($user->email)->send(new OtpEmail($otp, $user->name));
-    
+
             return response()->json(['message' => 'OTP sent to your email'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to send OTP email. Please try again later.'], 500);
@@ -62,6 +62,7 @@ class AuthControllers extends Controller
 
     public function verifyOtp(Request $request)
     {
+        error_log($request);
         if (empty($request->all())) {
             return response()->json(['message' => 'Request body cannot be empty'], 400);
         }
@@ -101,26 +102,13 @@ class AuthControllers extends Controller
             ]);
             return response()->json(['message' => 'Expired OTP'], 400);
         } else {
-            // reset the otp if verified
-            $user->update([
-                'otp' => null,
-                'otp_expired_at' => null,
-            ]);
-
             RateLimiter::clear($key); // reset the attempt if verified
             return response()->json([
                 'message' => 'OTP verified',
                 'user' => $user->only('id', 'email'),
             ], 200);
-        } 
-    }
-
-    public function resetPassword(Request $request)
-    {
-        if (empty($request->all())) {
-            return response()->json(['message' => 'Request body cannot be empty'], 400);
         }
-        
+
         $validator = Validator::make($request->all(), [
             'otp' => 'required|string|filled',
             'password' => [
