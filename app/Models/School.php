@@ -22,7 +22,7 @@ use Laravel\Sanctum\HasApiTokens;
 class School extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
-
+    protected $table = 'school';
     protected $fillable = [
         'uuid',
         'school_name',
