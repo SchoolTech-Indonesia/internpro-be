@@ -11,6 +11,8 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,4 +71,8 @@ Route::middleware('auth:api')->group(function () {
     });
 });
 
-Route::resource('users', UsersController::class); // ini hanya untuk sementara, silakan dimodifikasi ulang
+Route::resource('users', UsersController::class); // only for temporary needs, please modify it again
+Route::post('users/import', [UsersController::class, 'importUsers']); // only for temporary needs, please modify it again
+Route::get('/users/export/xlsx', [UsersController::class, 'exportUsersToXLSX']); // only for temporary needs, please modify it again
+Route::get('/users/export/csv', [UsersController::class, 'exportUsersToCSV']); // only for temporary needs, please modify it again
+Route::get('/users/export/pdf', [UsersController::class, 'exportUsersToPDF']); // only for temporary needs, please modify it again

@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use App\Exports\UsersExport;
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UsersController extends Controller
 {
@@ -83,5 +88,35 @@ class UsersController extends Controller
                 'message' => 'User gagal dihapus'
             ], 400);
         }
+    }
+
+    public function importUsers(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx'
+        ]);
+
+        Excel::import(new UsersImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Users Imported Successfully');
+    }
+
+    public function exportUsersToXLSX()
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
+    }
+
+    public function exportUsersToCSV()
+    {
+        return Excel::download(new UsersExport, 'users.csv', \Maatwebsite\Excel\Excel::CSV);
+    }
+
+    public function exportUsersToPDF()
+    {
+        $users = User::all(['id', 'name', 'email', 'nip', 'nisn', 'id_role']);
+        
+        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
+
+        return $pdf->download('users.pdf');
     }
 }
