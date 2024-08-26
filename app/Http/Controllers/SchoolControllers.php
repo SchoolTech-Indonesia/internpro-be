@@ -6,7 +6,7 @@ use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
-
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class SchoolControllers
@@ -20,13 +20,21 @@ class SchoolControllers extends Controller
      */
     public function index()
     {
-      $school = School::latest()->paginate(5);
+        try {
+            $schools = School::latest()->paginate(5);
 
-      return response()->json([
-        'success' => true,
-        'message' => 'Daftar Data Sekolah',
-        'data' => $school
-      ], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Daftar Data Sekolah',
+                'data' => $schools
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data sekolah',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -43,23 +51,35 @@ class SchoolControllers extends Controller
         ]);
 
         if ($validator->fails()) {
-          return response()->json($validator->errors(), 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $school = School::create([
-            'uuid' => Str::uuid()->toString(),
-            'school_name' => $request->school_name,
-            'school_address' => $request->school_address,
-            'phone_number' => $request->phone_number,
-            'start_member' => $request->start_member,
-            'end_member' => $request->end_member,
-        ]);
+        try {
+            $school = School::create([
+              'uuid' => Str::uuid()->toString(),
+              'school_name' => $request->school_name,
+              'school_address' => $request->school_address,
+              'phone_number' => $request->phone_number,
+              'start_member' => $request->start_member,
+              'end_member' => $request->end_member,
+            ]);
 
-        return response()->json([
-          'success' => true,
-          'message' => 'Data Sekolah Berhasil Ditambahkan!',
-          'data' => $school
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Sekolah Berhasil Ditambahkan!',
+                'data' => $school,
+            ], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data sekolah',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -67,12 +87,28 @@ class SchoolControllers extends Controller
      */
     public function show($uuid)
     {
-        $school = School::where('uuid', $uuid)->first();
-        return response()->json([
-          'success' => true,
-          'message' => 'Detail data sekolah',
-          'data' => $school
-        ], 200);
+        try {
+            $school = School::where('uuid', $uuid)->first();
+
+            if (!$school) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Sekolah Tidak Ditemukan',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail Data Sekolah',
+                'data' => $school,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data sekolah',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -80,47 +116,58 @@ class SchoolControllers extends Controller
      */
     public function update(Request $request, $uuid)
     {
-      $school = School::where('uuid', $uuid)->first();
+        $school = School::where('uuid', $uuid)->first();
 
-      if (!$school) {
-        return response()->json([
-          'success' => true,
-          'message' => 'Data Sekolah Tidak Ditemukan!',
-          'data' => $school
-        ], 404);
-      }
+        if (!$school) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Sekolah Tidak Ditemukan',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
-      $validator = Validator::make($request->all(), [
-        'school_name' => 'required|string|max:255|unique:school',
-        'school_address' => 'required|string|max:255',
-        'phone_number' => 'required|string|max:15|unique:school',
-        'start_member' => 'required|date_format:Y-m-d H:i:s',
-        'end_member' => 'required|date_format:Y-m-d H:i:s',
-      ]);
+        $validator = Validator::make($request->all(), [
+            'school_name' => 'required|string|max:255|unique:school,school_name,' . $school->uuid . ',uuid',
+            'school_address' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:15|unique:school,phone_number,' . $school->uuid. ',uuid',
+            'start_member' => 'required|date_format:Y-m-d H:i:s',
+            'end_member' => 'required|date_format:Y-m-d H:i:s',
+        ]);
 
-      if ($validator->fails()) {
-        return response()->json($validator->errors(), 422);
-      }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
-      School::where('uuid', $uuid)->update([
-        'school_name' => $request->school_name,
-        'school_address' => $request->school_address,
-        'phone_number' => $request->phone_number,
-        'start_member' => $request->start_member,
-        'end_member' => $request->end_member
-      ]);
+        try {
+            School::where('uuid', $uuid)->update([
+              'school_name' => $request->school_name,
+              'school_address' => $request->school_address,
+              'phone_number' => $request->phone_number,
+              'start_member' => $request->start_member,
+              'end_member' => $request->end_member,
+              'updated_at' => now()
+            ]);
 
-      return response()->json([
-        'success' => true,
-        'message' => 'Data Sekolah Berhasil Diperbarui!',
-        'data' => $school
-      ], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Sekolah Berhasil Diperbarui!',
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui data sekolah',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
-     * Delete a school record by UUID.
+     * Delete a school record by UUID (soft delete).
      */
-    public function deleteSchool($uuid)
+    public function destroy($uuid)
     {
       //
     }

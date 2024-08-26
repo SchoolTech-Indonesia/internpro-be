@@ -30,4 +30,8 @@ class School extends Model
         'start_member',
         'end_member',
     ];
+
+    protected $hidden = [
+        'id',
+    ];
 }
