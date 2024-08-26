@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\School;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+
 
 /**
  * Class SchoolControllers
@@ -13,106 +16,109 @@ use Illuminate\Http\Request;
 class SchoolControllers extends Controller
 {
     /**
-     * Create a new school record.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Show all school data with pagination.
      */
-
-    public function createSchool(Request $request)
+    public function index()
     {
-        $request->validate([
-            'uuid' => 'required|string|unique:school,uuid',
-            'school_name' => 'required|string|max:255|unique:school,school_name',
-            'school_address' => 'required|string|max:255|unique:school,school_address',
-            'phone_number' => 'required|string|max:15|unique:school,phone_number',
-            'start_member' => 'required|date',
-            'end_member' => 'required|date|after:start_member',
-        ]);
-
-        // Save data
-        $school = new School();
-        $school->uuid = $request->uuid;
-        $school->school_name = $request->school_name;
-        $school->school_address = $request->school_address;
-        $school->phone_number = $request->phone_number;
-        $school->start_member = $request->start_member;
-        $school->end_member = $request->end_member;
-        $school->save();
-
-        return response()->json($school, 201);
-    }
-
-    /**
-     * Get all school records.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getAllSchools()
-    {
-        $schools = School::all();
-
-        if ($schools->isEmpty()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Daftar sekolah kosong!',
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Berhasil menampilkan daftar sekolah!',
-            'data' => $schools
-        ], 200);
-    }
-
-    /**
-     * Update an existing school record by UUID.
-     *
-     * @param Request $request
-     * @param string $uuid
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function updateSchool(Request $request, $uuid)
-    {
-      // Find school by UUID
-      $school = School::where('uuid', $uuid)->first();
-
-      if (!$school) {
-          return response()->json([
-              'status' => false,
-              'message' => 'Data sekolah tidak ditemukan!',
-          ], 404);
-      }
-
-      $request->validate([
-        'school_name' => 'required|string|max:255|unique:school,school_name',
-        'school_address' => 'required|string|max:255|unique:school,school_address',
-        'phone_number' => 'required|string|max:15|unique:school,phone_number',
-        'start_member' => 'required|date',
-        'end_member' => 'required|date|after:start_member',
-      ]);
-
-      // Update data
-      $school->school_name = $request->school_name;
-      $school->school_address = $request->school_address;
-      $school->phone_number = $request->phone_number;
-      $school->start_member = $request->start_member;
-      $school->end_member = $request->end_member;
-      $school->save();
+      $school = School::latest()->paginate(5);
 
       return response()->json([
-        'status' => true,
-        'message' => 'Berhasil memperbarui data sekolah!',
+        'success' => true,
+        'message' => 'Daftar Data Sekolah',
         'data' => $school
       ], 200);
     }
 
     /**
-     * Delete an existing school record by UUID.
-     *
-     * @param string $uuid
-     * @return \Illuminate\Http\JsonResponse
+     * Create a new school record.
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'school_name' => 'required|string|max:255|unique:school',
+            'school_address' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:15|unique:school',
+            'start_member' => 'required|date_format:Y-m-d H:i:s',
+            'end_member' => 'required|date_format:Y-m-d H:i:s',
+        ]);
+
+        if ($validator->fails()) {
+          return response()->json($validator->errors(), 422);
+        }
+
+        $school = School::create([
+            'uuid' => Str::uuid()->toString(),
+            'school_name' => $request->school_name,
+            'school_address' => $request->school_address,
+            'phone_number' => $request->phone_number,
+            'start_member' => $request->start_member,
+            'end_member' => $request->end_member,
+        ]);
+
+        return response()->json([
+          'success' => true,
+          'message' => 'Data Sekolah Berhasil Ditambahkan!',
+          'data' => $school
+        ], 201);
+    }
+
+    /**
+     * Show a school record by UUID.
+     */
+    public function show($uuid)
+    {
+        $school = School::where('uuid', $uuid)->first();
+        return response()->json([
+          'success' => true,
+          'message' => 'Detail data sekolah',
+          'data' => $school
+        ], 200);
+    }
+
+    /**
+     * Update a school record by UUID.
+     */
+    public function update(Request $request, $uuid)
+    {
+      $school = School::where('uuid', $uuid)->first();
+
+      if (!$school) {
+        return response()->json([
+          'success' => true,
+          'message' => 'Data Sekolah Tidak Ditemukan!',
+          'data' => $school
+        ], 404);
+      }
+
+      $validator = Validator::make($request->all(), [
+        'school_name' => 'required|string|max:255|unique:school',
+        'school_address' => 'required|string|max:255',
+        'phone_number' => 'required|string|max:15|unique:school',
+        'start_member' => 'required|date_format:Y-m-d H:i:s',
+        'end_member' => 'required|date_format:Y-m-d H:i:s',
+      ]);
+
+      if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
+      }
+
+      School::where('uuid', $uuid)->update([
+        'school_name' => $request->school_name,
+        'school_address' => $request->school_address,
+        'phone_number' => $request->phone_number,
+        'start_member' => $request->start_member,
+        'end_member' => $request->end_member
+      ]);
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Data Sekolah Berhasil Diperbarui!',
+        'data' => $school
+      ], 200);
+    }
+
+    /**
+     * Delete a school record by UUID.
      */
     public function deleteSchool($uuid)
     {
