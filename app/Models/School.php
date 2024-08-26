@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @model School
+ *
+ * @property string $uuid
+ * @property string $school_name
+ * @property string $school_address
+ * @property string $phone_number
+ * @property \Illuminate\Support\Carbon $start_member
+ * @property \Illuminate\Support\Carbon $end_member
+ */
 class School extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
