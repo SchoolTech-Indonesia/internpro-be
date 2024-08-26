@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->softDeletes(); // add deleted_at column
-        });
+            $table->unsignedBigInteger('created_by')->nullable()->after('created_at');
+            $table->unsignedBigInteger('updated_by')->nullable()->after('updated_at');
+            $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
+        }); // add 3 new columns
     }
 
     /**
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropSoftDeletes(); // remove deleted_at column
+            $table->dropColumn(['created_by', 'updated_by', 'deleted_by']);
         });
     }
 };

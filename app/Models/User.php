@@ -6,13 +6,13 @@ namespace App\Models;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\SoftDeletes; // add soft deletes
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes; // add soft deletes
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +28,9 @@ class User extends Authenticatable implements JWTSubject
         'id_role',
         'otp',
         'otp_expired_at',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     /**
