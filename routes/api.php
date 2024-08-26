@@ -36,7 +36,8 @@ Route::prefix('schools')->group(function () {
     Route::get('/', [SchoolControllers::class, 'index'])->name('getallschool');
     Route::get('/{uuid}', [SchoolControllers::class, 'show'])->name('getspecificschool');
     Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
-    Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteschool');
+    Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteSchool');
+    Route::post('/search', [SchoolControllers::class, 'search'])->name('searchSchool');
 });
 
 Route::middleware('auth:api')->group(function () {

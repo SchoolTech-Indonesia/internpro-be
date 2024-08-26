@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -19,8 +21,7 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class School extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    protected $table = 'school';
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'uuid',
@@ -30,4 +31,13 @@ class School extends Model
         'start_member',
         'end_member',
     ];
+
+    protected $dates = ['deleted_at'];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('notDeleted', function (Builder $builder) {
+            $builder->whereNull('deleted_at');
+        });
+    }
 }
