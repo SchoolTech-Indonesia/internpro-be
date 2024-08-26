@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthControllers;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\GuruControllers;
 use App\Http\Controllers\PermissionControllers;
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
-Route::put('/resetpassword', [AuthControllers::class, 'resetPassword'])->name('resetpassword');
+Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
 
 Route::middleware('auth:api')->group(function () {
     /**
