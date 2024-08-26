@@ -32,6 +32,10 @@ class School extends Model
         'end_member',
     ];
 
+    protected $hidden = [
+        'id',
+    ];
+
     protected $dates = ['deleted_at'];
 
     protected static function booted()
