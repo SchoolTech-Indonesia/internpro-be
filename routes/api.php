@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthControllers;
+use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\GuruControllers;
 use App\Http\Controllers\PermissionControllers;
 use App\Http\Controllers\RoleControllers;
@@ -42,6 +43,14 @@ Route::middleware('auth:api')->group(function () {
      * @method "POST"
      */
     Route::post('/logout', LogoutController::class)->name('logout');
+
+    // SCHOOL
+    Route::prefix('school')->group(function () {
+        Route::post('/create', [SchoolControllers::class, 'createSchool'])->name('createschool');
+        Route::get('/', [SchoolControllers::class, 'getAllSchools'])->name('getallschools');
+        Route::post('/update/{id}', [SchoolControllers::class, 'updateSchool'])->name('updateschool');
+        Route::delete('/{id}', [SchoolControllers::class, 'deleteSchool'])->name('deleteschool');
+    });
 
     // GURU
     Route::prefix('guru')->group(function () {
