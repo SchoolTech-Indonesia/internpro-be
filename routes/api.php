@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -67,3 +68,5 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [PermissionControllers::class, 'DeletePermission'])->name('DeletePermission');
     });
 });
+
+Route::resource('users', UsersController::class); // ini hanya untuk sementara, silakan dimodifikasi ulang
