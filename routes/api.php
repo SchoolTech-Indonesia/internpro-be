@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthControllers;
 use App\Http\Controllers\GuruControllers;
 use App\Http\Controllers\PermissionControllers;
-use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
@@ -23,12 +22,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // AUTH
-Route::post('/register', RegisterController::class)->name('register');
+// Route::post('/register', RegisterController::class)->name('register');
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
-
-Route::apiResource('/resetpassword', ResetPasswordController::class)->only(['store'])->middleware('throttle:resetpassword');
+Route::put('/resetpassword', [AuthControllers::class, 'resetPassword'])->name('resetpassword');
 
 Route::middleware('auth:api')->group(function () {
     /**
