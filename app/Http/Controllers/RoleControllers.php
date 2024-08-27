@@ -79,4 +79,29 @@ class RoleControllers extends Controller
             ], 400);
         }
     }
+
+    public function createRole(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name',
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name', 
+        ]);
+
+        // Membuat role baru
+        $role = Role::create([
+            'name' => $validatedData['name'],
+            'description' => $request->input('description'),
+        ]);
+
+        $permissions = Permission::whereIn('name', $validatedData['permissions'])->get();
+
+        $role->permissions()->sync($permissions);
+
+        return response()->json([
+            'message' => 'Role created successfully',
+            'role' => $role,
+            'permissions' => $role->permissions,
+        ], 201);
+    }
 }

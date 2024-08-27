@@ -58,6 +58,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [RoleControllers::class, 'getAllRoles'])->name('getallroles');
         Route::get('/{id}', [RoleControllers::class, 'getSpecificRole'])->name('getspecificrole');
         Route::delete('/{id}', [RoleControllers::class, 'DeleteRole'])->name('DeleteRole');
+        Route::post('/create', [RoleControllers::class, 'createRole'])->name('createrole');
     });
 
     // PERMISSION
