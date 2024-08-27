@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('otp')->nullable();
-            $table->string('otp_expired_at')->nullable();
+            $table->dateTime('otp_expired_at')->nullable();
         });
     }
 
