@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\SchoolResource;
 
 /**
  * Class SchoolControllers
@@ -28,6 +29,7 @@ class SchoolControllers extends Controller
                 'message' => 'Daftar Data Sekolah',
                 'data' => $schools
             ], Response::HTTP_OK);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -70,9 +72,10 @@ class SchoolControllers extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data Sekolah Berhasil Ditambahkan!',
-                'data' => $school,
+                'message' => 'Data Sekolah Berhasil Disimpan!',
+                'data' => new SchoolResource($school),
             ], Response::HTTP_CREATED);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -100,8 +103,9 @@ class SchoolControllers extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Detail Data Sekolah',
-                'data' => $school,
+                'data' => new SchoolResource($school),
             ], Response::HTTP_OK);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -126,9 +130,9 @@ class SchoolControllers extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'school_name' => 'required|string|max:255|unique:school,school_name,' . $school->uuid . ',uuid',
+            'school_name' => 'required|string|max:255|unique:school',
             'school_address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:15|unique:school,phone_number,' . $school->uuid . ',uuid',
+            'phone_number' => 'required|string|max:15|unique:school',
             'start_member' => 'required|date_format:Y-m-d H:i:s',
             'end_member' => 'required|date_format:Y-m-d H:i:s',
         ]);
@@ -155,6 +159,7 @@ class SchoolControllers extends Controller
                 'success' => true,
                 'message' => 'Data Sekolah Berhasil Diperbarui!',
             ], Response::HTTP_OK);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -171,13 +176,28 @@ class SchoolControllers extends Controller
     {
         try {
             $school = School::where('uuid', $uuid)->first();
+
+            $validator = Validator::make($school->toArray(), [
+                'uuid' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi Gagal',
+                    'errors' => $validator->errors(),
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             if (!$school) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Data Sekolah Tidak Ditemukan!',
                 ], Response::HTTP_NOT_FOUND);
+
             } else {
                 School::where('uuid', $uuid)->delete();
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Data Sekolah Berhasil Dihapus!',
@@ -192,12 +212,25 @@ class SchoolControllers extends Controller
     }
     
     /**
-     * Search school data.
+     * Search school records.
      */
     public function search(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'search' => 'required|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi Gagal',
+                    'errors' => $validator->errors(),
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             $school = School::where('school_name', 'like', '%' . $request->search . '%')->get();
+
             if ($school->isEmpty()) {
                 return response()->json([
                     'success' => true,
@@ -208,8 +241,9 @@ class SchoolControllers extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data Sekolah Ditemukan!',
-                'data' => $school
+                'data' => SchoolResource::collection($school),
             ], Response::HTTP_OK);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
