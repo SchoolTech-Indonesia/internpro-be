@@ -30,16 +30,6 @@ Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('f
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
 
-// SCHOOL sementara (setelah fix pindah kan ke dalam auth)
-Route::prefix('schools')->group(function () {
-    Route::post('/create', [SchoolControllers::class, 'store'])->name('createschool');
-    Route::get('/', [SchoolControllers::class, 'index'])->name('getallschool');
-    Route::get('/{uuid}', [SchoolControllers::class, 'show'])->name('getspecificschool');
-    Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
-    Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteSchool');
-    Route::post('/search', [SchoolControllers::class, 'search'])->name('searchSchool');
-});
-
 Route::middleware('auth:api')->group(function () {
     /**
      * route "/user"
@@ -55,7 +45,15 @@ Route::middleware('auth:api')->group(function () {
      */
     Route::post('/logout', LogoutController::class)->name('logout');
 
-    // SCHOOL
+    // SCHOOL endpoints
+    Route::prefix('schools')->group(function () {
+        Route::post('/create', [SchoolControllers::class, 'store'])->name('createschool');
+        Route::get('/', [SchoolControllers::class, 'index'])->name('getallschool');
+        Route::get('/{uuid}', [SchoolControllers::class, 'show'])->name('getspecificschool');
+        Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
+        Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteschool');
+        Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
+    });
 
     // GURU
     Route::prefix('guru')->group(function () {
