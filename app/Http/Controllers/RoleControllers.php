@@ -34,7 +34,7 @@ class RoleControllers extends Controller
         $role = Role::with('permissions:name')->find($id);
         if (!$role) {
             return response()->json([
-                'message' => 'Role not found'
+                'message' => 'Data tidak ditemukan'
             ], 404);
         }
         return response()->json([
@@ -53,17 +53,26 @@ class RoleControllers extends Controller
                 'message' => 'Data tidak ditemukan'
             ], 404);
         }
-
-        if ($Role->delete()) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Data berhasil dihapus'
-            ], 200);
-        } else {
+        try {
+            $Role->permissions()->detach();
+            
+            if ($Role->delete()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data gagal dihapus'
+                ], 400);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data gagal dihapus'
-            ], 400);
+                'message' => 'Gagal menghapus data',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
