@@ -6,11 +6,25 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RolePermission;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RoleControllers extends Controller
 {
+    public function listRoles() : JsonResponse
+    {
+        $roles = Role::all();
+
+        if ($roles->isEmpty()) {
+            return response()->json([
+                'message' => 'No roles found'
+            ], 404);
+        }
+
+        return response()->json($roles, 200);
+    }
+
     public function getAllRoles()
     {
         $roles = Role::all();
@@ -55,7 +69,7 @@ class RoleControllers extends Controller
         }
         try {
             $Role->permissions()->detach();
-            
+
             if ($Role->delete()) {
                 return response()->json([
                     'status' => true,
@@ -81,7 +95,7 @@ class RoleControllers extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,name', 
+            'permissions.*' => 'exists:permissions,name',
         ]);
 
         // Membuat role baru
