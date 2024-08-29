@@ -73,8 +73,8 @@ Route::middleware('auth:api')->group(function () {
 
     // PERMISSION
     Route::prefix('permission')->group(function () {
-        Route::post('/create', [PermissionControllers::class, 'createPermission'])->name('createpermission');
-        Route::post('/update/{id}', [PermissionControllers::class, 'editPermission'])->name('editpermission');
-        Route::delete('/{id}', [PermissionControllers::class, 'DeletePermission'])->name('DeletePermission');
+        Route::get('/', [PermissionControllers::class, 'listPermissions'])->name('listPermissions');
+        Route::get('/{id}', [PermissionControllers::class, 'getPermissionsOfRole'])->name('getPermissionsOfRole');
+        Route::put('/{id}', [PermissionControllers::class, 'editPermissionsOfRole'])->name('editPermissionsOfRole');
     });
 });
