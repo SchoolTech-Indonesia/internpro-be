@@ -31,31 +31,18 @@ class RoleControllers extends Controller
 
     public function getSpecificRole($id)
     {
-        $roleWithPermissions = DB::select("
-            SELECT roles.name as role, roles.description, permissions.name
-            FROM roles
-            LEFT JOIN roles_permissions ON roles.id = roles_permissions.id_role
-            LEFT JOIN permissions ON roles_permissions.id_permission = permissions.id
-            WHERE roles.id = :id
-        ", ['id' => $id]);
-
-        if (empty($roleWithPermissions)) {
+        $role = Role::with('permissions:name')->find($id);
+        if (!$role) {
             return response()->json([
                 'message' => 'Role not found'
             ], 404);
         }
-
-        $formattedRole = [
-            'role' => $roleWithPermissions[0]->role,
-            'description' => $roleWithPermissions[0]->description,
-            'permissions' => [],
-        ];
-
-        foreach ($roleWithPermissions as $item) {
-            $formattedRole['permissions'][] = $item->name;
-        }
-
-        return response()->json([$formattedRole], 200);
+        return response()->json([
+            'id' => $role->id,
+            'name' => $role->name,
+            'description' => $role->description,
+            'permissions' => $role->permissions->pluck('name')
+        ],200);
     }
     public function DeleteRole($id)
     {
