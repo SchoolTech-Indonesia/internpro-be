@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthControllers;
+use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\GuruControllers;
 use App\Http\Controllers\PermissionControllers;
-use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
@@ -23,12 +24,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // AUTH
-Route::post('/register', RegisterController::class)->name('register');
+// Route::post('/register', RegisterController::class)->name('register');
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
-
-Route::apiResource('/resetpassword', ResetPasswordController::class)->only(['store'])->middleware('throttle:resetpassword');
+Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
 
 Route::middleware('auth:api')->group(function () {
     /**
@@ -44,6 +44,16 @@ Route::middleware('auth:api')->group(function () {
      * @method "POST"
      */
     Route::post('/logout', LogoutController::class)->name('logout');
+
+    // SCHOOL endpoints
+    Route::prefix('schools')->group(function () {
+        Route::post('/create', [SchoolControllers::class, 'store'])->name('createschool');
+        Route::get('/', [SchoolControllers::class, 'index'])->name('getallschool');
+        Route::get('/{uuid}', [SchoolControllers::class, 'show'])->name('getspecificschool');
+        Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
+        Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteschool');
+        Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
+    });
 
     // GURU
     Route::prefix('guru')->group(function () {
