@@ -46,6 +46,9 @@ Route::middleware('auth:api')->group(function () {
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
+    //UPDATE PASSWORD
+    Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
+
     // SCHOOL endpoints
     Route::prefix('schools')->group(function () {
         Route::post('/create', [SchoolControllers::class, 'store'])->name('createschool');
