@@ -22,7 +22,15 @@ class SchoolControllers extends Controller
     public function index()
     {
         try {
-            $schools = School::latest()->paginate(5);
+            $perPage = request()->get('per_page', 5);
+
+            $perPageOptions = [5, 10, 15, 20, 50];
+
+            if (!in_array($perPage, $perPageOptions)) {
+                $perPage = 5;
+            }
+
+            $schools = School::latest()->paginate($perPage);
 
             return response()->json([
                 'success' => true,
@@ -48,8 +56,8 @@ class SchoolControllers extends Controller
             'school_name' => 'required|string|max:255|unique:school',
             'school_address' => 'required|string|max:255',
             'phone_number' => 'required|string|max:15|unique:school',
-            'start_member' => 'required|date_format:Y-m-d H:i:s',
-            'end_member' => 'required|date_format:Y-m-d H:i:s',
+            'start_member' => 'required|date_format:Y-m-d',
+            'end_member' => 'required|date_format:Y-m-d',
         ]);
 
         if ($validator->fails()) {
@@ -130,11 +138,11 @@ class SchoolControllers extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'school_name' => 'required|string|max:255|unique:school',
+            'school_name' => 'required|string|max:255|unique:school,'. $school->uuid .',uuid',
             'school_address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:15|unique:school',
-            'start_member' => 'required|date_format:Y-m-d H:i:s',
-            'end_member' => 'required|date_format:Y-m-d H:i:s',
+            'phone_number' => 'required|string|max:15|unique:school,'. $school->uuid .',uuid',
+            'start_member' => 'required|date',
+            'end_member' => 'required|date',
         ]);
 
         if ($validator->fails()) {

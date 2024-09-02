@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('school_name', 255);
             $table->string('school_address', 255);
             $table->string('phone_number', 15);
-            $table->dateTime('start_member');
-            $table->dateTime('end_member');
+            $table->date('start_member');
+            $table->date('end_member');
             $table->timestamps();
         });
     }
