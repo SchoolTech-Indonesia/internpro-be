@@ -57,8 +57,8 @@ class SchoolControllers extends Controller
             'school_name' => 'required|string|max:255|unique:school',
             'school_address' => 'required|string|max:255',
             'phone_number' => 'required|string|max:15|unique:school',
-            'start_member' => 'required|date_format:Y-m-d',
-            'end_member' => 'required|date_format:Y-m-d',
+            'start_member' => 'required|date',
+            'end_member' => 'required|date',
         ]);
 
         if ($validator->fails()) {
