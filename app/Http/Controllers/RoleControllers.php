@@ -21,7 +21,7 @@ class RoleControllers extends Controller
      */
     public function index(): JsonResponse
     {
-        $roles = Role::withCount('users')->simplePaginate();
+        $roles = Role::withCount('users');
 
         if ($roles->isEmpty()) {
             return response()->json([
