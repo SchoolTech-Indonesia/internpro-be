@@ -33,6 +33,7 @@ class SchoolControllers extends Controller
 
             $schools = School::latest()->paginate($perPage);
 
+
             return response()->json([
                 'success' => true,
                 'message' => 'Daftar Data Sekolah',
