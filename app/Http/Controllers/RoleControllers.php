@@ -4,36 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\RolePermission;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
+/**
+ * @tags Role and Permissions
+ */
 class RoleControllers extends Controller
 {
-    public function listRoles() : JsonResponse
+    /**
+     * @return JsonResponse
+     *
+     * Get all roles
+     */
+    public function index(): JsonResponse
     {
-        $roles = Role::all();
-
-        if ($roles->isEmpty()) {
-            return response()->json([
-                'message' => 'No roles found'
-            ], 404);
-        }
-
-        return response()->json($roles, 200);
-    }
-
-    public function getAllRoles()
-    {
-        $roles = Role::all();
-
-        foreach($roles as $role) {
-            $numberOfUsers = 0;
-            $numberOfUsers += User::where('id_role', $role->id)->count();
-            $role->number_of_users = $numberOfUsers;
-        }
+        $roles = Role::withCount('users')->get();
 
         if (count($roles) == 0) {
             return response()->json([
@@ -43,7 +30,13 @@ class RoleControllers extends Controller
         return response()->json($roles, 200);
     }
 
-    public function getSpecificRole($id)
+    /**
+     * @param $id
+     * @return JsonResponse
+     *
+     * Get role by id
+     */
+    public function show($id): JsonResponse
     {
         $role = Role::with('permissions:name')->find($id);
         if (!$role) {
@@ -56,9 +49,16 @@ class RoleControllers extends Controller
             'name' => $role->name,
             'description' => $role->description,
             'permissions' => $role->permissions->pluck('name')
-        ],200);
+        ], 200);
     }
-    public function DeleteRole($id)
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     *
+     * Get role by id
+     */
+    public function DeleteRole($id): JsonResponse
     {
         $Role = Role::find($id);
         if (!$Role) {
@@ -90,12 +90,20 @@ class RoleControllers extends Controller
         }
     }
 
-    public function createRole(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * Create new role
+     */
+    public function store(Request $request): JsonResponse
     {
+        error_log($request);
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'required|array',
             'permissions.*' => 'exists:permissions,name',
+            'description' => 'nullable|string',
         ]);
 
         // Membuat role baru

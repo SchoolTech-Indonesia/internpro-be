@@ -53,6 +53,13 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed

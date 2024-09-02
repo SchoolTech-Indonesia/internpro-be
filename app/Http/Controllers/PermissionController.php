@@ -8,9 +8,19 @@ use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @tags Role and Permissions
+ *
+ * APIs for managing permissions
+ */
 class PermissionController extends Controller
 {
-    public function listPermissions(): JsonResponse
+    /**
+     * @return JsonResponse
+     *
+     *  Get all permissions
+     */
+    public function index(): JsonResponse
     {
         $permissions = Permission::all();
 
@@ -23,7 +33,13 @@ class PermissionController extends Controller
         return response()->json($permissions, 200);
     }
 
-    public function getPermissionsOfRole($id): JsonResponse
+    /**
+     * @param $id
+     * @return JsonResponse
+     *
+     * Get permission of certain role
+     */
+    public function show($id): JsonResponse
     {
         $role = Role::with('permissions')->find($id);
 
@@ -35,11 +51,18 @@ class PermissionController extends Controller
 
         return response()->json([
             'role' => $role->name,
-            'permissions' => $role->permissions
+            'permissions' => $role->permissions->pluck('name')
         ], 200);
     }
 
-    public function editPermissionsOfRole(PermissionRequest $request, $id): JsonResponse
+    /**
+     * @param PermissionRequest $request
+     * @param $id
+     * @return JsonResponse
+     *
+     * Update permission of a role
+     */
+    public function update(PermissionRequest $request, $id): JsonResponse
     {
         // Check if the request is valid
         if (isset($request->validator) && $request->validator->fails()) {
