@@ -76,6 +76,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [PermissionController::class, 'index'])->name('index');
         Route::get('/{id}', [PermissionController::class, 'show'])->name('show');
         Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
 });
