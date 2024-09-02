@@ -9,26 +9,25 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasUuids;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'nip',
-        'nisn',
-        'password',
-        'id_role',
-        'otp',
-        'otp_expired_at',
-    ];
+
+    protected $primaryKey = 'uuid';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -69,5 +68,25 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class, 'school_id', 'uuid');
+    }
+
+    public function major()
+    {
+        return $this->belongsTo(Major::class, 'major_id', 'uuid');
+    }
+
+    public function class()
+    {
+        return $this->belongsTo(Kelas::class, 'class_id', 'uuid');
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class, 'partner_id', 'uuid');
     }
 }
