@@ -98,7 +98,6 @@ class RoleControllers extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        error_log($request);
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'required|array',
@@ -109,7 +108,7 @@ class RoleControllers extends Controller
         // Membuat role baru
         $role = Role::create([
             'name' => $validatedData['name'],
-            'description' => $request->input('description'),
+            'descrition' => $request->input('description'),
         ]);
 
         $permissions = Permission::whereIn('name', $validatedData['permissions'])->get();

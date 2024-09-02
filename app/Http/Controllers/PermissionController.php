@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreatePermissionRequest;
 use App\Http\Requests\PermissionRequest;
 use App\Models\Permission;
 use App\Models\Role;
@@ -87,5 +88,31 @@ class PermissionController extends Controller
             'role' => $role,
             'permissions' => $role->permissions
         ], 200);
+    }
+
+    /**
+     * @param PermissionRequest $request
+     * @param $id
+     * @return JsonResponse
+     *
+     * Create a new permission
+     */
+
+    public function store(CreatePermissionRequest $request): JsonResponse
+    {
+        // Check if the request is valid
+        if (isset($request->validator) && $request->validator->fails()) {
+            return response()->json($request->validator->messages(), 400);
+        }
+        $validatedData = $request->validated();
+
+        foreach ($validatedData['permissions'] as $permissionData) {
+            Permission::firstOrCreate($permissionData);
+        }
+
+        return response()->json([
+            'message' => 'Permission created successfully',
+            'permission' => $validatedData['permissions']
+        ], 201);
     }
 }
