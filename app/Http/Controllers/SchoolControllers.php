@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\SchoolResource;
+use Illuminate\Validation\Rule;
 
 /**
  * Class SchoolControllers
@@ -138,9 +139,19 @@ class SchoolControllers extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'school_name' => 'required|string|max:255|unique:school,'. $school->uuid .',uuid',
+            'school_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('school', 'school_name')->ignore($school->uuid, 'uuid')
+            ],
             'school_address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:15|unique:school,'. $school->uuid .',uuid',
+            'phone_number' => [
+                'required',
+                'string',
+                'max:15',
+                Rule::unique('school', 'phone_number')->ignore($school->uuid, 'uuid')
+            ],
             'start_member' => 'required|date',
             'end_member' => 'required|date',
         ]);
