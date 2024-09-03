@@ -2,62 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RoleResource;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\RolePermission;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
+/**
+ * @tags Roles
+ */
 class RoleControllers extends Controller
 {
-    public function getAllRoles()
+    /**
+     * @return JsonResponse
+     *
+     * Get all roles
+     */
+    public function index(): JsonResponse
     {
-        $roles = Role::all();
+        $roles = Role::withCount('users');
 
-        foreach($roles as $role) {
-            $numberOfUsers = 0;
-            $numberOfUsers += User::where('id_role', $role->id)->count();
-            $role->number_of_users = $numberOfUsers;
-        }
-
-        if (count($roles) == 0) {
+        if ($roles->isEmpty()) {
             return response()->json([
                 'message' => 'No roles found'
             ], 404);
         }
-        return response()->json($roles, 200);
+        return RoleResource::collection($roles)->response();
     }
 
-    public function getSpecificRole($id)
+    /**
+     * @param $id
+     * @return JsonResponse
+     *
+     * Get role by id
+     */
+    public function show($id): JsonResponse
     {
-        $roleWithPermissions = DB::select("
-            SELECT roles.name as role, roles.description, permissions.name
-            FROM roles
-            LEFT JOIN roles_permissions ON roles.id = roles_permissions.id_role
-            LEFT JOIN permissions ON roles_permissions.id_permission = permissions.id
-            WHERE roles.id = :id
-        ", ['id' => $id]);
-
-        if (empty($roleWithPermissions)) {
+        $role = Role::with('permissions:name')->find($id);
+        if (!$role) {
             return response()->json([
-                'message' => 'Role not found'
+                'message' => 'Data tidak ditemukan'
             ], 404);
         }
-
-        $formattedRole = [
-            'role' => $roleWithPermissions[0]->role,
-            'description' => $roleWithPermissions[0]->description,
-            'permissions' => [],
-        ];
-
-        foreach ($roleWithPermissions as $item) {
-            $formattedRole['permissions'][] = $item->name;
-        }
-
-        return response()->json([$formattedRole], 200);
+        return RoleResource::collection($role)->response();
     }
-    public function DeleteRole($id)
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     *
+     * Delete role by id
+     */
+    public function destroy($id): JsonResponse
     {
         $Role = Role::find($id);
         if (!$Role) {
@@ -66,17 +63,58 @@ class RoleControllers extends Controller
                 'message' => 'Data tidak ditemukan'
             ], 404);
         }
+        try {
+            $Role->permissions()->detach();
 
-        if ($Role->delete()) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Data berhasil dihapus'
-            ], 200);
-        } else {
+            if ($Role->delete()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data gagal dihapus'
+                ], 400);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data gagal dihapus'
-            ], 400);
+                'message' => 'Gagal menghapus data',
+                'error' => $e->getMessage()
+            ], 500);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * Create new role
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name',
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name',
+            'description' => 'nullable|string',
+        ]);
+
+        // Membuat role baru
+        $role = Role::create([
+            'name' => $validatedData['name'],
+            'descrition' => $request->input('description'),
+        ]);
+
+        $permissions = Permission::whereIn('name', $validatedData['permissions'])->get();
+
+        $role->permissions()->sync($permissions);
+
+        return response()->json([
+            'message' => 'Role created successfully',
+            'role' => $role,
+            'permissions' => $role->permissions,
+        ], 201);
     }
 }
