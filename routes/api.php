@@ -46,6 +46,9 @@ Route::middleware('auth:api')->group(function () {
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
+    // UPDATE PROFILE
+    Route::put('/update-profile', [ProfileController::class, "updateProfile"])->name('updateprofile');
+
     //UPDATE PASSWORD
     Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
 

@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -18,6 +20,43 @@ class ProfileController extends Controller
         return response()->json([
             "success" => true,
             "data" => new ProfileResource($user)
+        ], 200);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->guard('api')->user();
+
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($user), // Abaikan email user saat ini untuk validasi unik
+            ],
+            'phone_number' => [
+                'required',
+                'string',
+                Rule::unique('users', 'phone_number')->ignore($user),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Update user profile
+        User::where('uuid', $user->uuid)->update([
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data updated successfully!',
         ], 200);
     }
 
