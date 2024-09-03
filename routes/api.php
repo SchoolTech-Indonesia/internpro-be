@@ -9,6 +9,8 @@ use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,15 +37,20 @@ Route::middleware('auth:api')->group(function () {
      * route "/user"
      * @method "GET"
      */
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->name('user');
-
     /**
      * route "/logout"
      * @method "POST"
      */
     Route::post('/logout', LogoutController::class)->name('logout');
+
+    // GET CURRENT PROFILE
+    Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
+
+    // UPDATE PROFILE
+    Route::put('/update-profile', [ProfileController::class, "updateProfile"])->name('updateprofile');
+
+    //UPDATE PASSWORD
+    Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
 
     // SCHOOL endpoints
     Route::prefix('schools')->group(function () {

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,22 +25,7 @@ class LoginController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $user = User::where('nip', $request->nip_nisn)
-            ->orWhere('nisn', $request->nip_nisn)
-            ->first();
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'NIP/NISN atau Password Anda salah'
-            ], 401);
-        }
-
-        // get credentials
-        $credentials = [
-            $user->nip === $request->nip_nisn ? 'nip' : 'nisn' => $request->nip_nisn,
-            'password' => $request->password
-        ];
+        $credentials = $request->only(['nip_nisn', 'password']);
 
         //if auth failed
         if (!$token = auth()->guard('api')->attempt($credentials)) {
