@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthControllers;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\GuruControllers;
-use App\Http\Controllers\PermissionControllers;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
@@ -65,15 +65,18 @@ Route::middleware('auth:api')->group(function () {
 
     // ROLE
     Route::prefix('roles')->group(function () {
-        Route::get('/', [RoleControllers::class, 'getAllRoles'])->name('getallroles');
-        Route::get('/{id}', [RoleControllers::class, 'getSpecificRole'])->name('getspecificrole');
-        Route::delete('/{id}', [RoleControllers::class, 'DeleteRole'])->name('DeleteRole');
+        Route::get('/', [RoleControllers::class, 'index'])->name('index');
+        Route::get('/{id}', [RoleControllers::class, 'show'])->name('show');
+        Route::delete('/{id}', [RoleControllers::class, 'destroy'])->name('destroy');
+        Route::post('/create', [RoleControllers::class, 'store'])->name('store');
     });
 
     // PERMISSION
     Route::prefix('permission')->group(function () {
-        Route::post('/create', [PermissionControllers::class, 'createPermission'])->name('createpermission');
-        Route::post('/update/{id}', [PermissionControllers::class, 'editPermission'])->name('editpermission');
-        Route::delete('/{id}', [PermissionControllers::class, 'DeletePermission'])->name('DeletePermission');
+        Route::get('/', [PermissionController::class, 'index'])->name('index');
+        Route::get('/{id}', [PermissionController::class, 'show'])->name('show');
+        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
 });
