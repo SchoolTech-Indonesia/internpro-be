@@ -48,6 +48,19 @@ Route::middleware('auth:api')->group(function () {
      */
     Route::post('/logout', LogoutController::class)->name('logout');
 
+    // USERS
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('getallusers');
+        Route::get('/{user}', [UsersController::class, 'show'])->name('getuser');
+        Route::post('/create', [UsersController::class, 'store'])->name('createuser');
+        Route::patch('/update/{id}', [UsersController::class, 'update'])->name('updateuser');
+        Route::delete('/{id}', [UsersController::class, 'destroy'])->name('deleteuser');
+        Route::post('/import', [UsersController::class, 'importUsers'])->name('importusers');
+        Route::get('/export/xlsx', [UsersController::class, 'exportUsersToXLSX'])->name('exportuserstoxlsx');
+        Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
+        Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
+    });
+    
     // GURU
     Route::prefix('guru')->group(function () {
         Route::post('/create', [GuruControllers::class, 'createGuru'])->name('createguru');
@@ -70,9 +83,3 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [PermissionControllers::class, 'DeletePermission'])->name('DeletePermission');
     });
 });
-
-Route::resource('users', UsersController::class); // only for temporary needs, please modify it again
-Route::post('users/import', [UsersController::class, 'importUsers']); // only for temporary needs, please modify it again
-Route::get('/users/export/xlsx', [UsersController::class, 'exportUsersToXLSX']); // only for temporary needs, please modify it again
-Route::get('/users/export/csv', [UsersController::class, 'exportUsersToCSV']); // only for temporary needs, please modify it again
-Route::get('/users/export/pdf', [UsersController::class, 'exportUsersToPDF']); // only for temporary needs, please modify it again

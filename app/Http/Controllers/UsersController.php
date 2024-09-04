@@ -9,6 +9,7 @@ use App\Imports\UsersImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -32,7 +33,7 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         // input validator
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
@@ -41,24 +42,37 @@ class UsersController extends Controller
             'id_role' => 'required|exists:roles,id',
         ]);
 
-        // create new user
-        $user = new User();
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->password = bcrypt($request->input('password'));
-        $user->nip = $request->input('nip');
-        $user->nisn = $request->input('nisn');
-        $user->id_role = $request->input('id_role');
-        $user->created_by = auth()->id();  // id admin as creator
-        $user->save();
-
-        return response()->json($user, 201);
+        try {
+            // create new user
+            $user = new User();
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->password = bcrypt($validatedData['password']);
+            $user->nip = $validatedData['nip'] ?? null;
+            $user->nisn = $validatedData['nisn'] ?? null;
+            $user->id_role = $validatedData['id_role'];
+            $user->created_by = auth()->id();  // admin id as creator
+            $user->save();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'User berhasil dibuat',
+                'data' => $user
+            ], 201);
+    
+        } catch (\Exception $e) {
+            // handling general error
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat membuat user: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(Request $request, $id)
     {
         // input validator
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
@@ -67,43 +81,70 @@ class UsersController extends Controller
             'id_role' => 'required|exists:roles,id',
         ]);
 
-        // find user
-        $user = User::findOrFail($id);
-
-        // update user data
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-
-        if ($request->input('password')) {
-            $user->password = bcrypt($request->input('password'));
+        try {
+            // find user by id
+            $user = User::findOrFail($id);
+    
+            // update user data
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+    
+            if ($request->filled('password')) {
+                $user->password = bcrypt($validatedData['password']);
+            }
+    
+            $user->nip = $validatedData['nip'] ?? null;
+            $user->nisn = $validatedData['nisn'] ?? null;
+            $user->id_role = $validatedData['id_role'];
+            $user->updated_by = auth()->id(); // admin id as creator
+            $user->save();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'User berhasil diperbarui',
+                'data' => $user
+            ], 200);
+    
+        } catch (\Exception $e) {
+            // handling general error
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui user: ' . $e->getMessage()
+            ], 500);
         }
-
-        $user->nip = $request->input('nip');
-        $user->nisn = $request->input('nisn');
-        $user->id_role = $request->input('id_role');
-        $user->updated_by = auth()->id();  // id admin as creator
-        $user->save();
-
-        return response()->json($user);
     }
 
     public function destroy($id)
     {
-        // find user
-        $user = User::findOrFail($id);
+        try {
+            // database protection
+            DB::beginTransaction();
 
-        // set column deleted_by and soft deleting
-        $user->deleted_by = auth()->id();  // id admin as creator
-        if ($user->save() && $user->delete()) {
+            // find user by id
+            $user = User::findOrFail($id);
+    
+            // set kolom deleted_by dan soft delete
+            $user->deleted_by = auth()->id();
+    
+            // delete user
+            $user->delete();
+
+            // commit transaction
+            DB::commit();
+
             return response()->json([
                 'status' => true,
                 'message' => 'User berhasil dihapus'
             ], 200);
-        } else {
+
+        } catch (\Exception $e) {
+            // database protection
+            DB::rollBack();
+
             return response()->json([
                 'status' => false,
-                'message' => 'User gagal dihapus'
-            ], 400);
+                'message' => 'Terjadi kesalahan saat menghapus user: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -113,9 +154,22 @@ class UsersController extends Controller
             'file' => 'required|mimes:xlsx'
         ]);
 
-        Excel::import(new UsersImport, $request->file('file'));
-
-        return redirect()->back()->with('success', 'Users Imported Successfully');
+        try {
+            // import process
+            Excel::import(new UsersImport, $request->file('file'));
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Users Imported Successfully'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            // general handling error
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat mengimpor users: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function exportUsersToXLSX()
