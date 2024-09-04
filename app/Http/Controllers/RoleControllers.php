@@ -98,13 +98,11 @@ class RoleControllers extends Controller
             'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'required|array',
             'permissions.*' => 'exists:permissions,name',
-            'description' => 'nullable|string',
         ]);
 
         // Membuat role baru
         $role = Role::create([
             'name' => $validatedData['name'],
-            'descrition' => $request->input('description'),
         ]);
 
         $permissions = Permission::whereIn('name', $validatedData['permissions'])->get();
