@@ -15,7 +15,10 @@ class UsersController extends Controller
     public function index(Request $request): JsonResponse
     {
         $search = $request->query('name');
-        $users = User::where('name', 'LIKE', "%$search%")->paginate(5);
+        $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
+        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
+            $query->whereIn("role_id", $roles);
+        })->paginate(5);
         return response()->json($users);
     }
 

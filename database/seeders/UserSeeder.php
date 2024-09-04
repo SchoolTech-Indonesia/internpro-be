@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             'nip' => '1234567890',
             'nisn' => '9876543210',
             'password' => bcrypt('password'),
-            'id_role' => 1
+            'role_id' => 1
         ]);
 
         User::factory(10)->create();
