@@ -4,14 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
 
 class UsersController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $search = $request->query('name');
+        $users = User::where('name', 'LIKE', "%$search%")->paginate(5);
+        return response()->json($users);
+    }
+
+    public function show(User $user): JsonResponse
+    {
+        return response()->json($user);
+    }
+
+    public function filterByRole(Request $request) {}
+
     public function createUser(Request $request)
     {
         // input validator
@@ -114,7 +128,7 @@ class UsersController extends Controller
     public function exportUsersToPDF()
     {
         $users = User::all(['id', 'name', 'email', 'nip', 'nisn', 'id_role']);
-        
+
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
         return $pdf->download('users.pdf');
