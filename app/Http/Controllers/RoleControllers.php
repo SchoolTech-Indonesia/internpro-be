@@ -21,7 +21,7 @@ class RoleControllers extends Controller
      */
     public function index(): JsonResponse
     {
-        $roles = Role::withCount('users');
+        $roles = Role::withCount('users')->get();
 
         if ($roles->isEmpty()) {
             return response()->json([
@@ -45,7 +45,7 @@ class RoleControllers extends Controller
                 'message' => 'Data tidak ditemukan'
             ], 404);
         }
-        return RoleResource::collection($role)->response();
+        return (new RoleResource($role))->response();
     }
 
     /**
