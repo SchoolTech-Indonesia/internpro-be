@@ -26,7 +26,7 @@ class UsersController extends Controller
 
     public function filterByRole(Request $request) {}
 
-    public function createUser(Request $request)
+    public function store(Request $request)
     {
         // input validator
         $request->validate([
@@ -52,7 +52,7 @@ class UsersController extends Controller
         return response()->json($user, 201);
     }
 
-    public function updateUser(Request $request, $id)
+    public function update(Request $request, $id)
     {
         // input validator
         $request->validate([
@@ -84,7 +84,7 @@ class UsersController extends Controller
         return response()->json($user);
     }
 
-    public function deleteUser($id)
+    public function destroy($id)
     {
         // find user
         $user = User::findOrFail($id);
