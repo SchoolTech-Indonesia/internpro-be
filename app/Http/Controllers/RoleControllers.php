@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RoleResource;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -9,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * @tags Role and Permissions
+ * @tags Roles
  */
 class RoleControllers extends Controller
 {
@@ -20,14 +21,14 @@ class RoleControllers extends Controller
      */
     public function index(): JsonResponse
     {
-        $roles = Role::withCount('users')->get();
+        $roles = Role::withCount('users');
 
-        if (count($roles) == 0) {
+        if ($roles->isEmpty()) {
             return response()->json([
                 'message' => 'No roles found'
             ], 404);
         }
-        return response()->json($roles, 200);
+        return RoleResource::collection($roles)->response();
     }
 
     /**
@@ -44,21 +45,16 @@ class RoleControllers extends Controller
                 'message' => 'Data tidak ditemukan'
             ], 404);
         }
-        return response()->json([
-            'id' => $role->id,
-            'name' => $role->name,
-            'description' => $role->description,
-            'permissions' => $role->permissions->pluck('name')
-        ], 200);
+        return RoleResource::collection($role)->response();
     }
 
     /**
      * @param $id
      * @return JsonResponse
      *
-     * Get role by id
+     * Delete role by id
      */
-    public function DeleteRole($id): JsonResponse
+    public function destroy($id): JsonResponse
     {
         $Role = Role::find($id);
         if (!$Role) {

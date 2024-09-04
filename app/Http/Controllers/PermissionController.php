@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePermissionRequest;
 use App\Http\Requests\PermissionRequest;
+use App\Http\Resources\PermissionResource;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * @tags Role and Permissions
+ * @tags Permissions
  *
  * APIs for managing permissions
  */
@@ -31,7 +32,7 @@ class PermissionController extends Controller
             ], 404);
         }
 
-        return response()->json($permissions, 200);
+        return PermissionResource::collection($permissions)->response();
     }
 
     /**
@@ -52,7 +53,7 @@ class PermissionController extends Controller
 
         return response()->json([
             'role' => $role->name,
-            'permissions' => $role->permissions->pluck('name')
+            'permissions' => PermissionResource::collection($role->permissions)
         ], 200);
     }
 
@@ -86,7 +87,7 @@ class PermissionController extends Controller
         return response()->json([
             'message' => 'Permissions updated successfully',
             'role' => $role,
-            'permissions' => $role->permissions
+            'permissions' => PermissionResource::collection($role->permissions)
         ], 200);
     }
 
@@ -106,13 +107,42 @@ class PermissionController extends Controller
         }
         $validatedData = $request->validated();
 
+        $createdPermissions[] = [];
         foreach ($validatedData['permissions'] as $permissionData) {
-            Permission::firstOrCreate($permissionData);
+            $createdPermissions = Permission::firstOrCreate($permissionData);
         }
 
         return response()->json([
             'message' => 'Permission created successfully',
-            'permission' => $validatedData['permissions']
+            'permission' => $createdPermissions
         ], 201);
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     *
+     * Delete a permission by id
+     */
+    public function destroy($id): JsonResponse
+    {
+        $permission = Permission::find($id);
+
+        if (!$permission) {
+            return response()->json([
+                'message' => 'Permission not found'
+            ], 404);
+        }
+
+        if ($permission->delete()) {
+            return response()->json([
+                'message' => 'Permission deleted successfully',
+                'permission' => new PermissionResource($permission)
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Failed to delete permission'
+        ], 400);
     }
 }
