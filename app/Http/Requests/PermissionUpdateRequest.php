@@ -22,7 +22,7 @@ class PermissionUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['permission' => 'required'];
+        return ['name' => 'required'];
     }
 
     // Failed validation method
@@ -36,7 +36,7 @@ class PermissionUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'permission' => 'The permission name field is required.',
+            'name' => 'The permission name field is required.',
         ];
     }
 }

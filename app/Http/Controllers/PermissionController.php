@@ -37,7 +37,7 @@ class PermissionController extends Controller
      * @param $id
      * @return JsonResponse
      *
-     * Get a certain permission
+     * Get a permission by id
      */
     public function show($id): JsonResponse
     {
@@ -69,7 +69,7 @@ class PermissionController extends Controller
 
         try {
             $permission = Permission::findById($id);
-            $permission->update(['name' => $validatedData['permission']]);
+            $permission->update(['name' => $validatedData['name']]);
             $updatedPermission = Permission::findById($id);
         } catch (\Exception $e) {
             // create if permission name or not unique exception already exist
