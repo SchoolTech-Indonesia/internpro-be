@@ -53,9 +53,9 @@ class UserSeeder extends Seeder
         ]);
 
         $user = User::firstOrCreate([
-            'nip_nisn' => "1234567890",
+            'nip_nisn' => "987",
             'name' => 'Super Administrator',
-            'email' => 'superadmin@gmail.com',
+            'email' => 'user@dev-internpro.schooltech.biz.id',
             'phone_number' => "085711987654",
             'password' => bcrypt('password'),
             'school_id' => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
