@@ -45,8 +45,9 @@ class PermissionController extends Controller
             $permission = Permission::findById($id);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Permission not found'
-            ], 404);
+                'message' => 'Failed to get permission',
+                'error' => $e->getMessage()
+            ], 400);
         }
 
         return (new PermissionResource($permission))->response();
