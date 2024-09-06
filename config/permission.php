@@ -30,16 +30,52 @@ return [
     ],
 
     'table_names' => [
+        /*
+        * When using the "HasRoles" trait from this package, we need to know which
+        * table should be used to retrieve your roles. We have chosen a basic
+        * default value but you may easily change it to any table you like.
+        */
+
         'roles' => 'roles',
+
+        /*
+         * When using the "HasPermissions" trait from this package, we need to know which
+         * table should be used to retrieve your permissions. We have chosen a basic
+         * default value but you may easily change it to any table you like.
+         */
+
         'permissions' => 'permissions',
+
+        /*
+         * When using the "HasPermissions" trait from this package, we need to know which
+         * table should be used to retrieve your models permissions. We have chosen a
+         * basic default value but you may easily change it to any table you like.
+         */
+
+        'model_has_permissions' => 'model_has_permissions',
+
+        /*
+         * When using the "HasRoles" trait from this package, we need to know which
+         * table should be used to retrieve your models roles. We have chosen a
+         * basic default value but you may easily change it to any table you like.
+         */
+
+        'model_has_roles' => 'model_has_roles',
+
+        /*
+         * When using the "HasRoles" trait from this package, we need to know which
+         * table should be used to retrieve your roles permissions. We have chosen a
+         * basic default value but you may easily change it to any table you like.
+         */
+
         'role_has_permissions' => 'roles_permissions',
     ],
     'column_names' => [
         /*
          * Change this if you want to name the related pivots other than defaults
          */
-        'role_pivot_key' => null, //default 'role_id',
-        'permission_pivot_key' => null, //default 'permission_id',
+        'role_pivot_key' => 'role_id', //default 'role_id',
+        'permission_pivot_key' => 'permission_id', //default 'permission_id',
 
         /*
          * Change this if you want to name the related model primary key other than
