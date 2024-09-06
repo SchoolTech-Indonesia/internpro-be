@@ -2,30 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\QueryException;
+use Spatie\Permission\Models\Role as SpatieRole;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Role extends Model
+class Role extends SpatieRole
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+    use HasUuids;
+    protected $primaryKey = 'id';
 
     protected $table = 'roles';
     protected $fillable = [
         'name',
         'description',
-        'created_at',
-        'updated_at',
+        'guard_name'
     ];
-
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'roles_permissions', 'id_role', 'id_permission');
-    }
-
-    public function users()
-    {
-        return $this->hasMany(User::class, 'id_role');
-    }
 }

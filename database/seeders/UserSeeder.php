@@ -18,12 +18,12 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create([
+        $role = Role::firstOrCreate([
             'name' => 'Super Administrator',
             'description' => 'Super Administrator'
         ]);
 
-        $school = School::create([
+        $school = School::firstOrCreate([
             "uuid" => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
             "school_name" => "smk tadika mesra",
             "school_address" => "kampung durian runtuh",
@@ -32,18 +32,18 @@ class UserSeeder extends Seeder
             "end_member" => "2024-09-05 10:00:00"
         ]);
 
-        $major = Major::create([
+        $major = Major::firstOrCreate([
             "major_code" => "0987654321",
             "major_name" => "Rekaya Perangkat Lunak"
         ]);
 
-        $class = Kelas::create([
+        $class = Kelas::firstOrCreate([
             "class_code" => "TIF2024",
             "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
             "major" => $major->uuid
         ]);
 
-        $partner = Partner::create([
+        $partner = Partner::firstOrCreate([
             "partner_name" => "PT mencari cinta sejati",
             "partner_address" => "Jalan kebun raya bogor",
             "partner_logo" => "00xx000x00x",
@@ -52,17 +52,17 @@ class UserSeeder extends Seeder
             "school" => $school->uuid
         ]);
 
-        User::create([
+        $user = User::firstOrCreate([
             'nip_nisn' => "1234567890",
             'name' => 'Super Administrator',
             'email' => 'superadmin@gmail.com',
             'phone_number' => "085711987654",
             'password' => bcrypt('password'),
-            'id_role' => 1,
             'school_id' => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
             'partner_id' => $partner->uuid
         ]);
+        $user->assignRole(['Super Administrator']);
     }
 }

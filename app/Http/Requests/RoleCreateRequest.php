@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
-class CreatePermissionRequest extends FormRequest
+class RoleCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,15 +21,22 @@ class CreatePermissionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['permissions' => 'required|array'];
+        return [
+            'name' => 'required|string|max:255|unique:roles,name',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name',
+            'description' => 'required|string',
+        ];
     }
 
-    // Prepare for validation
     protected function prepareForValidation()
     {
-        $this->merge([
-            'permissions' => array_map(fn($permission) => ['name' => $permission], $this->permissions),
-        ]);
+        // make if permission null to empty array
+        if ($this->permissions === null) {
+            $this->merge([
+                'permissions' => [],
+            ]);
+        }
     }
 
     // Failed validation method
@@ -39,5 +45,13 @@ class CreatePermissionRequest extends FormRequest
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
         $this->validator = $validator;
+    }
+
+    // create custom message for permissions.*
+    public function messages(): array
+    {
+        return [
+            'permissions.*.exists' => 'The selected permission :input is invalid.',
+        ];
     }
 }
