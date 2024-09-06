@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PermissionCreateRequest;
-use App\Http\Requests\PermissionRequest;
 use App\Http\Requests\PermissionUpdateRequest;
 use App\Http\Resources\PermissionResource;
 use App\Models\Permission;

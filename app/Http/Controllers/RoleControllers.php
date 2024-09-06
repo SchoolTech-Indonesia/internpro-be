@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleUpdateRequest;
 use App\Http\Resources\RoleResource;
-use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * @tags Roles
@@ -22,7 +20,7 @@ class RoleControllers extends Controller
      */
     public function index(): JsonResponse
     {
-        $roles = Role::with('permissions:name')->withCount('users')->get();
+        $roles = Role::with('permissions')->withCount('users')->get();
 
         if ($roles->isEmpty()) {
             return response()->json([
@@ -40,7 +38,7 @@ class RoleControllers extends Controller
      */
     public function show($id): JsonResponse
     {
-        $role = Role::with('permissions:name')->withCount('users')->find($id);
+        $role = Role::with('permissions')->withCount('users')->find($id);
         if (!$role) {
             return response()->json([
                 'message' => 'Data tidak ditemukan'
@@ -57,7 +55,7 @@ class RoleControllers extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        $Role = Role::with('permissions:name')->withCount('users')->find($id);
+        $Role = Role::with('permissions')->withCount('users')->find($id);
         if (!$Role) {
             return response()->json([
                 'status' => false,
@@ -113,7 +111,7 @@ class RoleControllers extends Controller
             ], 400);
         }
 
-        $roles = Role::with('permissions:name')->withCount('users')->find($role->id);
+        $roles = Role::with('permissions')->withCount('users')->find($role->id);
 
         return response()->json([
             'message' => 'Role created successfully',
@@ -153,7 +151,7 @@ class RoleControllers extends Controller
             ], 400);
         }
 
-        $roles = Role::with('permissions:name')->withCount('users')->find($role->id);
+        $roles = Role::with('permissions')->withCount('users')->find($role->id);
 
         return response()->json([
             'message' => 'Role updated successfully',
