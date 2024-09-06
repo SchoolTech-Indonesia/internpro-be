@@ -56,7 +56,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var string
      */
-    protected $primaryKey = 'id';
+    // protected $primaryKey = 'id';
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
