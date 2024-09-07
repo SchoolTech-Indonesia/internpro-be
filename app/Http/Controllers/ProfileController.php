@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -32,12 +33,12 @@ class ProfileController extends Controller
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users', 'email')->ignore($user), // Abaikan email user saat ini untuk validasi unik
+                Rule::unique('users', 'email')->ignore(Auth::user()), // Abaikan email user saat ini untuk validasi unik
             ],
             'phone_number' => [
                 'required',
                 'string',
-                Rule::unique('users', 'phone_number')->ignore($user),
+                Rule::unique('users', 'phone_number')->ignore(Auth::user()),
             ],
         ]);
 
