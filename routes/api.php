@@ -74,6 +74,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('roles')->group(function () {
         Route::get('/', [RoleControllers::class, 'index'])->name('index');
         Route::get('/{id}', [RoleControllers::class, 'show'])->name('show');
+        Route::put('/update/{id}', [RoleControllers::class, 'update'])->name('update');
         Route::delete('/{id}', [RoleControllers::class, 'destroy'])->name('destroy');
         Route::post('/create', [RoleControllers::class, 'store'])->name('store');
     });
