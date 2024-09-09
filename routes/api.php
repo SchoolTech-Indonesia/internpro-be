@@ -1,14 +1,17 @@
 <?php
 
 use App\Http\Controllers\AuthControllers;
-use App\Http\Controllers\GuruControllers;
-use App\Http\Controllers\PermissionControllers;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\SchoolControllers;
+use App\Http\Controllers\GuruControllers;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Exports\UsersExport;
@@ -26,22 +29,17 @@ use Maatwebsite\Excel\Facades\Excel;
 */
 
 // AUTH
-Route::post('/register', RegisterController::class)->name('register');
+// Route::post('/register', RegisterController::class)->name('register');
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
-
-Route::apiResource('/resetpassword', ResetPasswordController::class)->only(['store'])->middleware('throttle:resetpassword');
+Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
 
 Route::middleware('auth:api')->group(function () {
     /**
      * route "/user"
      * @method "GET"
      */
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->name('user');
-
     /**
      * route "/logout"
      * @method "POST"
@@ -61,6 +59,25 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
     });
     
+    // GET CURRENT PROFILE
+    Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
+
+    // UPDATE PROFILE
+    Route::put('/update-profile', [ProfileController::class, "updateProfile"])->name('updateprofile');
+
+    //UPDATE PASSWORD
+    Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
+
+    // SCHOOL endpoints
+    Route::prefix('schools')->group(function () {
+        Route::post('/create', [SchoolControllers::class, 'store'])->name('createschool');
+        Route::get('/', [SchoolControllers::class, 'index'])->name('getallschool');
+        Route::get('/{uuid}', [SchoolControllers::class, 'show'])->name('getspecificschool');
+        Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
+        Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteschool');
+        Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
+    });
+
     // GURU
     Route::prefix('guru')->group(function () {
         Route::post('/create', [GuruControllers::class, 'createGuru'])->name('createguru');
@@ -71,15 +88,19 @@ Route::middleware('auth:api')->group(function () {
 
     // ROLE
     Route::prefix('roles')->group(function () {
-        Route::get('/', [RoleControllers::class, 'getAllRoles'])->name('getallroles');
-        Route::get('/{id}', [RoleControllers::class, 'getSpecificRole'])->name('getspecificrole');
-        Route::delete('/{id}', [RoleControllers::class, 'DeleteRole'])->name('DeleteRole');
+        Route::get('/', [RoleControllers::class, 'index'])->name('index');
+        Route::get('/{id}', [RoleControllers::class, 'show'])->name('show');
+        Route::put('/update/{id}', [RoleControllers::class, 'update'])->name('update');
+        Route::delete('/{id}', [RoleControllers::class, 'destroy'])->name('destroy');
+        Route::post('/create', [RoleControllers::class, 'store'])->name('store');
     });
 
     // PERMISSION
     Route::prefix('permission')->group(function () {
-        Route::post('/create', [PermissionControllers::class, 'createPermission'])->name('createpermission');
-        Route::post('/update/{id}', [PermissionControllers::class, 'editPermission'])->name('editpermission');
-        Route::delete('/{id}', [PermissionControllers::class, 'DeletePermission'])->name('DeletePermission');
+        Route::get('/', [PermissionController::class, 'index'])->name('index');
+        Route::get('/{id}', [PermissionController::class, 'show'])->name('show');
+        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
 });
