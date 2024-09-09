@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'password' => 'password', // default password
             'nip' => $this->faker->optional()->numerify('##########'),
             'nisn' => $this->faker->optional()->numerify('##########'),
-            'id_role' => 1, // assuming a default role id
+            'role_id' => 1, // assuming a default role id
             'otp' => $this->faker->optional()->numerify('######'),
             'otp_expired_at' => Carbon::now()->addWeek(),
             'remember_token' => Str::random(10),
@@ -42,7 +42,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

@@ -12,12 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Define foreign key constraint
-            $table->foreign('role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('cascade');
-        });
+            $table->unsignedBigInteger('created_by')->nullable()->after('created_at');
+            $table->unsignedBigInteger('updated_by')->nullable()->after('updated_at');
+            $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
+        }); // add 3 new columns
     }
 
     /**
@@ -26,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn(['created_by', 'updated_by', 'deleted_by']);
         });
     }
 };

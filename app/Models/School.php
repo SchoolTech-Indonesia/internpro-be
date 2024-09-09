@@ -44,4 +44,9 @@ class School extends Model
             $builder->whereNull('deleted_at');
         });
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'school_id', 'uuid');
+    }
 }
