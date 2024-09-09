@@ -21,6 +21,8 @@ class ProfileResource extends JsonResource
             'phone_number' => $this->phone_number,
             'school' => new SchoolResource($this->whenLoaded('school')),
             'major' => new MajorResource($this->whenLoaded('major')),
+            'role' => "Koordinator",
+            'class' => "SMK Tadika Mesra 2"
         ];
     }
 }

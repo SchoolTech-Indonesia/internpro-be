@@ -23,6 +23,35 @@ class UserSeeder extends Seeder
             'description' => 'Super Administrator'
         ]);
 
+        $school = School::create([
+            "uuid" => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
+            "school_name" => "smk tadika mesra",
+            "school_address" => "kampung durian runtuh",
+            "phone_number" => "082198765",
+            "start_member" => "2024-09-01 10:00:00",
+            "end_member" => "2024-09-05 10:00:00"
+        ]);
+
+        $major = Major::create([
+            "major_code" => "0987654321",
+            "major_name" => "Rekaya Perangkat Lunak"
+        ]);
+
+        $class = Kelas::create([
+            "class_code" => "TIF2024",
+            "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
+            "major" => $major->uuid
+        ]);
+
+        $partner = Partner::create([
+            "partner_name" => "PT mencari cinta sejati",
+            "partner_address" => "Jalan kebun raya bogor",
+            "partner_logo" => "00xx000x00x",
+            "number_sk" => "3001",
+            "end_date_sk" => "2024-09-09 10:00:00",
+            "school" => $school->uuid
+        ]);
+
         $school = School::firstOrCreate([
             "uuid" => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
             "school_name" => "smk tadika mesra",
