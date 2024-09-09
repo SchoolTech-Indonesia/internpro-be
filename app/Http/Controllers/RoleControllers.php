@@ -101,7 +101,7 @@ class RoleControllers extends Controller
         // Membuat role baru
         try {
             $role = Role::create([
-                'name' => $validatedData['name'], 'description' => $validatedData['description']
+                'name' => $validatedData['name']
             ]);
             $role->syncPermissions($validatedData['permissions']);
         } catch (\Exception $e) {
