@@ -87,6 +87,7 @@ class UserSeeder extends Seeder
             'email' => 'user@dev-internpro.schooltech.biz.id',
             'phone_number' => "085711987654",
             'password' => bcrypt('password'),
+            'role_id' => 1
             'school_id' => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
