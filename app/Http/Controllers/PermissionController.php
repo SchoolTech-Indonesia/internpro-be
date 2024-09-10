@@ -26,6 +26,7 @@ class PermissionController extends Controller
 
         if ($permissions->isEmpty()) {
             return response()->json([
+                'status' => false,
                 'message' => 'No permissions found'
             ], 404);
         }
@@ -45,6 +46,7 @@ class PermissionController extends Controller
             $permission = Permission::findById($id);
         } catch (\Exception $e) {
             return response()->json([
+                'status' => false,
                 'message' => 'Failed to get permission',
                 'error' => $e->getMessage()
             ], 400);
@@ -76,18 +78,20 @@ class PermissionController extends Controller
             // create if permission name or not unique exception already exist
             if ($e->getCode() === '23000') {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Permission name already exists'
                 ], 400);
             }
             return response()->json([
+                'status' => false,
                 'message' => 'Failed to update permission',
                 'error' => $e->getMessage()
             ], 400);
         }
 
         return response()->json([
+            'status' => true,
             'message' => 'Permissions updated successfully',
-            'permissions' => new PermissionResource($updatedPermission)
         ], 200);
     }
 
@@ -114,14 +118,15 @@ class PermissionController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json([
+                'status' => false,
                 'message' => 'Failed to create permission',
                 'error' => $e->getMessage()
             ], 400);
         }
 
         return response()->json([
+            'status' => true,
             'message' => 'Permission created successfully',
-            'data' => PermissionResource::collection($createdPermissions)
         ], 201);
     }
 
@@ -137,18 +142,20 @@ class PermissionController extends Controller
 
         if (!$permission) {
             return response()->json([
+                'status' => false,
                 'message' => 'Permission not found'
             ], 404);
         }
 
         if ($permission->delete()) {
             return response()->json([
-                'message' => 'Permission deleted successfully',
-                'data' => new PermissionResource($permission)
+                'status' => true,
+                'message' => 'Permission deleted successfully'
             ], 200);
         }
 
         return response()->json([
+            'status' => false,
             'message' => 'Failed to delete permission'
         ], 400);
     }
