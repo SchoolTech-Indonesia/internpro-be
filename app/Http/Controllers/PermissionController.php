@@ -73,7 +73,6 @@ class PermissionController extends Controller
         try {
             $permission = Permission::findById($id);
             $permission->update(['name' => $validatedData['name']]);
-            $updatedPermission = Permission::findById($id);
         } catch (\Exception $e) {
             // create if permission name or not unique exception already exist
             if ($e->getCode() === '23000') {
@@ -150,7 +149,8 @@ class PermissionController extends Controller
         if ($permission->delete()) {
             return response()->json([
                 'status' => true,
-                'message' => 'Permission deleted successfully'
+                'message' => 'Permission deleted successfully',
+                'deleted_at' => $permission->deleted_at
             ], 200);
         }
 

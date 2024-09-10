@@ -63,11 +63,11 @@ class RoleControllers extends Controller
             ], 404);
         }
         try {
-            $Role->permissions()->detach();
             if ($Role->delete()) {
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil dihapus',
+                    'deleted_at' => $Role->deleted_at
                 ], 200);
             } else {
                 return response()->json([
