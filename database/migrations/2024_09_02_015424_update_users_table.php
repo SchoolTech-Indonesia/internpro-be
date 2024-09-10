@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->dropColumn('nisn');
             $table->uuid('uuid')->primary()->first();
             $table->string('nip_nisn', 18)->unique()->after('uuid');
-            $table->string('phone_number', 15)->unique()->after('role_id');
+            $table->string('phone_number', 15)->unique()->after('email');
             $table->uuid('school_id')->after('role_id');
             $table->uuid('major_id')->after('school_id');
             $table->uuid('class_id')->after('major_id');
