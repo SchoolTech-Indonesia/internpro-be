@@ -20,8 +20,8 @@ return new class extends Migration
 
         // drop role_id relation in users table
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['id_role']);
-            $table->dropColumn('id_role');
+            $table->dropForeign(['role_id']);
+            $table->dropColumn('role_id');
         });
         Schema::dropIfExists($tableNames['role_has_permissions']);
         Schema::dropIfExists($tableNames['model_has_roles']);

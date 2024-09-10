@@ -16,17 +16,26 @@ return new class extends Migration {
             $table->dropColumn('nisn');
             $table->uuid('uuid')->primary()->first();
             $table->string('nip_nisn', 18)->unique()->after('uuid');
-            $table->string('phone_number', 15)->unique()->after('email');
-            $table->uuid('school_id')->after('id_role');
+            $table->string('phone_number', 15)->unique()->after('role_id');
+            $table->uuid('school_id')->after('role_id');
             $table->uuid('major_id')->after('school_id');
             $table->uuid('class_id')->after('major_id');
             $table->uuid('partner_id')->after('class_id');
 
+            if (!Schema::hasColumn('users', 'created_by')) {
             $table->string('created_by')->nullable()->after('partner_id');
+            }
+            if(!Schema::hasColumn('users', 'updated_by')){
             $table->string('updated_by')->nullable()->after('created_by');
+            }
+            if(!Schema::hasColumn('users', 'deleted_by')){
             $table->string('deleted_by')->nullable()->after('updated_by');
+            }
+            if(!Schema::hasColumn('users', 'deleted_at')){
+                $table->softDeletes()->after('deleted_by');
+            }
 
-            $table->softDeletes()->after('deleted_by');
+            
 
             $table->foreign('school_id')->references('uuid')->on('school');
             $table->foreign('major_id')->references('uuid')->on('majors');

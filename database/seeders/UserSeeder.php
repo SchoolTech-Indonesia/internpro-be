@@ -52,15 +52,6 @@ class UserSeeder extends Seeder
             "school" => $school->uuid
         ]);
 
-        $school = School::firstOrCreate([
-            "uuid" => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
-            "school_name" => "smk tadika mesra",
-            "school_address" => "kampung durian runtuh",
-            "phone_number" => "082198765",
-            "start_member" => "2024-09-01 10:00:00",
-            "end_member" => "2024-09-05 10:00:00"
-        ]);
-
         $major = Major::firstOrCreate([
             "major_code" => "0987654321",
             "major_name" => "Rekaya Perangkat Lunak"
