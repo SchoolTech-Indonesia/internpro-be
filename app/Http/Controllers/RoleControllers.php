@@ -63,12 +63,11 @@ class RoleControllers extends Controller
             ], 404);
         }
         try {
-            $Role->permissions()->detach();
             if ($Role->delete()) {
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil dihapus',
-                    'data' => (new RoleResource($Role))
+                    'deleted_at' => $Role->deleted_at
                 ], 200);
             } else {
                 return response()->json([
@@ -106,6 +105,7 @@ class RoleControllers extends Controller
             $role->syncPermissions($validatedData['permissions']);
         } catch (\Exception $e) {
             return response()->json([
+                'status' => false,
                 'message' => 'Failed to create role',
                 'error' => $e->getMessage()
             ], 400);
@@ -114,8 +114,8 @@ class RoleControllers extends Controller
         $roles = Role::with('permissions')->withCount('users')->find($role->id);
 
         return response()->json([
+            'status' => true,
             'message' => 'Role created successfully',
-            'data' => (new RoleResource($roles)),
         ], 201);
     }
 
@@ -136,16 +136,18 @@ class RoleControllers extends Controller
 
         try {
             $role = Role::findById($id);
-            $role->update(['name' => $validatedData['name'], 'description' => $validatedData['description']]);
+            $role->update(['name' => $validatedData['name']]);
             $role->syncPermissions($validatedData['permissions']);
         } catch (\Exception $e) {
             // create if permission name or not unique exception already exist
             if ($e->getCode() === '23000') {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Role name already exists'
                 ], 400);
             }
             return response()->json([
+                'status' => false,
                 'message' => 'Failed to update role',
                 'error' => $e->getMessage()
             ], 400);
@@ -154,8 +156,8 @@ class RoleControllers extends Controller
         $roles = Role::with('permissions')->withCount('users')->find($role->id);
 
         return response()->json([
+            'status' => true,
             'message' => 'Role updated successfully',
-            'data' => (new RoleResource($roles)),
         ], 201);
     }
 }

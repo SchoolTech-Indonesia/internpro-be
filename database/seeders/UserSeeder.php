@@ -19,8 +19,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $role = Role::firstOrCreate([
-            'name' => 'Super Administrator',
-            'description' => 'Super Administrator'
+            'name' => 'Super Administrator'
         ]);
 
         $school = School::firstOrCreate([
