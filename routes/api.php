@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\MajorityController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 // AUTH
 // Route::post('/register', RegisterController::class)->name('register');
 Route::post('/login', LoginController::class)->name('login');
+Route::post('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
@@ -50,7 +52,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/update-profile', [ProfileController::class, "updateProfile"])->name('updateprofile');
 
     //UPDATE PASSWORD
-    Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
+    Route::post("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
 
     // SCHOOL endpoints
     Route::prefix('schools')->group(function () {
@@ -86,4 +88,13 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
+});
+
+// MAJORITY
+Route::prefix('majority')->group(function () {
+    Route::get('/', [MajorityController::class, 'index'])->name('index');
+    Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
+    Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
+    Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
+    Route::post('/create', [MajorityController::class, 'store'])->name('store');
 });
