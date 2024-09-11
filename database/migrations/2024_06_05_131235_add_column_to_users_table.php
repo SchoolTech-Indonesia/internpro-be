@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-                        // Define foreign key constraint
-                        $table->foreign('id_role')
-                        ->references('id')
-                        ->on('roles')
-                        ->onDelete('cascade');
-                        
+            // Define foreign key constraint
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->onDelete('cascade');
         });
     }
 

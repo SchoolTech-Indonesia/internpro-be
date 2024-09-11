@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,8 +16,7 @@ class LoginController extends Controller
     {
         //set validation
         $validator = Validator::make($request->all(), [
-            'nip' => 'required_without:nisn',
-            'nisn' => 'required_without:nip',
+            'nip_nisn' => 'required|string|filled',
             'password' => 'required',
         ]);
 
@@ -25,8 +25,7 @@ class LoginController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // get credentials
-        $credentials = $request->only(['nip', 'nisn', 'password']);
+        $credentials = $request->only(['nip_nisn', 'password']);
 
         //if auth failed
         if (!$token = auth()->guard('api')->attempt($credentials)) {
@@ -39,8 +38,8 @@ class LoginController extends Controller
         //if auth success
         return response()->json([
             'success' => true,
-            'user'    => auth()->guard('api')->user(),
-            'token'   => $token
+            'user' => new UserResource(auth()->guard('api')->user()),
+            'token' => $token
         ], 200);
     }
 }

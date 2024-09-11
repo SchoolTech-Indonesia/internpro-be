@@ -3,16 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUuids, SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,7 +30,18 @@ class User extends Authenticatable implements JWTSubject
         'id_role',
         'otp',
         'otp_expired_at',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
+
+    protected $primaryKey = 'uuid';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,7 +61,15 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'otp_expired_at' => 'datetime',
     ];
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    // protected $primaryKey = 'id';
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -67,5 +89,25 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class, 'school_id', 'uuid');
+    }
+
+    public function major()
+    {
+        return $this->belongsTo(Major::class, 'major_id', 'uuid');
+    }
+
+    public function class()
+    {
+        return $this->belongsTo(Kelas::class, 'class_id', 'uuid');
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class, 'partner_id', 'uuid');
     }
 }
