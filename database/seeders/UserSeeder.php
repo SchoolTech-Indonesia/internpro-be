@@ -84,5 +84,20 @@ class UserSeeder extends Seeder
             'partner_id' => $partner->uuid
         ]);
         $user->assignRole(['Super Administrator']);
+
+        $role = Role::firstOrCreate([
+            'name' => 'Mentor'
+        ]);
+
+        $user = User::firstOrCreate([
+            'nip_nisn' => "111",
+            'name' => 'Test Mentor',
+            'email' => 'mentor@dev-internpro.schooltech.biz.id',
+            'phone_number' => "085511112222",
+            'password' => bcrypt('mentor'),
+            'school_id' => '15808e5b-cec3-4df5-a0c5-f1324bce7357',
+            'partner_id' => $partner->uuid
+        ]);
+        $user->assignRole(['Mentor']);
     }
 }

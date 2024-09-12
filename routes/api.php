@@ -1,21 +1,22 @@
 <?php
 
+use App\Exports\UsersExport;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Route;
+use App\Http\Resources\ProfileResource;
 use App\Http\Controllers\AuthControllers;
+use App\Http\Controllers\GuruControllers;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RoleControllers;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\MentorController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SchoolControllers;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\SchoolControllers;
-use App\Http\Controllers\GuruControllers;
-use App\Http\Controllers\RoleControllers;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\LogoutController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Resources\ProfileResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Exports\UsersExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,5 +103,10 @@ Route::middleware('auth:api')->group(function () {
         // Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
         // Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         // Route::post('/create', [PermissionController::class, 'store'])->name('store');
+    });
+
+    //MENTOR
+    Route::prefix('mentor')->group(function(){
+        Route::get('/', [MentorController::class, 'index'])->name('index');
     });
 });
