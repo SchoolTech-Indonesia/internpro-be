@@ -16,9 +16,16 @@ class MentorController extends Controller
      * @return JsonResponse
      * Display a listing of the resource.
      */
-    public function index():JsonResponse
+    public function index(Request $request):JsonResponse
     {
-        $mentor = User::role('Mentor')->get();
+        $perPage = request()->get('per_page', 5);
+
+        $perPageOptions = [5, 10, 15, 20, 50];
+
+            if (!in_array($perPage, $perPageOptions)) {
+                $perPage = 5;
+            }
+        $mentor = User::role('Mentor')->paginate($perPage);
         if($mentor->isEmpty()){
             return response()->json([
                 'message' => 'Data tidak ditemukan'
