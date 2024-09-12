@@ -25,7 +25,10 @@ class MentorController extends Controller
             ], 404);
         }
 
-        return MentorResource::collection($mentor)->response();
+        return response()->json([
+            'success' => true,
+            'data' => MentorResource::collection($mentor)
+        ]);
     }
 
     /**
