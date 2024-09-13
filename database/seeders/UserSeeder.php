@@ -44,12 +44,12 @@ class UserSeeder extends Seeder
 
         $partner = Partner::firstOrCreate([
             "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
-            "partner_name" => "PT mencari cinta sejati",
-            "partner_address" => "Jalan kebun raya bogor",
-            "partner_logo" => "00xx000x00x",
+            "name" => "PT mencari cinta sejati",
+            "address" => "Jalan kebun raya bogor",
+            "logo" => "00xx000x00x",
             "number_sk" => "3001",
+            "file_sk" => fake()->filePath(),
             "end_date_sk" => "2024-09-09 10:00:00",
-            "school" => $school->uuid
         ]);
 
         $major = Major::firstOrCreate([
@@ -63,15 +63,6 @@ class UserSeeder extends Seeder
             "major" => $major->uuid
         ]);
 
-        $partner = Partner::firstOrCreate([
-            "partner_name" => "PT mencari cinta sejati",
-            "partner_address" => "Jalan kebun raya bogor",
-            "partner_logo" => "00xx000x00x",
-            "number_sk" => "3001",
-            "end_date_sk" => "2024-09-09 10:00:00",
-            "school" => $school->uuid
-        ]);
-
         $user = User::firstOrCreate([
             'nip_nisn' => "987",
             'name' => 'Super Administrator',
@@ -82,7 +73,7 @@ class UserSeeder extends Seeder
             'school_id' => "15808e5b-cec3-4df5-a0c5-f1324bce7357",
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
-            'partner_id' => $partner->uuid
+//            'partner_id' => $partner->uuid
         ]);
         $user->assignRole(['Super Administrator']);
 
@@ -97,7 +88,6 @@ class UserSeeder extends Seeder
             'phone_number' => "085511112222",
             'password' => bcrypt('mentor'),
             'school_id' => '15808e5b-cec3-4df5-a0c5-f1324bce7357',
-            'partner_id' => '7dcda20c-dc76-4dd6-b427-87dc86d6e0c7'
         ]);
         $user->assignRole(['Mentor']);
     }
