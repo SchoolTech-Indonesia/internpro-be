@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Models\Permission as SpatiePermission;
 
-class Permission extends Model
+class Permission extends SpatiePermission
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+    use HasUuids;
+    use SoftDeletes;
+    protected $primaryKey = 'id';
 
     protected $table = 'permissions';
     protected $fillable = [
         'name',
+        'guard_name'
     ];
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'roles_permissions', 'id_permission', 'id_role');
-    }
 }

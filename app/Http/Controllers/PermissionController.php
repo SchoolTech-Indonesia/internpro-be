@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreatePermissionRequest;
-use App\Http\Requests\PermissionRequest;
+use App\Http\Requests\PermissionCreateRequest;
+use App\Http\Requests\PermissionUpdateRequest;
 use App\Http\Resources\PermissionResource;
 use App\Models\Permission;
-use App\Models\Role;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * @tags Permissions
@@ -28,6 +26,7 @@ class PermissionController extends Controller
 
         if ($permissions->isEmpty()) {
             return response()->json([
+                'status' => false,
                 'message' => 'No permissions found'
             ], 404);
         }
@@ -39,32 +38,31 @@ class PermissionController extends Controller
      * @param $id
      * @return JsonResponse
      *
-     * Get permission of certain role
+     * Get a permission by id
      */
     public function show($id): JsonResponse
     {
-        $role = Role::with('permissions')->find($id);
-
-        if (!$role) {
+        try {
+            $permission = Permission::findById($id);
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Role not found'
-            ], 404);
+                'status' => false,
+                'message' => 'Failed to get permission',
+                'error' => $e->getMessage()
+            ], 400);
         }
 
-        return response()->json([
-            'role' => $role->name,
-            'permissions' => PermissionResource::collection($role->permissions)
-        ], 200);
+        return (new PermissionResource($permission))->response();
     }
 
     /**
-     * @param PermissionRequest $request
+     * @param PermissionUpdateRequest $request
      * @param $id
      * @return JsonResponse
      *
-     * Update permission of a role
+     * Update existing permission name
      */
-    public function update(PermissionRequest $request, $id): JsonResponse
+    public function update(PermissionUpdateRequest $request, $id): JsonResponse
     {
         // Check if the request is valid
         if (isset($request->validator) && $request->validator->fails()) {
@@ -72,34 +70,38 @@ class PermissionController extends Controller
         }
         $validatedData = $request->validated();
 
-        $role = Role::find($id);
-
-        if (!$role) {
+        try {
+            $permission = Permission::findById($id);
+            $permission->update(['name' => $validatedData['name']]);
+        } catch (\Exception $e) {
+            // create if permission name or not unique exception already exist
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Permission name already exists'
+                ], 400);
+            }
             return response()->json([
-                'message' => 'Role not found'
-            ], 404);
+                'status' => false,
+                'message' => 'Failed to update permission',
+                'error' => $e->getMessage()
+            ], 400);
         }
 
-        $permissions = Permission::whereIn('name', $validatedData['permissions'])->get();
-
-        $role->permissions()->sync($permissions);
-
         return response()->json([
+            'status' => true,
             'message' => 'Permissions updated successfully',
-            'role' => $role,
-            'permissions' => PermissionResource::collection($role->permissions)
         ], 200);
     }
 
     /**
-     * @param PermissionRequest $request
-     * @param $id
+     * @param PermissionCreateRequest $request
      * @return JsonResponse
      *
      * Create a new permission
      */
 
-    public function store(CreatePermissionRequest $request): JsonResponse
+    public function store(PermissionCreateRequest $request): JsonResponse
     {
         // Check if the request is valid
         if (isset($request->validator) && $request->validator->fails()) {
@@ -107,14 +109,23 @@ class PermissionController extends Controller
         }
         $validatedData = $request->validated();
 
-        $createdPermissions[] = [];
-        foreach ($validatedData['permissions'] as $permissionData) {
-            $createdPermissions = Permission::firstOrCreate($permissionData);
+        $createdPermissions = collect();
+
+        try {
+            foreach ($validatedData['permissions'] as $permissionData) {
+                $createdPermissions->add(Permission::create($permissionData));
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create permission',
+                'error' => $e->getMessage()
+            ], 400);
         }
 
         return response()->json([
+            'status' => true,
             'message' => 'Permission created successfully',
-            'permission' => $createdPermissions
         ], 201);
     }
 
@@ -130,18 +141,21 @@ class PermissionController extends Controller
 
         if (!$permission) {
             return response()->json([
+                'status' => false,
                 'message' => 'Permission not found'
             ], 404);
         }
 
         if ($permission->delete()) {
             return response()->json([
+                'status' => true,
                 'message' => 'Permission deleted successfully',
-                'permission' => new PermissionResource($permission)
+                'deleted_at' => $permission->deleted_at
             ], 200);
         }
 
         return response()->json([
+            'status' => false,
             'message' => 'Failed to delete permission'
         ], 400);
     }

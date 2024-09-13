@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('nip')->nullable();
             $table->string('nisn')->nullable();
-            $table->unsignedBigInteger('id_role');
+            $table->unsignedBigInteger('role_id');
             $table->timestamps();
             $table->rememberToken();
         });

@@ -9,11 +9,17 @@ use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+<<<<<<< HEAD
 use App\Http\Controllers\MajorityController;
+=======
+use App\Http\Controllers\UsersController;
+>>>>>>> origin/dev-sp3-sq2
 use App\Http\Controllers\ProfileController;
 use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +51,19 @@ Route::middleware('auth:api')->group(function () {
      */
     Route::post('/logout', LogoutController::class)->name('logout');
 
+    // USERS
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('getallusers');
+        Route::get('/{user}', [UsersController::class, 'show'])->name('getuser');
+        Route::post('/create', [UsersController::class, 'store'])->name('createuser');
+        Route::patch('/update/{id}', [UsersController::class, 'update'])->name('updateuser');
+        Route::delete('/{id}', [UsersController::class, 'destroy'])->name('deleteuser');
+        Route::post('/import', [UsersController::class, 'importUsers'])->name('importusers');
+        Route::get('/export/xlsx', [UsersController::class, 'exportUsersToXLSX'])->name('exportuserstoxlsx');
+        Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
+        Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
+    });
+    
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
@@ -76,6 +95,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('roles')->group(function () {
         Route::get('/', [RoleControllers::class, 'index'])->name('index');
         Route::get('/{id}', [RoleControllers::class, 'show'])->name('show');
+        Route::put('/update/{id}', [RoleControllers::class, 'update'])->name('update');
         Route::delete('/{id}', [RoleControllers::class, 'destroy'])->name('destroy');
         Route::post('/create', [RoleControllers::class, 'store'])->name('store');
     });
@@ -84,9 +104,9 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('permission')->group(function () {
         Route::get('/', [PermissionController::class, 'index'])->name('index');
         Route::get('/{id}', [PermissionController::class, 'show'])->name('show');
-        Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
-        Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
-        Route::post('/create', [PermissionController::class, 'store'])->name('store');
+        // Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
+        // Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
+        // Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
 });
 

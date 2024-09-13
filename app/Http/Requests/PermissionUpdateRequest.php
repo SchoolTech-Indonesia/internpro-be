@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class CreatePermissionRequest extends FormRequest
+class PermissionUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,15 +22,7 @@ class CreatePermissionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['permissions' => 'required|array'];
-    }
-
-    // Prepare for validation
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'permissions' => array_map(fn($permission) => ['name' => $permission], $this->permissions),
-        ]);
+        return ['name' => 'required'];
     }
 
     // Failed validation method
@@ -39,5 +31,12 @@ class CreatePermissionRequest extends FormRequest
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
         $this->validator = $validator;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name' => 'The permission name field is required.',
+        ];
     }
 }
