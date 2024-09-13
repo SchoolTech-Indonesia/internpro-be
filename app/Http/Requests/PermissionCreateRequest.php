@@ -22,7 +22,9 @@ class PermissionCreateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['permissions' => 'required|array'];
+        return ['permissions' => 'required|array',
+            'permissions.*.name' => 'required|string|max:255|unique:permissions,name',
+        ];
     }
 
     // Prepare for validation
