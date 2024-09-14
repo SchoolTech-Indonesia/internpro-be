@@ -108,6 +108,7 @@ Route::middleware('auth:api')->group(function () {
     //MENTOR
     Route::prefix('mentor')->group(function(){
         Route::get('/', [MentorController::class, 'index'])->name('index');
+        Route::get('/{id}', [MentorController::class, 'show'])->name('show');
         Route::post('/create', [MentorController::class, 'store'])->name('store');
     });
 });

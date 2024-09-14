@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\MentorResource;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @tags Mentor
@@ -40,15 +41,10 @@ class MentorController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
+     * @param Request $request
+     * @return JsonResponse
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -89,9 +85,30 @@ class MentorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($uuid)
     {
-        //
+        try{
+            $mentor = User::role('Mentor')->where('uuid', $uuid)->first();
+            if (!$mentor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Mentor Tidak Ditemukan',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail Data Mentor',
+                'data' => new MentorResource($mentor),
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data mentor',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+            
     }
 
     /**
