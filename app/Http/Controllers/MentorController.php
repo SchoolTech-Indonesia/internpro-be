@@ -83,6 +83,8 @@ class MentorController extends Controller
     }
 
     /**
+     * @param $uuid
+     * @return JsonResponse
      * Display the specified resource.
      */
     public function show($uuid)
@@ -112,19 +114,53 @@ class MentorController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
+     * @param Request $request
+     * @param $uuid
+     * @return JsonResponse
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $uuid)
     {
-        //
+        $mentor = User::role('Mentor')->where('uuid', $uuid)->first();
+        if (!$mentor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Mentor Tidak Ditemukan',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        try{
+            $validateData = $request->validate([
+                'nip_nisn' => 'required|string|max:20',
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'phone_number' => 'required|string|max:15|unique:users',
+                'school_id' => 'required|exists:school,uuid'
+            ]);
+
+            $mentor->nip_nisn = $validateData['nip_nisn'];
+            $mentor->name = $validateData['name'];
+            $mentor->email = $validateData['email'];
+            if ($request->filled('password')) {
+                $mentor->password = bcrypt($validateData['password']);
+            }
+            $mentor->phone_number = $validateData['phone_number'];
+            $mentor->school_id = $validateData['school_id'];
+            $mentor->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Mentor Berhasil Diupdate',
+                ], Response::HTTP_OK);
+        } catch (\Exception $e){
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Data Mentor Gagal Diupdate',
+                ], Response::HTTP_BAD_REQUEST);
+        }
+        
     }
 
     /**

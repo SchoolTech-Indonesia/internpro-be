@@ -22,7 +22,7 @@ class MentorResource extends JsonResource
             'phone_number' => $this->phone_number,
             'school' => new SchoolResource($this->school),
             'partner' => $this->partner,
-            'roles' => $this->roles->pluck('name'),
+            'roles' => $this->roles->pluck('name')->first(),
         ];
     }
 }
