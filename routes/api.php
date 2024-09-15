@@ -110,6 +110,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [MentorController::class, 'index'])->name('index');
         Route::get('/{id}', [MentorController::class, 'show'])->name('show');
         Route::put('/update/{id}',  [MentorController::class, 'update'])->name('update');
+        Route::delete('/{id}',  [MentorController::class, 'destroy'])->name('destroy');
         Route::post('/create', [MentorController::class, 'store'])->name('store');
     });
 });

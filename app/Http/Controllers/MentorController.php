@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\MentorResource;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -164,10 +165,33 @@ class MentorController extends Controller
     }
 
     /**
+     * @param $uuid
+     * @return JsonResponse
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($uuid)
     {
-        //
+        $mentor = User::role('Mentor')->where('uuid', $uuid)->first();
+        if (!$mentor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Mentor Tidak Ditemukan',
+            ], Response::HTTP_NOT_FOUND);
+        }
+        try{
+            $mentor->roles()->detach(); 
+            $mentor->delete(); 
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Mentor Berhasil Dihapus',
+                ], Response::HTTP_OK);
+        } catch (\Exception $e){
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Data Mentor Gagal Dihapus',
+                ], Response::HTTP_BAD_REQUEST);
+        }
     }
 }
