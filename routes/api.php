@@ -36,6 +36,7 @@ Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('f
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
 
+
 Route::middleware('auth:api')->group(function () {
     /**
      * route "/user"
@@ -112,5 +113,8 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/update/{id}',  [MentorController::class, 'update'])->name('update');
         Route::delete('/{id}',  [MentorController::class, 'destroy'])->name('destroy');
         Route::post('/create', [MentorController::class, 'store'])->name('store');
+        Route::get('export/xlsx',  [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
+        Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
+        Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
     });
 });

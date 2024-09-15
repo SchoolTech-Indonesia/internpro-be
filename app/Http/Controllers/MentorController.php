@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Exports\MentorExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\MentorResource;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -194,4 +197,21 @@ class MentorController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
     }
+
+    public function exportMentorsToXLSX()
+    {
+        return Excel::download(new MentorExport, 'mentors.xlsx'); // Mengunduh file Excel
+    }
+    
+    public function exportMentorsToCSV()
+    {
+        return Excel::download(new MentorExport, 'mentors.csv', \Maatwebsite\Excel\Excel::CSV); // Mengunduh file Excel
+    }
+
+    public function exportMentorsToPDF(){
+        $mentors = User::Role('Mentor')->get();
+        $pdf = Pdf::loadView('exportPDF.ExportMentorsToPDF', ['mentors' =>$mentors]);
+        return $pdf->download('mentors.pdf');
+    }
+    
 }
