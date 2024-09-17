@@ -32,7 +32,6 @@ use Maatwebsite\Excel\Facades\Excel;
 // AUTH
 // Route::post('/register', RegisterController::class)->name('register');
 Route::post('/login', LoginController::class)->name('login');
-Route::post('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
@@ -51,7 +50,7 @@ Route::middleware('auth:api')->group(function () {
     // USERS
     Route::prefix('users')->group(function () {
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
-        Route::get('/{user}', [UsersController::class, 'show'])->name('getuser');
+        Route::get('/{user:uuid}', [UsersController::class, 'show'])->name('getuser');
         Route::post('/create', [UsersController::class, 'store'])->name('createuser');
         Route::patch('/update/{id}', [UsersController::class, 'update'])->name('updateuser');
         Route::delete('/{id}', [UsersController::class, 'destroy'])->name('deleteuser');
@@ -60,7 +59,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
         Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
     });
-    
+
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
@@ -68,7 +67,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/update-profile', [ProfileController::class, "updateProfile"])->name('updateprofile');
 
     //UPDATE PASSWORD
-    Route::post("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
+    Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
 
     // SCHOOL endpoints
     Route::prefix('schools')->group(function () {

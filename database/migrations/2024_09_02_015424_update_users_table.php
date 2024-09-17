@@ -23,24 +23,24 @@ return new class extends Migration {
             $table->uuid('partner_id')->after('class_id');
 
             if (!Schema::hasColumn('users', 'created_by')) {
-            $table->string('created_by')->nullable()->after('partner_id');
+                $table->string('created_by')->nullable()->after('partner_id');
             }
-            if(!Schema::hasColumn('users', 'updated_by')){
-            $table->string('updated_by')->nullable()->after('created_by');
+            if (!Schema::hasColumn('users', 'updated_by')) {
+                $table->string('updated_by')->nullable()->after('created_by');
             }
-            if(!Schema::hasColumn('users', 'deleted_by')){
-            $table->string('deleted_by')->nullable()->after('updated_by');
+            if (!Schema::hasColumn('users', 'deleted_by')) {
+                $table->string('deleted_by')->nullable()->after('updated_by');
             }
-            if(!Schema::hasColumn('users', 'deleted_at')){
+            if (!Schema::hasColumn('users', 'deleted_at')) {
                 $table->softDeletes()->after('deleted_by');
             }
 
-            
 
-            $table->foreign('school_id')->references('uuid')->on('school')->onDelete('cascade');
-            $table->foreign('major_id')->references('uuid')->on('majors')->onDelete('cascade');
-            $table->foreign('class_id')->references('uuid')->on('classes')->onDelete('cascade');
-            $table->foreign('partner_id')->references('uuid')->on('partners')->onDelete('cascade');
+
+            $table->foreign('school_id')->references('uuid')->on('school');
+            $table->foreign('major_id')->references('uuid')->on('majors');
+            $table->foreign('class_id')->references('uuid')->on('classes');
+            $table->foreign('partner_id')->references('uuid')->on('partners');
         });
     }
 
