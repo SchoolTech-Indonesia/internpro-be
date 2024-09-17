@@ -84,8 +84,7 @@ class MajorityController extends Controller
         }
         try {
             $data = $validator->validated();
-            $user = User::where('uuid', $this->user_uuid())->first();
-            $data['updated_by'] = $user->name;
+            $data['updated_by'] = Auth::user()->name;
             Major::where('uuid', $id)->update($data);
             return response()->json([
                 'success' => true,
@@ -98,7 +97,6 @@ class MajorityController extends Controller
             ], 500);
         }
     }
-
 
     // DELETE MAJORITY
     public function destroy($id)
