@@ -115,12 +115,3 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('store');
     });
 });
-
-// MAJORITY
-Route::prefix('majority')->group(function () {
-    Route::get('/', [MajorityController::class, 'index'])->name('index');
-    Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
-    Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
-    Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
-    Route::post('/create', [MajorityController::class, 'store'])->name('store');
-});
