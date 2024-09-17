@@ -9,11 +9,8 @@ use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
-<<<<<<< HEAD
 use App\Http\Controllers\MajorityController;
-=======
 use App\Http\Controllers\UsersController;
->>>>>>> origin/dev-sp3-sq2
 use App\Http\Controllers\ProfileController;
 use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;

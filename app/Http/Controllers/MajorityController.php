@@ -64,6 +64,18 @@ class MajorityController extends Controller
     }
 
 
+    // GET MAJORITY BY ID
+    public function show($id)
+    {
+        $major = Major::where('uuid', $id)->first();
+        return response()->json([
+            'success' => true,
+            'message' => 'Major retrieved successfully.',
+            'data' => $major
+        ], 200);
+    }
+
+
     // UPDATE MAJORITY
     public function update(Request $request, $id)
     {
