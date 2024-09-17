@@ -29,6 +29,7 @@ class MajorityController extends Controller
             "major_code" => "required|unique:majors|max:255",
             "major_name" => "required|string|max:255",
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
