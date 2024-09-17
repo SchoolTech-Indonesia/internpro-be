@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('created_by')->nullable()->after('created_at');
-            $table->unsignedBigInteger('updated_by')->nullable()->after('updated_at');
-            $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
+            // $table->unsignedBigInteger('created_by')->nullable()->after('created_at');
+            // $table->unsignedBigInteger('updated_by')->nullable()->after('updated_at');
+            // $table->unsignedBigInteger('deleted_by')->nullable()->after('deleted_at');
         }); // add 3 new columns
     }
 
