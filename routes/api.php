@@ -32,7 +32,6 @@ use Maatwebsite\Excel\Facades\Excel;
 // AUTH
 // Route::post('/register', RegisterController::class)->name('register');
 Route::post('/login', LoginController::class)->name('login');
-Route::post('/register', [LoginController::class, 'register'])->name('register');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
@@ -68,7 +67,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/update-profile', [ProfileController::class, "updateProfile"])->name('updateprofile');
 
     //UPDATE PASSWORD
-    Route::post("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
+    Route::put("/update-password", [ProfileController::class, 'updatePassword'])->name('updatepassword');
 
     // SCHOOL endpoints
     Route::prefix('schools')->group(function () {
