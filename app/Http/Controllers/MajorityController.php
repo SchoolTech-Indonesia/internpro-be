@@ -6,21 +6,10 @@ use App\Models\Major;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Firebase\JWT\JWT;
-use Firebase\JWT\ExpiredException;
-use Firebase\JWT\Key;
 use Illuminate\Support\Facades\Validator;
 
 class MajorityController extends Controller
 {
-    // GET USER UUID
-    public function user_uuid()
-    {
-        $token = Request()->bearerToken();
-        $jwt = Jwt::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
-        $token = $jwt->sub;
-        return $token;
-    }
     // GET MAJORITY
     public function index()
     {
@@ -39,7 +28,6 @@ class MajorityController extends Controller
             "major_code" => "required|unique:majors|max:255",
             "major_name" => "required|string|max:255",
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -48,8 +36,7 @@ class MajorityController extends Controller
         }
         try {
             $data = $validator->validated();
-            $user = User::where('uuid', $this->user_uuid())->first();
-            $data['created_by'] = $user->name;
+            $data['created_by'] = Auth::user()->name;
             Major::create($data);
             return response()->json([
                 'success' => true,
