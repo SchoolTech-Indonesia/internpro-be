@@ -18,7 +18,7 @@ class PartnerController extends Controller
      *
      *
      * This method is used to get all partners or search partners by name. It can also be used to paginate the result.
-     * The search parameter is optional and can be used to search for partners by name. The paginate parameter is also optional and can be used to paginate the result.
+     * The search parameter is optional and can be used to search for partners by name. The per_page parameter is also optional and can be used to paginate the result.
      * @param PartnerGetRequest $request
      *
      * @return JsonResponse
@@ -26,26 +26,33 @@ class PartnerController extends Controller
     public function index(PartnerGetRequest $request): JsonResponse
     {
         if (isset($request->validator) && $request->validator->fails()) {
-            return response()->json($request->validator->messages(), 400);
+            return (new MessageResource(null, false, 'Validation failed', $request->validator->messages()))->response()->setStatusCode(400);
         }
+
+        $validatedData = $request->validated();
 
         $query = Partner::query();
 
-        if ($request->string('search')) {
-            $search = $request->input('search');
-            $query->where('name', 'like', '%' . $search . '%');
+        if (isset($validatedData['search'])) {
+            $query->where('name', 'like', '%' . $validatedData['search'] . '%');
         }
 
-        if ($request->integer('paginate')) {
-            $paginate = $request->input('paginate');
-            $partners = $query->Simplepaginate($paginate);
+        $sortBy = $validatedData['sort_by'] ?? 'created_at';
+        $sortDirection = $validatedData['sort_direction'] ?? 'desc';
+
+        $query->orderBy($sortBy, $sortDirection);
+
+        if (isset($validatedData['per_page'])) {
+            $partners = $query->paginate($validatedData['per_page']);
+            $partners->appends($validatedData);
         } else {
             $partners = $query->get();
         }
 
         if ($partners->isEmpty()) {
-            return (new MessageResource(null, false, 'No partner found'))->response()->setStatusCode(404);
+            return (new MessageResource(null, false, 'No partners found'))->response()->setStatusCode(404);
         }
+
 
         return PartnerResource::collection($partners)->response();
     }

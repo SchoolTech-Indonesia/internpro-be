@@ -26,7 +26,9 @@ class PartnerGetRequest extends FormRequest
     {
         return [
             'search' => 'string|nullable',
-            'paginate' => 'integer|nullable',
+            'per_page' => 'integer|nullable',
+            'sort_by' => ['string', 'nullable', Rule::in(['name', 'end_date', 'status'])],
+            'sort_direction' => ['string', 'nullable', Rule::in(['asc', 'desc'])],
         ];
     }
 
