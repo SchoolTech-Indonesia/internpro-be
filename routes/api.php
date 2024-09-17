@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\MajorityController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Resources\ProfileResource;
@@ -103,4 +104,13 @@ Route::middleware('auth:api')->group(function () {
         // Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         // Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
+});
+
+// MAJORITY
+Route::prefix('majority')->group(function () {
+    Route::get('/', [MajorityController::class, 'index'])->name('index');
+    Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
+    Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
+    Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
+    Route::post('/create', [MajorityController::class, 'store'])->name('store');
 });
