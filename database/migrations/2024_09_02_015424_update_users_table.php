@@ -37,10 +37,10 @@ return new class extends Migration {
 
             
 
-            $table->foreign('school_id')->references('uuid')->on('school')->onDelete('cascade');
-            $table->foreign('major_id')->references('uuid')->on('majors')->onDelete('cascade');
-            $table->foreign('class_id')->references('uuid')->on('classes')->onDelete('cascade');
-            $table->foreign('partner_id')->references('uuid')->on('partners')->onDelete('cascade');
+            $table->foreign('school_id')->references('uuid')->on('school');
+            $table->foreign('major_id')->references('uuid')->on('majors');
+            $table->foreign('class_id')->references('uuid')->on('classes');
+            $table->foreign('partner_id')->references('uuid')->on('partners');
         });
     }
 
