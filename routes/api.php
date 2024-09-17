@@ -49,7 +49,7 @@ Route::middleware('auth:api')->group(function () {
     // USERS
     Route::prefix('users')->group(function () {
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
-        Route::get('/{user}', [UsersController::class, 'show'])->name('getuser');
+        Route::get('/{user:uuid}', [UsersController::class, 'show'])->name('getuser');
         Route::post('/create', [UsersController::class, 'store'])->name('createuser');
         Route::patch('/update/{id}', [UsersController::class, 'update'])->name('updateuser');
         Route::delete('/{id}', [UsersController::class, 'destroy'])->name('deleteuser');
@@ -58,7 +58,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
         Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
     });
-    
+
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
