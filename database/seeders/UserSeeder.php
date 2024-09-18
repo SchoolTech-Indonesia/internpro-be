@@ -89,6 +89,10 @@ class UserSeeder extends Seeder
             'password' => bcrypt('mentor'),
             'school_id' => '15808e5b-cec3-4df5-a0c5-f1324bce7357',
         ]);
+        $partnerId = '7dcda20c-dc76-4dd6-b427-87dc86d6e0c7';
+        $user->partners()->attach($partnerId);
         $user->assignRole(['Mentor']);
+
     }
+
 }

@@ -25,6 +25,7 @@
                 <th>NIP/NISN</th>
                 <th>Phone Number</th>
                 <th>School Name</th>
+                <th>Partner Name</th>
                 <th>Role</th>
             </tr>
         </thead>
@@ -37,6 +38,7 @@
                     <td>{{ $mentor->nip_nisn }}</td>
                     <td>{{ $mentor->phone_number }}</td>
                     <td>{{ $mentor->school->school_name }}</td>
+                    <td>{{ $mentor->partners->pluck('name')->implode(', ')}}</td>
                     <td>{{ $mentor->getRoleNames()->implode(', ')}}</td>
                 </tr>
             @endforeach

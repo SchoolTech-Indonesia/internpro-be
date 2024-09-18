@@ -60,7 +60,8 @@ class MentorController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|string|max:15|unique:users',
-                'school_id' => 'required|exists:school,uuid'
+                'school_id' => 'required|exists:school,uuid',
+                'partner_id' => 'required|exists:partners,uuid'
             ]);
             $user = new User();
             $user->nip_nisn = $validateData['nip_nisn'];
@@ -71,6 +72,8 @@ class MentorController extends Controller
             $user->school_id = $validateData['school_id'];
             $user->assignRole(['Mentor']);
             $user->save();
+
+            $user->partners()->attach($validateData['partner_id']);
 
             return response()->json([
                 'status' => true,
@@ -140,7 +143,8 @@ class MentorController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|string|max:15|unique:users',
-                'school_id' => 'required|exists:school,uuid'
+                'school_id' => 'required|exists:school,uuid',
+                'partner_id' => 'required|exists:partners,uuid'
             ]);
 
             $mentor->nip_nisn = $validateData['nip_nisn'];
@@ -152,6 +156,8 @@ class MentorController extends Controller
             $mentor->phone_number = $validateData['phone_number'];
             $mentor->school_id = $validateData['school_id'];
             $mentor->save();
+
+            $mentor->partners()->sync([$validateData['partner_id']]);
 
             return response()->json([
                 'success' => true,
@@ -183,6 +189,7 @@ class MentorController extends Controller
         }
         try{
             $mentor->roles()->detach(); 
+            $mentor->partners()->detach();
             $mentor->delete(); 
             
             return response()->json([
@@ -209,8 +216,9 @@ class MentorController extends Controller
     }
 
     public function exportMentorsToPDF(){
+        
         $mentors = User::Role('Mentor')->get();
-        $pdf = Pdf::loadView('exportPDF.ExportMentorsToPDF', ['mentors' =>$mentors]);
+        $pdf = Pdf::loadView('exportPDF.ExportMentorsToPDF', ['mentors' =>$mentors])->setPaper('a4', 'landscape');
         return $pdf->download('mentors.pdf');
     }
     

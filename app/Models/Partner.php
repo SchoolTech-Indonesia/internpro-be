@@ -30,4 +30,9 @@ class Partner extends Model
     protected $casts = [
         'end_date_sk' => 'datetime',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'mentor_partner', 'partner_id', 'user_id');
+    }
 }

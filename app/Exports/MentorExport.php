@@ -14,7 +14,7 @@ class MentorExport implements FromCollection,  WithHeadings, WithMapping
     */
     public function collection()
     {
-        return User::role('mentor')->get();
+        return User::role('Mentor')->get();
     }
 
     public function headings(): array
@@ -26,6 +26,7 @@ class MentorExport implements FromCollection,  WithHeadings, WithMapping
             'NIP/NISN',
             'Phone Number',
             'School Name',
+            'Partner Name',
             'Role',
         ];
     }
@@ -39,6 +40,7 @@ class MentorExport implements FromCollection,  WithHeadings, WithMapping
             $mentor->nip_nisn,
             $mentor->phone_number,
             $mentor->school->school_name,
+            $mentor->partners->pluck('name')->implode(', '),
             $mentor->getRoleNames()->implode(', '), 
         ];
     }

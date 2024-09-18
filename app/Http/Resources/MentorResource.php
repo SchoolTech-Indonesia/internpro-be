@@ -14,6 +14,7 @@ class MentorResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $Partner = $this->partners->first();
         return [
             'id' => $this->uuid,
             'nip_nisn' => $this->nip_nisn,
@@ -21,7 +22,10 @@ class MentorResource extends JsonResource
             'email' => $this->email,
             'phone_number' => $this->phone_number,
             'school' => new SchoolResource($this->school),
-            'partner' => $this->partner,
+            'partner' =>[
+                'uuid' => $Partner->uuid,
+                'name' => $Partner->name,
+            ] ,
             'roles' => $this->roles->pluck('name')->first(),
         ];
     }
