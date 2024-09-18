@@ -35,16 +35,7 @@ Route::post('/login', LoginController::class)->name('login');
 Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('forgetpassword');
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
-Route::prefix('mentor')->group(function(){
-    Route::get('/', [MentorController::class, 'index'])->name('index');
-    Route::get('/{id}', [MentorController::class, 'show'])->name('show');
-    Route::put('/update/{id}',  [MentorController::class, 'update'])->name('update');
-    Route::delete('/{id}',  [MentorController::class, 'destroy'])->name('destroy');
-    Route::post('/create', [MentorController::class, 'store'])->name('store');
-    Route::get('export/xlsx',  [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
-    Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
-    Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
-});
+
 
 Route::middleware('auth:api')->group(function () {
     /**
@@ -116,5 +107,14 @@ Route::middleware('auth:api')->group(function () {
     });
 
     //MENTOR
-    
+    Route::prefix('mentor')->group(function(){
+        Route::get('/', [MentorController::class, 'index'])->name('index');
+        Route::get('/{id}', [MentorController::class, 'show'])->name('show');
+        Route::put('/update/{id}',  [MentorController::class, 'update'])->name('update');
+        Route::delete('/{id}',  [MentorController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [MentorController::class, 'store'])->name('store');
+        Route::get('export/xlsx',  [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
+        Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
+        Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
+    });
 });
