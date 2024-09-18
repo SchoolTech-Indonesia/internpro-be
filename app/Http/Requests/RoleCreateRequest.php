@@ -23,19 +23,9 @@ class RoleCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:roles,name',
-            'permissions' => 'nullable|array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,id|string'
         ];
-    }
-
-    protected function prepareForValidation()
-    {
-        // make if permission null to empty array
-        if ($this->permissions === null) {
-            $this->merge([
-                'permissions' => [],
-            ]);
-        }
     }
 
     // Failed validation method
