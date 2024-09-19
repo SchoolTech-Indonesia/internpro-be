@@ -19,7 +19,7 @@ class UsersController extends Controller
         $search = $request->query('name');
         $rows = $request['rows'] != 0 ? $request['rows'] : 5;
         $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
-        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
+        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) { 
             $query->whereHas("roles", function ($query) use ($roles) {
                 $query->whereIn("name", $roles);
             });
