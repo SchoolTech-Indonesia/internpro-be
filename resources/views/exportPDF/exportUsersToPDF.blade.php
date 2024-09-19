@@ -37,7 +37,7 @@
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->nip }}</td>
                     <td>{{ $user->nisn }}</td>
-                    <td>{{ $user->id_role }}</td>
+                    <td>{{ $user->role_id }}</td>
                     {{-- <td>{{ $user->created_at }}</td>
                     <td>{{ $user->updated_at }}</td> --}}
                 </tr>

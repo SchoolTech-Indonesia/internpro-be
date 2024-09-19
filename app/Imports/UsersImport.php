@@ -22,7 +22,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithStartRow
             'password' => bcrypt($row['password']),
             'nip'      => $row['nip'],
             'nisn'     => $row['nisn'],
-            'id_role'  => $row['id_role'],
+            'role_id'  => $row['role_id'],
         ]);
     }
 }

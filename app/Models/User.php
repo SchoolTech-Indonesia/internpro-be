@@ -27,7 +27,7 @@ class User extends Authenticatable implements JWTSubject
         'nip',
         'nisn',
         'password',
-        'id_role',
+        'role_id',
         'otp',
         'otp_expired_at',
         'created_by',
@@ -109,5 +109,10 @@ class User extends Authenticatable implements JWTSubject
     public function partner()
     {
         return $this->belongsTo(Partner::class, 'partner_id', 'uuid');
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'uuid');
     }
 }
