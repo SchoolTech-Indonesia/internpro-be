@@ -118,13 +118,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('store');
     });
 
+    // ADMIN
     Route::prefix('admin')->group(function () {
-        Route::get('/', [AdminController::class, 'showAdmins'])->name('showadmins');
+        Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
         Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
         Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
-        Route::post('/search', [AdminController::class, 'searchAdmin'])->name('searchadmin');
         Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
-        Route::post('/paginate', [AdminController::class, 'paginateAdmins'])->name('paginateadmins');
     });
 });

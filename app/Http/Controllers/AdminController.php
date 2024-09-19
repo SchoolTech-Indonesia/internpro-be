@@ -13,13 +13,38 @@ use Validator;
 
 class AdminController extends Controller
 {
-    public function showAdmins()
+    public function index(Request $request)
     {
-        $admins = User::role('Admin')->get();
+        // Ambil keyword untuk pencarian dari query string, jika ada
+        $keyword = $request->query('keyword');
 
+        // Ambil jumlah item per halaman dari request, default 10
+        $perPage = $request->query('per_page', 10);
+
+        // Query dasar untuk mengambil admin berdasarkan peran
+        $query = User::role('Admin');
+
+        // Jika ada keyword, tambahkan kondisi pencarian berdasarkan nama
+        if ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
+        }
+
+        // Jika ada parameter pagination, lakukan paginasi
+        if ($request->has('per_page')) {
+            $admins = $query->paginate($perPage);
+            // Bungkus items dalam AdminResource
+            $admins->getCollection()->transform(function ($admin) {
+                return new AdminResource($admin);
+            });
+        } else {
+            // Jika tidak ada parameter pagination, ambil semua data dan bungkus dalam AdminResource
+            $admins = AdminResource::collection($query->get());
+        }
+
+        // Return data sesuai dengan hasil query
         return response()->json([
-            "success" => true,
-            "data" => AdminResource::collection($admins),
+            'success' => true,
+            'data' => $admins,
         ], 200);
     }
 
@@ -62,24 +87,6 @@ class AdminController extends Controller
             "message" => "User is not an admin"
         ], 403);
     }
-
-    public function searchAdmin(Request $request)
-    {
-        // Ambil keyword dari query string parameter
-        $keyword = $request->query('keyword');
-
-        // Cari admin berdasarkan nama dengan keyword
-        $admins = User::role('Admin')
-            ->where('name', 'like', '%' . $keyword . '%')
-            ->get();
-
-        // Return hasil pencarian
-        return response()->json([
-            'success' => true,
-            'data' => $admins
-        ], 200);
-    }
-
 
     public function updateAdmin(Request $request, $uuid)
     {
@@ -138,21 +145,6 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Done, data updated!',
             'data' => new AdminResource($admin)
-        ], 200);
-    }
-
-    public function paginateAdmins(Request $request)
-    {
-        // Ambil jumlah item per halaman dari request, default 10
-        $perPage = $request->query('per_page', 10);
-
-        // Lakukan pagination pada admin
-        $admins = User::role('Admin')->paginate($perPage);
-
-        // Return hasil pagination
-        return response()->json([
-            'success' => true,
-            'data' => $admins
         ], 200);
     }
 
