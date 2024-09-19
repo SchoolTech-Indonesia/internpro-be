@@ -17,6 +17,7 @@ use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Exports\UsersExport;
+use App\Http\Controllers\TeacherController;
 use Maatwebsite\Excel\Facades\Excel;
 
 /*
@@ -81,12 +82,13 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
     });
 
-    // GURU
-    Route::prefix('guru')->group(function () {
-        Route::post('/create', [GuruControllers::class, 'createGuru'])->name('createguru');
-        Route::get('/', [GuruControllers::class, 'getAllGuru'])->name('getallguru');
-        Route::post('/update/{id}', [GuruControllers::class, 'updateGuru'])->name('updateguru');
-        Route::delete('/{id}', [GuruControllers::class, 'DeleteGuru'])->name('DeleteGuru');
+    // TEACHER
+    Route::prefix('teachers')->group(function () {
+        Route::get('/', [TeacherController::class, 'index'])->name('getallteacher');
+        Route::post('/create', [TeacherController::class, 'store'])->name('createteacher');
+        Route::get('/{uuid}', [TeacherController::class, 'show'])->name('getspecificteacher');
+        Route::put('/update/{uuid}', [TeacherController::class, 'update'])->name('updateteacher');
+        Route::delete('/{uuid}', [TeacherController::class, 'destroy'])->name('deleteteacher');
     });
 
     // ROLE
