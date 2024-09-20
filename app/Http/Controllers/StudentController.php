@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Exports\UsersExport;
-use App\Imports\UsersImport;
+use App\Exports\StudentExport;
+use App\Imports\StudentImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -140,7 +140,7 @@ class StudentController extends Controller
         }
     }
 
-    public function importUsers(Request $request)
+    public function importStudent(Request $request)
     {
         try {
             $request->validate([
@@ -148,7 +148,7 @@ class StudentController extends Controller
             ]);
     
             // import process
-            Excel::import(new UsersImport(3), $request->file('file'));
+            Excel::import(new StudentImport(), $request->file('file'));
 
             return response()->json([
                 'status' => true,
@@ -163,19 +163,19 @@ class StudentController extends Controller
         }
     }
 
-    public function exportUsersToXLSX()
+    public function exportStudentToXLSX()
     {
-        return Excel::download(new UsersExport(3), 'student.xlsx');
+        return Excel::download(new StudentExport(), 'student.xlsx');
     }
 
-    public function exportUsersToCSV()
+    public function exportStudentToCSV()
     {
-        return Excel::download(new UsersExport(3), 'student.csv', \Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new StudentExport(), 'student.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
-    public function exportUsersToPDF()
+    public function exportStudentToPDF()
     {
-        $users = User::where('role_id', 3)->get(['id', 'name', 'email', 'nip', 'nisn', 'role_id']);
+        $users = User::where('role_id', 3)->get(['id', 'name', 'email', 'nip', 'nisn', 'role_id']); // 3 as Student role_id
 
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 

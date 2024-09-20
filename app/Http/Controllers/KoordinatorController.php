@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Exports\UsersExport;
-use App\Imports\UsersImport;
+use App\Exports\KoordinatorExport;
+use App\Imports\KoordinatorImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -140,7 +140,7 @@ class KoordinatorController extends Controller
         }
     }
 
-    public function importUsers(Request $request)
+    public function importKoordinator(Request $request)
     {
         try {
             $request->validate([
@@ -148,7 +148,7 @@ class KoordinatorController extends Controller
             ]);
     
             // import process
-            Excel::import(new UsersImport(2), $request->file('file'));
+            Excel::import(new KoordinatorImport(), $request->file('file'));
 
             return response()->json([
                 'status' => true,
@@ -163,19 +163,19 @@ class KoordinatorController extends Controller
         }
     }
 
-    public function exportUsersToXLSX()
+    public function exportKoordinatorToXLSX()
     {
-        return Excel::download(new UsersExport(2), 'koordinator.xlsx');
+        return Excel::download(new KoordinatorExport(), 'koordinator.xlsx');
     }
 
-    public function exportUsersToCSV()
+    public function exportKoordinatorToCSV()
     {
-        return Excel::download(new UsersExport(2), 'koordinator.csv', \Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new KoordinatorExport(), 'koordinator.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
-    public function exportUsersToPDF()
+    public function exportKoordinatorToPDF()
     {
-        $users = User::where('role_id', 2)->get(['id', 'name', 'email', 'nip', 'nisn', 'role_id']);
+        $users = User::where('role_id', 2)->get(['id', 'name', 'email', 'nip', 'nisn', 'role_id']); // 2 as Koordinator role_id
 
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
