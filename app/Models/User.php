@@ -21,19 +21,18 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'nip',
-        'nisn',
-        'password',
-        'id_role',
-        'otp',
-        'otp_expired_at',
-        'created_by',
-        'updated_by',
-        'deleted_by',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'nip_nisn',
+    //     'password',
+    //     'id_role',
+    //     'otp',
+    //     'otp_expired_at',
+    //     'created_by',
+    //     'updated_by',
+    //     'deleted_by',
+    // ];
 
     protected $primaryKey = 'uuid';
 
