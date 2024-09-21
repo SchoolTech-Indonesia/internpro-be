@@ -7,9 +7,12 @@ use App\Http\Requests\PartnerRequest;
 use App\Http\Resources\MessageResource;
 use App\Http\Resources\PartnerResource;
 use App\Models\Partner;
+use App\Services\S3Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use function Laravel\Prompts\error;
 
 class PartnerController extends Controller
 {
@@ -67,14 +70,16 @@ class PartnerController extends Controller
     public function store(PartnerRequest $request): JsonResponse
     {
         if (isset($request->validator) && $request->validator->fails()) {
-            return response()->json($request->validator->messages(), 400);
+            return (new MessageResource(null, false, 'Validation failed', $request->validator->messages()))->response()->setStatusCode(400);
         }
-        $validatedData = $request->validated();
-
-//        Storage::disk('s3')->put('/folder_name', $validatedData->file);
 
         try {
-            $partner = Partner::create($validatedData);
+            $uuid = Str::uuid();
+            $request['uuid'] = $uuid;
+            // TODO : File Upload
+//            $request['logo'] = S3Service::store($request->file('logo'), 'partners/', $uuid);
+//            $request['file_sk'] = S3Service::store($request->file('file_sk'), 'partners/', $uuid);
+            $partner = Partner::create($request);
         } catch (\Exception $e) {
             return (new MessageResource(null, false, 'Failed to create partner', $e->getMessage()))->response()->setStatusCode(500);
         }
@@ -89,7 +94,7 @@ class PartnerController extends Controller
      */
     public function show($uuid): JsonResponse
     {
-        $partner = Partner::find($uuid);
+        $partner = Partner::with('');
         if (!$partner) {
             return (new MessageResource(null, false, 'Partner not found'))->response()->setStatusCode(404);
         }
@@ -107,7 +112,7 @@ class PartnerController extends Controller
     public function update(PartnerRequest $request, $uuid): JsonResponse
     {
         if (isset($request->validator) && $request->validator->fails()) {
-            return response()->json($request->validator->messages(), 400);
+            return (new MessageResource(null, false, 'Validation failed', $request->validator->messages()))->response()->setStatusCode(400);
         }
         $validatedData = $request->validated();
 
@@ -117,6 +122,9 @@ class PartnerController extends Controller
         }
 
         try {
+//             TODO : File Upload
+//            $request['logo'] = S3Service::store($request->file('logo'), 'partners/', $partner->uuid);
+//            $request['file_sk'] = S3Service::store($request->file('file_sk'), 'partners/', $partner->uuid);
             $partner->update($validatedData);
         } catch (\Exception $e) {
             return (new MessageResource(null, false, 'Failed to update partner', $e->getMessage()))->response()->setStatusCode(500);

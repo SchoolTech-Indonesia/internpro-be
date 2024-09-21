@@ -44,7 +44,7 @@ class MessageResource extends JsonResource
         if (isset($this->error)) {
             $error = [
                 /**
-                 * The response error.
+                 * The response error. It's NOT REQUIRED.
                  * @var string $error
                  * @example SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test' for key 'partners_name_unique'
                  */

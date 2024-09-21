@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\UsersExport;
+use App\Http\Controllers\PartnerController;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -60,7 +61,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
         Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
     });
-    
+
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
@@ -117,4 +118,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
         Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
     });
+
+    Route::apiResource('partners', PartnerController::class);
 });

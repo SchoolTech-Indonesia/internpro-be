@@ -170,6 +170,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\BlueprintMacroServiceProvider::class,
+        App\Providers\S3ServiceProvider::class,
     ])->toArray(),
 
     /*

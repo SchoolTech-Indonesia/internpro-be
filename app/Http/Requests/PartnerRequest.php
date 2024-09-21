@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Intervention\Image\ImageManager;
 use function Laravel\Prompts\error;
 
 class PartnerRequest extends FormRequest
@@ -33,8 +34,10 @@ class PartnerRequest extends FormRequest
                 Rule::unique('partners')->ignore($uuid, 'uuid'),
             ],
             'address' => 'required|string',
-            'logo' => 'required|string',
-            'file_sk' => 'required|string',
+            // 'file_sk' => 'required|mimes:jpeg,jpg,png',
+            'logo' => 'required|mimes:jpeg,jpg,png',
+            // 'file_sk' => 'required|mimes:pdf',
+            'file_sk' => 'required|mimes:pdf',
             'number_sk' => [
                 'required',
                 'string',
@@ -44,6 +47,14 @@ class PartnerRequest extends FormRequest
             ],
             'end_date_sk' => 'required|string|date',
         ];
+    }
+
+    protected function passedValidation()
+    {
+        // TODO : Image Conversion
+//        $logo = ImageManager::gd()->read($this->file('logo')->getRealPath());
+//        $encoded = $logo->toJpeg(75)->toFilePointer();
+//        $this->merge(['logo' => $encoded]);
     }
 
     // Failed validation method
