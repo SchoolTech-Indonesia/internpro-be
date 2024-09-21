@@ -16,9 +16,7 @@ use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
-use App\Exports\UsersExport;
 use App\Http\Controllers\TeacherController;
-use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
