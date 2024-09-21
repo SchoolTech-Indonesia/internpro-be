@@ -106,8 +106,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Kelas::class, 'class_id', 'uuid');
     }
 
-    public function partners()
+    public function mentors()
     {
-        return $this->belongsToMany(Partner::class, 'mentor_partner', 'user_id', 'partner_id');
+        return $this->hasOne(MentorPartner::class, "user_id", "uuid");
     }
 }

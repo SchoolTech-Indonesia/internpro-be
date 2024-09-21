@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mentor_partner', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('user_id'); 
+            $table->uuid('uuid')->primary();
+            $table->uuid('user_id');
             $table->uuid('partner_id');
 
             $table->foreign('user_id')->references('uuid')->on('users')->onDelete('cascade');
