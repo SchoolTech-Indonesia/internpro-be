@@ -22,7 +22,9 @@ class PartnerResource extends JsonResource
             'logo' => $this->logo,
             'file_sk' => $this->file_sk,
             'number_sk' => $this->number_sk,
+            // type : DateTime
             'end_date_sk' => $this->end_date_sk,
+            'mentors'=> UserResource::collection($this->whenLoaded('users'))
         ];
     }
 }

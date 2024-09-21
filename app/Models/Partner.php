@@ -31,7 +31,12 @@ class Partner extends Model
         'end_date_sk' => 'datetime',
     ];
 
-    public function mentor() {
+    public function mentors() {
         return $this->hasMany(MentorPartner::class, 'partner_id', 'uuid');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'mentor_partner', 'partner_id', 'user_id');
     }
 }

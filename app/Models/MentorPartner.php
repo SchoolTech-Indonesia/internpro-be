@@ -10,6 +10,7 @@ class MentorPartner extends Model
 {
     use HasFactory, HasUuids;
 
+    protected $table = 'mentor_partner';
     protected $primaryKey = 'uuid';
 
     protected $fillable = ['user_id', 'partner_id'];

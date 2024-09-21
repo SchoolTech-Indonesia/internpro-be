@@ -110,4 +110,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(MentorPartner::class, "user_id", "uuid");
     }
+    public function partners()
+    {
+        return $this->belongsTo(Partner::class, 'mentor_partner', 'user_id', 'partner_id');
+    }
 }

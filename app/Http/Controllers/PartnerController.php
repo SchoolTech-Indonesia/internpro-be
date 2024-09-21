@@ -94,7 +94,8 @@ class PartnerController extends Controller
      */
     public function show($uuid): JsonResponse
     {
-        $partner = Partner::with('');
+        $partner = Partner::with('users')->where('uuid', $uuid)->firstOrFail();
+        error_log($partner);
         if (!$partner) {
             return (new MessageResource(null, false, 'Partner not found'))->response()->setStatusCode(404);
         }
