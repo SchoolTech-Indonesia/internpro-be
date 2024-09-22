@@ -21,7 +21,7 @@ class StudentController extends Controller
         $classes = $request->query("classes") ? explode(',', $request->query("classes")) : [];
         
         $users = User::whereHas("roles", function($query) {
-            $query->where("name", "Koordinator");
+            $query->where("name", "Student");
         })
         ->where('name', 'LIKE', "%$search%")
         ->when(count($majors) != 0, function ($query) use ($majors) { 
