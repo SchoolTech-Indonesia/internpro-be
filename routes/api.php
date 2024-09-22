@@ -1,21 +1,22 @@
 <?php
 
+use App\Http\Controllers\PartnerController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthControllers;
+use App\Http\Controllers\GuruControllers;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RoleControllers;
+use App\Http\Controllers\MajorityController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\MentorController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SchoolControllers;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\SchoolControllers;
-use App\Http\Controllers\GuruControllers;
-use App\Http\Controllers\RoleControllers;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\LogoutController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Resources\ProfileResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Exports\UsersExport;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\TeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,7 @@ Route::post('/forgetpassword', [AuthControllers::class, 'generateOtp'])->name('f
 Route::post('/verifyotp', [AuthControllers::class, 'verifyOtp'])->name('verifyotp');
 Route::put('/resetpassword', [ResetPasswordController::class, 'store'])->name('resetpassword');
 
+
 Route::middleware('auth:api')->group(function () {
     /**
      * route "/user"
@@ -49,7 +51,7 @@ Route::middleware('auth:api')->group(function () {
     // USERS
     Route::prefix('users')->group(function () {
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
-        Route::get('/{user}', [UsersController::class, 'show'])->name('getuser');
+        Route::get('/{user:uuid}', [UsersController::class, 'show'])->name('getuser');
         Route::post('/create', [UsersController::class, 'store'])->name('createuser');
         Route::patch('/update/{id}', [UsersController::class, 'update'])->name('updateuser');
         Route::delete('/{id}', [UsersController::class, 'destroy'])->name('deleteuser');
@@ -58,7 +60,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
         Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
     });
-    
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
@@ -78,12 +79,13 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
     });
 
-    // GURU
-    Route::prefix('guru')->group(function () {
-        Route::post('/create', [GuruControllers::class, 'createGuru'])->name('createguru');
-        Route::get('/', [GuruControllers::class, 'getAllGuru'])->name('getallguru');
-        Route::post('/update/{id}', [GuruControllers::class, 'updateGuru'])->name('updateguru');
-        Route::delete('/{id}', [GuruControllers::class, 'DeleteGuru'])->name('DeleteGuru');
+    // TEACHER
+    Route::prefix('teachers')->group(function () {
+        Route::get('/', [TeacherController::class, 'index'])->name('getallteacher');
+        Route::post('/create', [TeacherController::class, 'store'])->name('createteacher');
+        Route::get('/{uuid}', [TeacherController::class, 'show'])->name('getspecificteacher');
+        Route::put('/update/{uuid}', [TeacherController::class, 'update'])->name('updateteacher');
+        Route::delete('/{uuid}', [TeacherController::class, 'destroy'])->name('deleteteacher');
     });
 
     // ROLE
@@ -103,4 +105,35 @@ Route::middleware('auth:api')->group(function () {
         // Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         // Route::post('/create', [PermissionController::class, 'store'])->name('store');
     });
+
+    // MAJORITY
+    Route::prefix('majority')->group(function () {
+        Route::get('/', [MajorityController::class, 'index'])->name('index');
+        Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
+        Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [MajorityController::class, 'store'])->name('store');
+    });
+    // ADMIN
+    Route::prefix('admin')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
+        Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
+        Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
+        Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
+    });
+
+    //MENTOR
+    Route::prefix('mentor')->group(function(){
+        Route::get('/', [MentorController::class, 'index'])->name('index');
+        Route::get('/{id}', [MentorController::class, 'show'])->name('show');
+        Route::put('/update/{id}',  [MentorController::class, 'update'])->name('update');
+        Route::delete('/{id}',  [MentorController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [MentorController::class, 'store'])->name('store');
+        Route::get('export/xlsx',  [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
+        Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
+        Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
+    });
+
+    Route::apiResource('partners', PartnerController::class);
 });

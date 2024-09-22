@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -18,8 +19,10 @@ class UsersController extends Controller
         $search = $request->query('name');
         $rows = $request['rows'] != 0 ? $request['rows'] : 5;
         $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
-        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
-            $query->whereIn("role_id", $roles);
+        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) { 
+            $query->whereHas("roles", function ($query) use ($roles) {
+                $query->whereIn("name", $roles);
+            });
         })->paginate($rows);
         return response()->json($users);
     }
@@ -36,21 +39,29 @@ class UsersController extends Controller
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
+                'phone_number' => 'required|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
-                'nip' => 'nullable|string|max:20',
-                'nisn' => 'nullable|string|max:20',
-                'role_id' => 'required|exists:roles,id',
+                'nip_nisn' => 'required|string|max:20',
+                'role' => 'required|string|exists:roles,name',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
             ]);
 
             // create new user
             $user = new User();
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->phone_number = $validatedData['phone_number'];
             $user->password = bcrypt($validatedData['password']);
-            $user->nip = $validatedData['nip'] ?? null;
-            $user->nisn = $validatedData['nisn'] ?? null;
-            $user->role_id = $validatedData['role_id'];
+            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id();  // admin id as creator
+            $user->assignRole($validatedData['role']);
+            $user->school_id = $validatedData['school_id'];
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -70,29 +81,51 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // input validator
-            $validatedData = $request->validate([
+            $rules = [
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $id,
-                'password' => 'nullable|string|min:8|confirmed',
-                'nip' => 'nullable|string|max:20',
-                'nisn' => 'nullable|string|max:20',
-                'role_id' => 'required|exists:roles,id',
-            ]);
+                'password' => 'nullable|string|min:8',
+                'nip_nisn' => 'required|string|max:20',
+                'role' => 'required|string|exists:roles,name',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
+            ];
 
             // find user by id
             $user = User::findOrFail($id);
 
+            if ($user->email != $request['email']) {
+                $rules['email'] = 'required|email|unique:users,email';
+            } else {
+                $rules['email'] = 'required|email';
+            }
+
+            if ($user->phone_number != $request['phone_number']) {
+                $rules['phone_number'] = 'required|string|unique:users,phone_number';
+            } else {
+                $rules['phone_number'] = 'required|string';
+            }
+
+            // input validator
+            $validatedData = $request->validate($rules);
+
             // update user data
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->phone_number = $validatedData['phone_number'];
+
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
             }
-            $user->nip = $validatedData['nip'] ?? null;
-            $user->nisn = $validatedData['nisn'] ?? null;
-            $user->role_id = $validatedData['role_id'];
-            $user->updated_by = auth()->id(); // admin id as updater
+
+            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
+            $user->assignRole($validatedData['role']);
+            $user->updated_by = auth()->id(); // admin id as creator
+            $user->school_id = $validatedData['school_id'];
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -178,7 +211,7 @@ class UsersController extends Controller
 
     public function exportUsersToPDF()
     {
-        $users = User::all(['id', 'name', 'email', 'nip', 'nisn', 'role_id']);
+        $users = User::all(['id', 'name', 'email', 'nip_nisn', 'role_id']);
 
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
