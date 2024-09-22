@@ -15,18 +15,28 @@ class StudentController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        // $search = $request->query('name');
-        // $rows = $request['rows'] != 0 ? $request['rows'] : 5;
-        // $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
-        // $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
-        //     $query->whereIn("role_id", $roles);
-        // })->paginate($rows);
-        // return response()->json($users);
+        $search = $request->query('name');
+        $rows = $request['rows'] != 0 ? $request['rows'] : 5;
+        $majors = $request->query("majors") ? explode(',', $request->query("majors")) : [];
+        $classes = $request->query("classes") ? explode(',', $request->query("classes")) : [];
+        
+        $users = User::whereHas("roles", function($query) {
+            $query->where("name", "Koordinator");
+        })
+        ->where('name', 'LIKE', "%$search%")
+        ->when(count($majors) != 0, function ($query) use ($majors) { 
+                $query->whereIn("major_id", $majors);
+        })
+        ->when(count($classes) != 0, function ($query) use ($classes) { 
+            $query->whereIn("class_id", $classes);
+        })
+        ->paginate($rows);
+        return response()->json($users);
     }
 
     public function show(User $user): JsonResponse
     {
-        // return response()->json($user);
+        return response()->json($user);
     }
 
     public function store(Request $request)

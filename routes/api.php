@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthControllers;
 use App\Http\Controllers\GuruControllers;
+use App\Http\Controllers\KoordinatorController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\MajorityController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 
 /*
@@ -133,6 +135,32 @@ Route::middleware('auth:api')->group(function () {
         Route::get('export/xlsx',  [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
         Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
         Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
+    });
+
+    // COORDINATOR
+    Route::prefix('coordinators')->group(function () {
+        Route::get('/', [KoordinatorController::class, 'index'])->name('getallcoordinator');
+        Route::get('/{user:uuid}', [KoordinatorController::class, 'show'])->name('getcoordinator');
+        Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
+        Route::patch('/update/{id}', [KoordinatorController::class, 'update'])->name('updatecoordinator');
+        Route::delete('/{id}', [KoordinatorController::class, 'destroy'])->name('deletecoordinator');
+        Route::post('/import', [KoordinatorController::class, 'importKoordinator'])->name('importcoordinators');
+        Route::get('/export/xlsx', [KoordinatorController::class, 'exportKoordinatorToXLSX'])->name('exportcoordinatorstoxlsx');
+        Route::get('/export/csv', [KoordinatorController::class, 'exportKoordinatorToCSV'])->name('exportcoordinatorstocsv');
+        Route::get('/export/pdf', [KoordinatorController::class, 'exportKoordinatorToPDF'])->name('exportcoordinatorstopdf');
+    });
+
+    // STUDENT
+    Route::prefix('students')->group(function () {
+        Route::get('/', [StudentController::class, 'index'])->name('getallstudenet');
+        Route::get('/{user:uuid}', [StudentController::class, 'show'])->name('getstudenet');
+        Route::post('/create', [StudentController::class, 'store'])->name('createstudenet');
+        Route::patch('/update/{id}', [StudentController::class, 'update'])->name('updatestudenet');
+        Route::delete('/{id}', [StudentController::class, 'destroy'])->name('deletestudenet');
+        Route::post('/import', [StudentController::class, 'importStudent'])->name('importstudenets');
+        Route::get('/export/xlsx', [StudentController::class, 'exportStudentToXLSX'])->name('exportstudenetstoxlsx');
+        Route::get('/export/csv', [StudentController::class, 'exportStudentToCSV'])->name('exportstudenetstocsv');
+        Route::get('/export/pdf', [StudentController::class, 'exportStudentToPDF'])->name('exportstudenetstopdf');
     });
 
     Route::apiResource('partners', PartnerController::class);
