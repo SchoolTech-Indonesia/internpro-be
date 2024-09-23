@@ -82,8 +82,7 @@ class SchoolControllers extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data Sekolah Berhasil Disimpan!',
-                'data' => new SchoolResource($school),
+                'message' => 'Data Sekolah Berhasil Disimpan!'
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
