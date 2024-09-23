@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\KelasResource;
 use App\Models\Kelas;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,8 +45,8 @@ class ClassControllers extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "class_code" => "required|unique:classes|max:255",
             "class_name" => "required|string|max:255",
+            "major" => "required|exists:majors,uuid",
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -146,6 +147,35 @@ class ClassControllers extends Controller
      */
     public function search(Request $request)
     {
-
+        try {
+            $validator = Validator::make($request->all(), [
+                'search' => 'required|string|max:255',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi Gagal',
+                    'errors' => $validator->errors(),
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            $data = $validator->validated();
+            $class = Kelas::where('class_name', 'like', '%' . $data['search'] . '%')->get();
+            if ($class->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Kelas Tidak Ditemukan!'
+                ], Response::HTTP_NOT_FOUND);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Kelas Ditemukan!',
+                'data' => KelasResource::collection($class),
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

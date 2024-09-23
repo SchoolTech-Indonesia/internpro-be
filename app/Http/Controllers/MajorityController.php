@@ -45,7 +45,6 @@ class MajorityController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "major_code" => "required|unique:majors|max:255",
             "major_name" => "required|string|max:255",
         ]);
         if ($validator->fails()) {
