@@ -142,7 +142,7 @@ class ClassControllers extends Controller
     }
 
     /**
-     * Find Kelas by search
+     * Search Kelas by name
      */
     public function search(Request $request)
     {

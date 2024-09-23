@@ -13,7 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MajorityController extends Controller
 {
-    // GET MAJORITY
+    /**
+     * Show all majority with pagination.
+     */
     public function index()
     {
         try {
@@ -37,7 +39,9 @@ class MajorityController extends Controller
         }
     }
 
-    // CREATE MAJORITY
+    /**
+     * Create a Majority
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -48,7 +52,7 @@ class MajorityController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors(),
-            ], 400);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         try {
             $data = $validator->validated();
@@ -56,30 +60,33 @@ class MajorityController extends Controller
             Major::create($data);
             return response()->json([
                 'success' => true,
-                'message' => 'Major created successfully',
-            ], 201);
+                'message' => 'Major berhasil ditambahkan!',
+            ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-
-    // GET MAJORITY BY ID
+    /**
+     * Show a majority by ID
+     */
     public function show($id)
     {
         $major = Major::where('uuid', $id)->first();
         return response()->json([
             'success' => true,
-            'message' => 'Major retrieved successfully.',
+            'message' => 'Detail Data Major',
             'data' => $major
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
 
-    // UPDATE MAJORITY
+    /**
+     * Update a majority by ID
+     */
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -95,7 +102,7 @@ class MajorityController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors(),
-            ], 400);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         
         try {
@@ -104,17 +111,19 @@ class MajorityController extends Controller
             Major::where('uuid', $id)->update($data);
             return response()->json([
                 'success' => true,
-                'message' => 'Major updated successfully',
-            ], 200);
+                'message' => 'Data Major berhasil diperbarui!',
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    // DELETE MAJORITY
+    /**
+     * Delete a majority by ID
+     */
     public function destroy($id)
     {
         $major = Major::where('uuid', $id)->first();
@@ -122,16 +131,19 @@ class MajorityController extends Controller
             $major->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Major deleted successfully',
-            ], 200);
+                'message' => 'Data Major berhasil dihapus!',
+            ], Response::HTTP_OK);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Major not found',
-            ], 404);
+                'message' => 'Data Major Tidak Ditemukan!',
+            ], Response::HTTP_NOT_FOUND);
         }
     }
 
+    /**
+     * Search majority by name
+     */
     public function search(Request $request)
     {
         try {

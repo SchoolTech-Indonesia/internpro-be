@@ -14,6 +14,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\MajorityController;
+use App\Http\Controllers\ClassControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
@@ -110,10 +111,20 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('majority')->group(function () {
         Route::get('/', [MajorityController::class, 'index'])->name('index');
         Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
-        Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
+        Route::patch('/update/{id}', [MajorityController::class, 'update'])->name('update');
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('store');
         Route::post('/search', [MajorityController::class, 'search'])->name('search');
+    });
+
+    // CLASSES
+    Route::prefix('classes')->group(function () {
+        Route::get('/', [ClassControllers::class, 'index'])->name('index');
+        Route::get('/{id}', [ClassControllers::class, 'show'])->name('show');
+        Route::patch('/update/{id}', [ClassControllers::class, 'update'])->name('update');
+        Route::delete('/{id}', [ClassControllers::class, 'destroy'])->name('destroy');
+        Route::post('/create', [ClassControllers::class, 'store'])->name('store');
+        Route::post('/search', [ClassControllers::class, 'search'])->name('search');
     });
 
 });
