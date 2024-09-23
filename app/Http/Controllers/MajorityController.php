@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MajorResource;
 use App\Models\Major;
 use App\Models\User;
+use App\Http\Resources\MajorResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
-use Firebase\JWT\JWT;
-use Firebase\JWT\ExpiredException;
-use Firebase\JWT\Key;
-use Symfony\Component\HttpFoundation\Response;
-=======
->>>>>>> ac6ec8f8c7ac6aac651d270cdd0b504829867a5a
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 
 class MajorityController extends Controller
 {
@@ -24,22 +18,16 @@ class MajorityController extends Controller
     {
         try {
             $perPage = request()->get('per_page', 5);
-
             $perPageOptions = [5, 10, 15, 20, 50];
-
             if (!in_array($perPage, $perPageOptions)) {
                 $perPage = 5;
             }
-
             $major = Major::latest()->paginate($perPage);
-
-
             return response()->json([
                 'success' => true,
                 'message' => 'Daftar Data Major',
                 'data' => $major
             ], Response::HTTP_OK);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -56,7 +44,6 @@ class MajorityController extends Controller
             "major_code" => "required|unique:majors|max:255",
             "major_name" => "required|string|max:255",
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -110,6 +97,7 @@ class MajorityController extends Controller
                 'message' => $validator->errors(),
             ], 400);
         }
+        
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;
@@ -150,7 +138,6 @@ class MajorityController extends Controller
             $validator = Validator::make($request->all(), [
                 'search' => 'required|string|max:255',
             ]);
-
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
@@ -158,22 +145,18 @@ class MajorityController extends Controller
                     'errors' => $validator->errors(),
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-
             $major = Major::where('major_name', 'like', '%' . $request->search . '%')->get();
-
             if ($major->isEmpty()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Data Major Tidak Ditemukan!'
                 ], Response::HTTP_NOT_FOUND);
             }
-
             return response()->json([
                 'success' => true,
                 'message' => 'Major Sekolah Ditemukan!',
                 'data' => MajorResource::collection($major),
             ], Response::HTTP_OK);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

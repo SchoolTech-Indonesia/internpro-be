@@ -17,23 +17,6 @@ use App\Http\Controllers\MajorityController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
-<<<<<<< HEAD
-=======
-use App\Http\Controllers\SchoolControllers;
-use App\Http\Controllers\GuruControllers;
-use App\Http\Controllers\RoleControllers;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\LogoutController;
-use App\Http\Controllers\MajorityController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Resources\ProfileResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Exports\UsersExport;
-use Maatwebsite\Excel\Facades\Excel;
->>>>>>> ac6ec8f8c7ac6aac651d270cdd0b504829867a5a
 
 /*
 |--------------------------------------------------------------------------
@@ -130,19 +113,10 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('store');
+        Route::post('/search', [MajorityController::class, 'search'])->name('search');
     });
+
 });
 
-// MAJORITY
-Route::prefix('majority')->group(function () {
-    Route::get('/', [MajorityController::class, 'index'])->name('index');
-    Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
-    Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
-    Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
-    Route::post('/create', [MajorityController::class, 'store'])->name('store');
-<<<<<<< HEAD
-    Route::post('/search', [MajorityController::class, 'search'])->name('search');
-});
-=======
-});
->>>>>>> ac6ec8f8c7ac6aac651d270cdd0b504829867a5a
+
+
