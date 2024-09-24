@@ -60,6 +60,14 @@ Route::middleware('auth:api')->group(function () {
             Route::delete('/{uuid}', [TeacherController::class, 'destroy'])->name('deleteteacher');
         });
 
+        Route::prefix('admins')->group(function () {
+            Route::get('/', [AdminController::class, 'index'])->name('index');
+            Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
+            Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
+            Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
+            Route::put('/update/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
+        });
+
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
         Route::get('/{user:uuid}', [UsersController::class, 'show'])->name('getuser');
         Route::post('/create', [UsersController::class, 'store'])->name('createuser');
@@ -116,13 +124,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('store');
     });
     // ADMIN
-    Route::prefix('admin')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
-        Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
-        Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
-        Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
-    });
 
     //MENTOR
     Route::prefix('mentor')->group(function () {
