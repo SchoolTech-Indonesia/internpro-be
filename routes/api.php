@@ -50,6 +50,16 @@ Route::middleware('auth:api')->group(function () {
 
     // USERS
     Route::prefix('users')->group(function () {
+
+        // TEACHERS
+        Route::prefix("teachers")->group(function () {
+            Route::get('/', [TeacherController::class, 'index'])->name('getallteacher');
+            Route::post('/create', [TeacherController::class, 'store'])->name('createteacher');
+            Route::get('/{uuid}', [TeacherController::class, 'show'])->name('getspecificteacher');
+            Route::put('/update/{uuid}', [TeacherController::class, 'update'])->name('updateteacher');
+            Route::delete('/{uuid}', [TeacherController::class, 'destroy'])->name('deleteteacher');
+        });
+
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
         Route::get('/{user:uuid}', [UsersController::class, 'show'])->name('getuser');
         Route::post('/create', [UsersController::class, 'store'])->name('createuser');
@@ -77,15 +87,6 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
         Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteschool');
         Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
-    });
-
-    // TEACHER
-    Route::prefix('teachers')->group(function () {
-        Route::get('/', [TeacherController::class, 'index'])->name('getallteacher');
-        Route::post('/create', [TeacherController::class, 'store'])->name('createteacher');
-        Route::get('/{uuid}', [TeacherController::class, 'show'])->name('getspecificteacher');
-        Route::put('/update/{uuid}', [TeacherController::class, 'update'])->name('updateteacher');
-        Route::delete('/{uuid}', [TeacherController::class, 'destroy'])->name('deleteteacher');
     });
 
     // ROLE
