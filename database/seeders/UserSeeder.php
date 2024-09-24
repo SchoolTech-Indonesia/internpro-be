@@ -23,6 +23,27 @@ class UserSeeder extends Seeder
         $class = Kelas::where('class_code', 'TIF2024')->first();
         $partner = Partner::where('partner_name', 'PT mencari cinta sejati')->first();
 
+        $partner = Partner::firstOrCreate([
+            "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
+            "name" => "PT mencari cinta sejati",
+            "address" => "Jalan kebun raya bogor",
+            "logo" => "00xx000x00x",
+            "number_sk" => "3001",
+            "file_sk" => fake()->filePath(),
+            "end_date_sk" => "2024-09-09 10:00:00",
+        ]);
+
+        $major = Major::firstOrCreate([
+            "major_code" => "0987654321",
+            "major_name" => "Rekaya Perangkat Lunak"
+        ]);
+
+        $class = Kelas::firstOrCreate([
+            "class_code" => "TIF2024",
+            "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
+            "major" => $major->uuid
+        ]);
+
         $admin = User::firstOrCreate([
             'nip_nisn' => "987",
             'name' => 'Super Administrator',
@@ -44,10 +65,28 @@ class UserSeeder extends Seeder
             'school_id' => $school->uuid,
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
-            'partner_id' => $partner->uuid
+            //            'partner_id' => $partner->uuid
         ]);
 
         $admin->assignRole(['Super Administrator']);
         $guru->assignRole(['Teacher']);
+
+        $role = Role::firstOrCreate([
+            'name' => 'Mentor'
+        ]);
+
+        $user = User::firstOrCreate([
+            'nip_nisn' => "111",
+            'name' => 'Test Mentor',
+            'email' => 'mentor@dev-internpro.schooltech.biz.id',
+            'phone_number' => "085511112222",
+            'password' => bcrypt('mentor'),
+            'school_id' => '15808e5b-cec3-4df5-a0c5-f1324bce7357',
+        ]);
+        $partnerId = '7dcda20c-dc76-4dd6-b427-87dc86d6e0c7';
+        $user->partners()->attach($partnerId);
+        $user->assignRole(['Mentor']);
+
     }
+
 }
