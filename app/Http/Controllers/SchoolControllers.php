@@ -57,7 +57,7 @@ class SchoolControllers extends Controller
         $validator = Validator::make($request->all(), [
             'school_name' => 'required|string|max:255|unique:school',
             'school_address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:15|unique:school',
+            'phone_number' => 'required|number|max:15|unique:school',
             'start_member' => 'required|date',
             'end_member' => 'required|date',
         ]);
@@ -148,7 +148,7 @@ class SchoolControllers extends Controller
             'school_address' => 'required|string|max:255',
             'phone_number' => [
                 'required',
-                'string',
+                'number',
                 'max:15',
                 Rule::unique('school', 'phone_number')->ignore($school->uuid, 'uuid')
             ],
@@ -194,34 +194,29 @@ class SchoolControllers extends Controller
     public function destroy($uuid)
     {
         try {
-            $school = School::where('uuid', $uuid)->first();
-
-            $validator = Validator::make($school->toArray(), [
-                'uuid' => 'required',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validasi Gagal',
-                    'errors' => $validator->errors(),
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            $school = School::withTrashed()->where('uuid', $uuid)->first();
 
             if (!$school) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Data Sekolah Tidak Ditemukan!',
                 ], Response::HTTP_NOT_FOUND);
-
-            } else {
-                School::where('uuid', $uuid)->delete();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data Sekolah Berhasil Dihapus!',
-                ], Response::HTTP_OK);
             }
+
+            if ($school->trashed()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Sekolah Sudah Dihapus Sebelumnya!',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $school->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Sekolah Berhasil Dihapus!',
+            ], Response::HTTP_OK);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
