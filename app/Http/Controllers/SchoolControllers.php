@@ -57,7 +57,7 @@ class SchoolControllers extends Controller
         $validator = Validator::make($request->all(), [
             'school_name' => 'required|string|max:255|unique:school',
             'school_address' => 'required|string|max:255',
-            'phone_number' => 'required|number|max:15|unique:school',
+            'phone_number' => 'required|numeric|digits_between:11,13|unique:school',
             'start_member' => 'required|date',
             'end_member' => 'required|date',
         ]);
@@ -148,8 +148,8 @@ class SchoolControllers extends Controller
             'school_address' => 'required|string|max:255',
             'phone_number' => [
                 'required',
-                'number',
-                'max:15',
+                'numeric',
+                'digits_between:11,13',
                 Rule::unique('school', 'phone_number')->ignore($school->uuid, 'uuid')
             ],
             'start_member' => 'required|date',
