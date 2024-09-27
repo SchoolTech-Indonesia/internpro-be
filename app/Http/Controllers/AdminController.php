@@ -95,7 +95,12 @@ class AdminController extends Controller
         // Validasi input
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'nip_nisn' => 'required|string|max:255',
+            'nip_nisn' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($admin), // Abaikan email user saat ini
+            ],
             'email' => [
                 'nullable',
                 'email',
@@ -153,7 +158,7 @@ class AdminController extends Controller
         // Validasi input
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'nip_nisn' => 'required|string|max:255',
+            'nip_nisn' => 'required|string|unique:users|max:255',
             'email' => 'nullable|email|unique:users,email',
             'phone_number' => 'nullable|string|max:20|unique:users,phone_number',
             'password' => 'required|string|min:8',

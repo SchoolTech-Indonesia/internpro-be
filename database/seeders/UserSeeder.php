@@ -65,7 +65,7 @@ class UserSeeder extends Seeder
             'school_id' => $school->uuid,
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
-//            'partner_id' => $partner->uuid
+            //            'partner_id' => $partner->uuid
         ]);
 
         $admin->assignRole(['Super Administrator']);
