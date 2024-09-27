@@ -22,7 +22,7 @@ class PartnerSeeder extends Seeder
             "logo" => "00xx000x00x",
             "number_sk" => "3001",
             "end_date_sk" => "2024-09-09 10:00:00",
-            // "school" => $school->uuid
+            "school" => $school->uuid
         ]);
     }
 }
