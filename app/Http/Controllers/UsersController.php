@@ -38,7 +38,7 @@ class UsersController extends Controller
             // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'nullable|email|unique:users,email',
                 'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
@@ -96,9 +96,9 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
 
             if ($user->email != $request['email']) {
-                $rules['email'] = 'required|email|unique:users,email';
+                $rules['email'] = 'nullable|email|unique:users,email';
             } else {
-                $rules['email'] = 'required|email';
+                $rules['email'] = 'nullable|email';
             }
 
             if ($user->phone_number != $request['phone_number']) {
