@@ -39,7 +39,7 @@ class UsersController extends Controller
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
-                'phone_number' => 'required|string|unique:users,phone_number',
+                'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
                 'role' => 'required|string|exists:roles,name',
@@ -102,9 +102,9 @@ class UsersController extends Controller
             }
 
             if ($user->phone_number != $request['phone_number']) {
-                $rules['phone_number'] = 'required|string|unique:users,phone_number';
+                $rules['phone_number'] = 'nullable|string|unique:users,phone_number';
             } else {
-                $rules['phone_number'] = 'required|string';
+                $rules['phone_number'] = 'nullable|string';
             }
 
             // input validator
