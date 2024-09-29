@@ -116,6 +116,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('store');
     });
+    
     // ADMIN
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');

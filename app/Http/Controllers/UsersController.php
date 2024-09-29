@@ -211,9 +211,9 @@ class UsersController extends Controller
 
     public function exportUsersToPDF()
     {
-        $users = User::all(['id', 'name', 'email', 'nip_nisn', 'role_id']);
+        $users = User::all();
 
-        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
+        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users])->setPaper('a4', 'landscape');
 
         return $pdf->download('users.pdf');
     }
