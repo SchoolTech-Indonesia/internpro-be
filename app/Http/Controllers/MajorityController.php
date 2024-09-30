@@ -7,13 +7,10 @@ use App\Models\Major;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\Key;
 use Symfony\Component\HttpFoundation\Response;
-=======
->>>>>>> ac6ec8f8c7ac6aac651d270cdd0b504829867a5a
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -23,15 +20,15 @@ class MajorityController extends Controller
     public function index()
     {
         try {
-            $perPage = request()->get('per_page', 5);
+            // $perPage = request()->get('per_page', 5);
 
-            $perPageOptions = [5, 10, 15, 20, 50];
+            // $perPageOptions = [5, 10, 15, 20, 50];
 
-            if (!in_array($perPage, $perPageOptions)) {
-                $perPage = 5;
-            }
+            // if (!in_array($perPage, $perPageOptions)) {
+            //     $perPage = 5;
+            // }
 
-            $major = Major::latest()->paginate($perPage);
+            $major = Major::latest()->paginate(5);
 
 
             return response()->json([
@@ -99,7 +96,7 @@ class MajorityController extends Controller
             "major_code" => [
                 "required",
                 "max:255",
-                Rule::unique('majors')->ignore($id, 'uuid')
+                Rule::unique('majors')->ignore($id, 'uuid'),
             ],
             "major_name" => "required|string|max:255",
         ]);
@@ -110,6 +107,7 @@ class MajorityController extends Controller
                 'message' => $validator->errors(),
             ], 400);
         }
+        
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;
