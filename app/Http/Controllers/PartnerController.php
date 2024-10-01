@@ -9,10 +9,7 @@ use App\Http\Resources\PartnerResource;
 use App\Models\Partner;
 use App\Services\S3Service;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use function Laravel\Prompts\error;
 
 class PartnerController extends Controller
 {
@@ -80,11 +77,11 @@ class PartnerController extends Controller
 
             $validatedData['uuid'] = $uuid;
             if ($request->hasFile('logo')) {
-                $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/logo/', $uuid);
+                $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/' . $uuid . '/', 'logo');
             }
 
             if ($request->hasFile('file_sk')) {
-                $validatedData['file_sk'] = S3Service::store($request->file('file_sk'), 'partners/file_sk/', $uuid);
+                $validatedData['file_sk'] = S3Service::store($request->file('file_sk'), 'partners/' . $uuid . '/', 'file_sk');
             }
 
             $partner = Partner::create($validatedData);
@@ -134,13 +131,15 @@ class PartnerController extends Controller
             $validatedData = $request->validated();
 
             if ($request->hasFile('logo')) {
-                $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/logo/', $uuid);
+                S3Service::destroy('partners/' . $uuid . '/logo');
+                $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/' . $uuid . '/', 'logo');
             } else {
                 $validatedData['logo'] = $partner->logo;
             }
 
             if ($request->hasFile('file_sk')) {
-                $validatedData['file_sk'] = S3Service::store($request->file('file_sk'), 'partners/file_sk/', $uuid);
+                S3Service::destroy('partners/' . $uuid . '/file_sk');
+                $validatedData['file_sk'] = S3Service::store($request->file('file_sk'), 'partners/' . $uuid . '/', 'file_sk');
             } else {
                 $validatedData['file_sk'] = $partner->file_sk;
             }
@@ -164,6 +163,7 @@ class PartnerController extends Controller
         }
 
         try {
+            S3Service::destroy('partners/' . $uuid);
             $partner->delete();
         } catch (\Exception $e) {
             return (new MessageResource(null, false, 'Failed to delete partner', $e->getMessage()))->response()->setStatusCode(500);

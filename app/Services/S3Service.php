@@ -37,12 +37,22 @@ class S3Service
         $s3Bucket = config('filesystems.disks.s3.bucket');
 
         try {
-            $s3Client->deleteObject([
+            $result = $s3Client->listObjectsV2([
                 'Bucket' => $s3Bucket,
-                'Key' => $filepath,
+                'Prefix' => $filepath,
             ]);
-        } catch (\Exception $e) {
 
+
+            if (!empty($result['Contents'])) {
+                foreach ($result['Contents'] as $object) {
+                    $s3Client->deleteObject([
+                        'Bucket' => $s3Bucket,
+                        'Key' => $object['Key'],
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
         }
     }
 
