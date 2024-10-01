@@ -45,21 +45,30 @@ class StudentController extends Controller
             // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'nullable|email|unique:users,email',
+                'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
-                'nip' => 'nullable|string|max:20',
-                'nisn' => 'nullable|string|max:20',
+                'nip_nisn' => 'nullable|string|max:20',
+                'role' => 'required|string|in:Student',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
             ]);
 
             // create new Student
             $user = new User();
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->phone_number = $validatedData['phone_number'];
             $user->password = bcrypt($validatedData['password']);
-            $user->nip = $validatedData['nip'] ?? null;
-            $user->nisn = $validatedData['nisn'] ?? null;
-            $user->role_id = 3; // 3 as Student role_id
+            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id(); // admin id as creator
+            $user->assignRole('Student');
+            $user->school_id = $validatedData['school_id'];
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -82,24 +91,34 @@ class StudentController extends Controller
             // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $id,
                 'password' => 'nullable|string|min:8|confirmed',
-                'nip' => 'nullable|string|max:20',
-                'nisn' => 'nullable|string|max:20',
+                'nip_nisn' => 'nullable|string|max:20',
+                'role' => 'required|string|in:Coordinator',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
             ]);
 
             // find Student by id
-            $user = User::where('id', $id)->where('role_id', 3)->firstOrFail();
+            $user = User::where('id', $id)->where('role', 'Student')->firstOrFail();
 
             // update Student data
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->phone_number = $validatedData['phone_number'];
+
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
             }
-            $user->nip = $validatedData['nip'] ?? null;
-            $user->nisn = $validatedData['nisn'] ?? null;
+
+            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
+            $user->assignRole('Student');
             $user->updated_by = auth()->id(); // admin id as updater
+            $user->school_id = $validatedData['school_id'];
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -123,7 +142,7 @@ class StudentController extends Controller
             DB::beginTransaction();
 
             // find Stuudent by id
-            $user = User::where('id', $id)->where('role_id', 3)->firstOrFail();
+            $user = User::where('id', $id)->where('role', 'Student')->firstOrFail();
             
             // set kolom deleted_by dan soft delete
             $user->deleted_by = auth()->id(); // admin id as deleter
@@ -185,7 +204,7 @@ class StudentController extends Controller
 
     public function exportStudentToPDF()
     {
-        $users = User::where('role_id', 3)->get(['id', 'name', 'email', 'nip', 'nisn', 'role_id']); // 3 as Student role_id
+        $users = User::where('role', 'Student')->get();
 
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
