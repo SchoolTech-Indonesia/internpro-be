@@ -17,10 +17,11 @@ class PartnerSeeder extends Seeder
         $school = School::where('uuid', SchoolSeeder::$schoolUuid)->first();
 
         Partner::firstOrCreate([
-            "partner_name" => "PT mencari cinta sejati",
-            "partner_address" => "Jalan kebun raya bogor",
-            "partner_logo" => "00xx000x00x",
+            "name" => "PT mencari cinta sejati",
+            "address" => "Jalan kebun raya bogor",
+            "logo" => "00xx000x00x",
             "number_sk" => "3001",
+            "file_sk" => "file_sk",
             "end_date_sk" => "2024-09-09 10:00:00",
             "school" => $school->uuid
         ]);

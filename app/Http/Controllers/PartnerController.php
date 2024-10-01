@@ -9,7 +9,10 @@ use App\Http\Resources\PartnerResource;
 use App\Models\Partner;
 use App\Services\S3Service;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use function Laravel\Prompts\error;
 
 class PartnerController extends Controller
 {
@@ -76,7 +79,6 @@ class PartnerController extends Controller
             $validatedData = $request->validated();
 
             $validatedData['uuid'] = $uuid;
-            // TODO : File Upload
             if ($request->hasFile('logo')) {
                 $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/logo/', $uuid);
             }
@@ -101,6 +103,7 @@ class PartnerController extends Controller
     public function show($uuid): JsonResponse
     {
         $partner = Partner::with('users')->where('uuid', $uuid)->firstOrFail();
+        error_log($partner);
         if (!$partner) {
             return (new MessageResource(null, false, 'Partner not found'))->response()->setStatusCode(404);
         }
@@ -120,6 +123,7 @@ class PartnerController extends Controller
         if (isset($request->validator) && $request->validator->fails()) {
             return (new MessageResource(null, false, 'Validation failed', $request->validator->messages()))->response()->setStatusCode(400);
         }
+        $validatedData = $request->validated();
 
         $partner = Partner::find($uuid);
         if (!$partner) {
