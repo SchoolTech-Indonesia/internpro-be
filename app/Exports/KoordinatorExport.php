@@ -15,7 +15,7 @@ class KoordinatorExport implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        return User::where('role_id', 2)->get(['id', 'name', 'email', 'nip', 'nisn']); // 2 as Koordinator role_id
+        return User::where('role', 'Coordinator')->get();
     }
 
     /**
@@ -29,11 +29,21 @@ class KoordinatorExport implements FromCollection, WithHeadings
             'ID',
             'Name',
             'Email',
-            'NIP',
-            'NISN',
-            // 'Role ID',
-            // 'Created At',
-            // 'Updated At',
+            'NIP/NISN',
+            'Phone Number',
+            // 'Role',
+        ];
+    }
+
+    public function map($users): array
+    {
+        return [
+            $users->uuid,
+            $users->name,
+            $users->email,
+            $users->nip_nisn,
+            $users->phone_number,
+            // $users->getRoleNames()->implode(', '), 
         ];
     }
 }
