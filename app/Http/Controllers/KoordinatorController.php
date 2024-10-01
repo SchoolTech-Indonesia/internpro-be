@@ -20,7 +20,7 @@ class KoordinatorController extends Controller
         $classes = $request->query("classes") ? explode(',', $request->query("classes")) : [];
 
         $users = User::whereHas("roles", function($query) {
-            $query->where("name", "Koordinator");
+            $query->where("name", "Coordinator");
         })
         ->where('name', 'LIKE', "%$search%")
         ->when(count($classes) != 0, function ($query) use ($classes) { 
@@ -41,21 +41,30 @@ class KoordinatorController extends Controller
             // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'nullable|email|unique:users,email',
+                'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
-                'nip' => 'nullable|string|max:20',
-                'nisn' => 'nullable|string|max:20',
+                'nip_nisn' => 'nullable|string|max:20',
+                'role' => 'required|string|in:Coordinator',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
             ]);
 
             // create new Koordinator
             $user = new User();
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->phone_number = $validatedData['phone_number'];
             $user->password = bcrypt($validatedData['password']);
-            $user->nip = $validatedData['nip'] ?? null;
-            $user->nisn = $validatedData['nisn'] ?? null;
-            $user->role_id = 2; // 2 as Koordinator role_id
+            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id(); // admin id as creator
+            $user->assignRole('Coordinator');
+            $user->school_id = $validatedData['school_id'];
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -78,24 +87,34 @@ class KoordinatorController extends Controller
             // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $id,
                 'password' => 'nullable|string|min:8|confirmed',
-                'nip' => 'nullable|string|max:20',
-                'nisn' => 'nullable|string|max:20',
+                'nip_nisn' => 'nullable|string|max:20',
+                'role' => 'required|string|in:Coordinator',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',,
             ]);
 
             // find Koordinator by id
-            $user = User::where('id', $id)->where('role_id', 2)->firstOrFail();
+            $user = User::where('id', $id)->where('role', 'Coordinator')->firstOrFail();
 
             // update Koordinator data
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
+            $user->phone_number = $validatedData['phone_number'];
+
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
             }
-            $user->nip = $validatedData['nip'] ?? null;
-            $user->nisn = $validatedData['nisn'] ?? null;
+
+            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
+            $user->assignRole('Coordinator');
             $user->updated_by = auth()->id(); // admin id as updater
+            $user->school_id = $validatedData['school_id'];
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -119,7 +138,7 @@ class KoordinatorController extends Controller
             DB::beginTransaction();
 
             // find Koordinator by id
-            $user = User::where('id', $id)->where('role_id', 2)->firstOrFail();
+            $user = User::where('id', $id)->where('role', 'Coordinator')->firstOrFail();
             
             // set kolom deleted_by dan soft delete
             $user->deleted_by = auth()->id(); // admin id as deleter
@@ -171,20 +190,20 @@ class KoordinatorController extends Controller
 
     public function exportKoordinatorToXLSX()
     {
-        return Excel::download(new KoordinatorExport(), 'koordinator.xlsx');
+        return Excel::download(new KoordinatorExport(), 'coordinator.xlsx');
     }
 
     public function exportKoordinatorToCSV()
     {
-        return Excel::download(new KoordinatorExport(), 'koordinator.csv', \Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new KoordinatorExport(), 'coordinator.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
     public function exportKoordinatorToPDF()
     {
-        $users = User::where('role_id', 2)->get(['id', 'name', 'email', 'nip', 'nisn', 'role_id']); // 2 as Koordinator role_id
+        $users = User::where('role', 'Coordinator')->get();
 
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
-        return $pdf->download('koordinator.pdf');
+        return $pdf->download('coordinator.pdf');
     }
 }
