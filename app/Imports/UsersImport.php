@@ -17,12 +17,16 @@ class UsersImport implements ToModel, WithHeadingRow, WithStartRow
     public function model(array $row)
     {
         return new User([
-            'name'     => $row['name'],
-            'email'    => $row['email'],
+            'name' => $row['name'],
+            'email' => $row['email'],
+            'phone_number' => $row['phone_number'],
             'password' => bcrypt($row['password']),
-            'nip'      => $row['nip'],
-            'nisn'     => $row['nisn'],
-            'role_id'  => $row['role_id'],
+            'nip_nisn' => $row['nip_nisn'],
+            'role' => $row['role'],
+            'school_id' => $row['school_id'],
+            'major_id' => $row['major_id'],
+            'class_id' => $row['class_id'],
+            'partner_id' => $row['partner_id'],
         ]);
     }
 }
