@@ -74,12 +74,29 @@ class MajorityController extends Controller
      */
     public function show($id)
     {
-        $major = Major::where('uuid', $id)->first();
-        return response()->json([
-            'success' => true,
-            'message' => 'Detail Data Major',
-            'data' => $major
-        ], Response::HTTP_OK);
+        try {
+            $major = Major::where('uuid', $id)->first();
+
+            if (!$major) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Jurusan Tidak Ditemukan',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail Data Jurusan',
+                'data' => $major,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data jurusan',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -88,6 +105,15 @@ class MajorityController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $major = Major::where('uuid', $id)->first();
+
+        if (!$major) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data jurusan tidak ditemukan!',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
         $validator = Validator::make($request->all(), [
             "major_code" => [
                 "required",
@@ -103,11 +129,13 @@ class MajorityController extends Controller
                 'message' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
+
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;
+
             Major::where('uuid', $id)->update($data);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Data Major berhasil diperbarui!',
