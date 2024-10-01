@@ -11,7 +11,6 @@ class S3Service
     {
         $s3Client = app(S3Client::class);
 
-        error_log($file->getClientOriginalExtension());
         // Generate a unique file key for S3
         $s3Key = $path . $filename . '.' . $file->getClientOriginalExtension();
 

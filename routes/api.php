@@ -124,16 +124,22 @@ Route::middleware('auth:api')->group(function () {
     });
 
     //MENTOR
-    Route::prefix('mentor')->group(function(){
+    Route::prefix('mentor')->group(function () {
         Route::get('/', [MentorController::class, 'index'])->name('index');
         Route::get('/{id}', [MentorController::class, 'show'])->name('show');
-        Route::put('/update/{id}',  [MentorController::class, 'update'])->name('update');
-        Route::delete('/{id}',  [MentorController::class, 'destroy'])->name('destroy');
+        Route::put('/update/{id}', [MentorController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MentorController::class, 'destroy'])->name('destroy');
         Route::post('/create', [MentorController::class, 'store'])->name('store');
-        Route::get('export/xlsx',  [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
-        Route::get('export/csv',   [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
-        Route::get('export/pdf',   [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
+        Route::get('export/xlsx', [MentorController::class, 'exportMentorsToXLSX'])->name('exportxlsx');
+        Route::get('export/csv', [MentorController::class, 'exportMentorsToCSV'])->name('exportCSV');
+        Route::get('export/pdf', [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
     });
 
-    Route::apiResource('partners', PartnerController::class);
+    Route::prefix('partners')->group(function () {
+        Route::get('/', [PartnerController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [PartnerController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [PartnerController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [PartnerController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [PartnerController::class, 'store'])->name('store');
+    });
 });
