@@ -100,8 +100,8 @@ Route::middleware('auth:api')->group(function () {
 
     // PERMISSION
     Route::prefix('permission')->group(function () {
-        Route::get('/', [PermissionController::class, 'index'])->name('index');
-        Route::get('/{id}', [PermissionController::class, 'show'])->name('show');
+        Route::get('/', [PermissionController::class, 'index'])->name('permission.index');
+        Route::get('/{id}', [PermissionController::class, 'show'])->name('permission.show');
         // Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
         // Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         // Route::post('/create', [PermissionController::class, 'store'])->name('store');
@@ -109,11 +109,12 @@ Route::middleware('auth:api')->group(function () {
 
     // MAJORITY
     Route::prefix('majority')->group(function () {
-        Route::get('/', [MajorityController::class, 'index'])->name('index');
-        Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
-        Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');
-        Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('destroy');
-        Route::post('/create', [MajorityController::class, 'store'])->name('store');
-        Route::post('/search', [MajorityController::class, 'search'])->name('search');
+        Route::get('/', [MajorityController::class, 'index'])->name('majority.index');
+        Route::get('/getmajor', [MajorityController::class,'majorityShow'])->name('majorityshow');
+        Route::get('/{id}', [MajorityController::class, 'show'])->name('majority.show');
+        Route::put('/update/{id}', [MajorityController::class, 'update'])->name('majority.update');
+        Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
+        Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
+        Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
 });

@@ -15,6 +15,7 @@ class MajorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "uuid"=> $this->uuid,
             'major_code' => $this->major_code,
             'major_name' => $this->major_name,
         ];

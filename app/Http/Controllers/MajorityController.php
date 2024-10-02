@@ -16,15 +16,15 @@ class MajorityController extends Controller
     public function index()
     {
         try {
-            // $perPage = request()->get('per_page', 5);
+            $perPage = request()->get('per_page', 5);
 
-            // $perPageOptions = [5, 10, 15, 20, 50];
+            $perPageOptions = [5, 10, 15, 20, 50];
 
-            // if (!in_array($perPage, $perPageOptions)) {
-            //     $perPage = 5;
-            // }
+            if (!in_array($perPage, $perPageOptions)) {
+                $perPage = 5;
+            }
 
-            $major = Major::latest()->paginate(5);
+            $major = Major::latest()->paginate($perPage);
 
 
             return response()->json([
@@ -166,6 +166,7 @@ class MajorityController extends Controller
         }
     }
 
+    // Search Major by Name
     public function search(Request $request)
     {
         try {
@@ -200,6 +201,25 @@ class MajorityController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi Kesalahan Saat Mencari Major',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Show All Majority Without Paginate
+    public function majorityShow()
+    {
+        try{
+            $major = Major::all();
+                return response()->json([
+                    'success'=> true,
+                    'message'=> 'Daftar Data All Jurusan',
+                    'data'=> MajorResource::collection($major),
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi Kesalahan Saat Menampilkan Major',
                 'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
