@@ -21,18 +21,18 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'nip_nisn',
-        'password',
-        'id_role',
-        'otp',
-        'otp_expired_at',
-        'created_by',
-        'updated_by',
-        'deleted_by',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'nip_nisn',
+    //     'password',
+    //     'id_role',
+    //     'otp',
+    //     'otp_expired_at',
+    //     'created_by',
+    //     'updated_by',
+    //     'deleted_by',
+    // ];
 
     protected $primaryKey = 'uuid';
 
@@ -105,8 +105,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Kelas::class, 'class_id', 'uuid');
     }
 
-    public function partner()
+    public function mentors()
     {
-        return $this->belongsTo(Partner::class, 'partner_id', 'uuid');
+        return $this->hasOne(MentorPartner::class, "user_id", "uuid");
+    }
+    public function partners()
+    {
+        return $this->belongsTo(Partner::class, 'mentor_partner', 'user_id', 'partner_id');
     }
 }
