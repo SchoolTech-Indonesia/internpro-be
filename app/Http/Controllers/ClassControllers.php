@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Major;
+use App\Http\Resources\KelasResource;
+use App\Models\Kelas;
 use App\Models\User;
-use App\Http\Resources\MajorResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
-class MajorityController extends Controller
+class ClassControllers extends Controller
 {
     /**
-     * Show all majority with pagination.
+     * Show all Kelas with pagination
      */
     public function index()
     {
@@ -24,28 +24,29 @@ class MajorityController extends Controller
             if (!in_array($perPage, $perPageOptions)) {
                 $perPage = 5;
             }
-            $major = Major::latest()->paginate($perPage);
+            $kelas = Kelas::latest()->paginate($perPage);
             return response()->json([
                 'success' => true,
-                'message' => 'Daftar Data Major',
-                'data' => $major
+                'message' => 'Daftar Data Kelas',
+                'data' => $kelas
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat mengambil data major',
+                'message' => 'Terjadi kesalahan saat mengambil data kelas',
                 'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Create a Majority
+     * Create Kelas
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "major_name" => "required|string|max:255",
+            "class_name" => "required|string|max:255",
+            "major" => "required|exists:majors,uuid",
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -56,10 +57,10 @@ class MajorityController extends Controller
         try {
             $data = $validator->validated();
             $data['created_by'] = Auth::user()->name;
-            Major::create($data);
+            Kelas::create($data);
             return response()->json([
                 'success' => true,
-                'message' => 'Major berhasil ditambahkan!',
+                'message' => 'Kelas berhasil ditambahkan!',
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
@@ -69,49 +70,34 @@ class MajorityController extends Controller
         }
     }
 
+
     /**
-     * Show a majority by ID
+     * Show Kelas by ID
      */
     public function show($id)
     {
-        $major = Major::where('uuid', $id)->first();
-
-        if(!$major){
-            return response()->json([
-                'success' => false,
-                'message' => 'Major dengan UUID ini tidak ada',
-            ], Response::HTTP_NOT_FOUND);
-        }
+        $kelas = Kelas::where('uuid', $id)->first();
         return response()->json([
             'success' => true,
-            'message' => 'Detail Data Major',
-            'data' => $major
+            'message' => 'Detail Data Kelas',
+            'data' => $kelas
         ], Response::HTTP_OK);
     }
 
 
     /**
-     * Update a majority by ID
+     * Update Kelas
      */
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            "major_code" => [
+            "class_code" => [
                 "required",
                 "max:255",
-                Rule::unique('majors')->ignore($id, 'uuid'),
+                Rule::unique('majors')->ignore($id, 'uuid')
             ],
-            "major_name" => "required|string|max:255",
+            "class_name" => "required|string|max:255",
         ]);
-
-        $major = Major::where("uuid", $id)->first();
-
-        if($major == null) {
-            return response()->json([
-                "success"=> false,
-                "message"=> "UUID Tidak ada"
-            ]);
-        }
 
         if ($validator->fails()) {
             return response()->json([
@@ -123,10 +109,10 @@ class MajorityController extends Controller
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;
-            Major::where('uuid', $id)->update($data);
+            Kelas::where('uuid', $id)->update($data);
             return response()->json([
                 'success' => true,
-                'message' => 'Data Major berhasil diperbarui!',
+                'message' => 'Data Kelas Berhasil Diperbarui!',
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
@@ -137,27 +123,27 @@ class MajorityController extends Controller
     }
 
     /**
-     * Delete a majority by ID
+     * Delete Kelas
      */
     public function destroy($id)
     {
-        $major = Major::where('uuid', $id)->first();
-        if ($major) {
-            $major->delete();
+        $kelas = Kelas::where('uuid', $id)->first();
+        if ($kelas) {
+            $kelas->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Data Major berhasil dihapus!',
+                'message' => 'Kelas berhasil dihapus!',
             ], Response::HTTP_OK);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Data Major Tidak Ditemukan!',
+                'message' => 'Kelas tidak ditemukan!',
             ], Response::HTTP_NOT_FOUND);
         }
     }
 
     /**
-     * Search majority by name
+     * Search Kelas by name
      */
     public function search(Request $request)
     {
@@ -172,23 +158,23 @@ class MajorityController extends Controller
                     'errors' => $validator->errors(),
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-            $major = Major::where('major_name', 'like', '%' . $request->search . '%')->get();
-            if ($major->isEmpty()) {
+            $data = $validator->validated();
+            $class = Kelas::where('class_name', 'like', '%' . $data['search'] . '%')->get();
+            if ($class->isEmpty()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Data Major Tidak Ditemukan!'
+                    'success' => false,
+                    'message' => 'Data Kelas Tidak Ditemukan!'
                 ], Response::HTTP_NOT_FOUND);
             }
             return response()->json([
                 'success' => true,
-                'message' => 'Major Sekolah Ditemukan!',
-                'data' => MajorResource::collection($major),
+                'message' => 'Kelas Ditemukan!',
+                'data' => KelasResource::collection($class),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi Kesalahan Saat Mencari Major',
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

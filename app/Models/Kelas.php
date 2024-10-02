@@ -30,4 +30,18 @@ class Kelas extends Model
     {
         return $this->hasMany(User::class, 'class_id', 'uuid');
     }
+
+    // Event Eloquent untuk generate class_code secara otomatis
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($kelas) {
+            $major = Major::find($kelas->major); 
+            if ($major) {
+                $majorCode = $major->major_code;
+                $kelas->class_code = "{$majorCode}-" . str_pad(($major->classes()->count() + 1), 2, '0', STR_PAD_LEFT);
+            }
+        });
+    }
 }

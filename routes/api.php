@@ -14,6 +14,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\MajorityController;
+use App\Http\Controllers\ClassControllers;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
@@ -116,5 +117,3 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/search', [MajorityController::class, 'search'])->name('search');
     });
 });
-
-

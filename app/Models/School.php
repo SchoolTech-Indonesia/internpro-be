@@ -23,6 +23,10 @@ class School extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
     protected $table = 'school';
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
         'uuid',
         'school_name',

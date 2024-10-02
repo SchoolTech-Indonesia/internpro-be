@@ -19,6 +19,7 @@ class Major extends Model
 
     protected $guarded = [];
 
+    // Relasi ke model `Kelas`
     public function classes()
     {
         return $this->hasMany(Kelas::class, 'major', 'uuid');
@@ -28,5 +29,22 @@ class Major extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'major_id', 'uuid');
+    }
+
+    // Event Eloquent untuk generate kode major secara otomatis
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $lastMajor = Major::withTrashed()->orderBy('major_code', 'desc')->first();
+            if ($lastMajor) {
+                $lastCode = $lastMajor->major_code;
+                $number = (int) substr($lastCode, 3);
+                $newNumber = $number + 1;
+                $model->major_code = 'MJ-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+            } else {
+                $model->major_code = 'MJ-001';
+            }
+        });
     }
 }
