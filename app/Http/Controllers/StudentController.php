@@ -50,10 +50,10 @@ class StudentController extends Controller
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'nullable|string|max:20',
                 'role' => 'required|string|in:Student',
-                'school_id' => 'required|exists:school,uuid',
+                'school_id' => 'nullable|exists:school,uuid',
                 'major_id' => 'required|exists:majors,uuid',
                 'class_id' => 'required|exists:classes,uuid',
-                'partner_id' => 'required|exists:partners,uuid',
+                'partner_id' => 'nullable|exists:partners,uuid',
             ]);
 
             // create new Student
@@ -94,10 +94,10 @@ class StudentController extends Controller
                 'password' => 'nullable|string|min:8|confirmed',
                 'nip_nisn' => 'nullable|string|max:20',
                 'role' => 'required|string|in:Coordinator',
-                'school_id' => 'required|exists:school,uuid',
+                'school_id' => 'nullable|exists:school,uuid',
                 'major_id' => 'required|exists:majors,uuid',
                 'class_id' => 'required|exists:classes,uuid',
-                'partner_id' => 'required|exists:partners,uuid',
+                'partner_id' => 'nullable|exists:partners,uuid',
             ]);
 
             // find Student by id
