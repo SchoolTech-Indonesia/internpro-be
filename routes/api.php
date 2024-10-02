@@ -1,5 +1,10 @@
 <?php
 
+use App\Exports\UsersExport;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Route;
+use App\Http\Resources\ProfileResource;
 use App\Http\Controllers\PartnerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
@@ -7,6 +12,15 @@ use App\Http\Controllers\AuthControllers;
 use App\Http\Controllers\GuruControllers;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RoleControllers;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SchoolControllers;
+use App\Http\Controllers\MajorityController;
+use App\Http\Controllers\ClassControllers;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\MajorityController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\LogoutController;
@@ -78,6 +92,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/csv', [UsersController::class, 'exportUsersToCSV'])->name('exportuserstocsv');
         Route::get('/export/pdf', [UsersController::class, 'exportUsersToPDF'])->name('exportuserstopdf');
     });
+
     // GET CURRENT PROFILE
     Route::get('/profile', [ProfileController::class, "getProfile"])->name('profile');
 
@@ -108,8 +123,8 @@ Route::middleware('auth:api')->group(function () {
 
     // PERMISSION
     Route::prefix('permission')->group(function () {
-        Route::get('/', [PermissionController::class, 'index'])->name('index');
-        Route::get('/{id}', [PermissionController::class, 'show'])->name('show');
+        Route::get('/', [PermissionController::class, 'index'])->name('permission.index');
+        Route::get('/{id}', [PermissionController::class, 'show'])->name('permission.show');
         // Route::put('/update/{id}', [PermissionController::class, 'update'])->name('update');
         // Route::delete('/{id}', [PermissionController::class, 'destroy'])->name('destroy');
         // Route::post('/create', [PermissionController::class, 'store'])->name('store');
@@ -117,6 +132,15 @@ Route::middleware('auth:api')->group(function () {
 
     // MAJORITY
     Route::prefix('majority')->group(function () {
+        Route::get('/', [MajorityController::class, 'index'])->name('majority.index');
+        Route::get('/getmajor', [MajorityController::class,'majorityShow'])->name('majorityshow');
+        Route::get('/{id}', [MajorityController::class, 'show'])->name('majority.show');
+        Route::put('/update/{id}', [MajorityController::class, 'update'])->name('majority.update');
+        Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
+        Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
+        Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
+    });
+});
         Route::get('/', [MajorityController::class, 'index'])->name('index');
         Route::get('/{id}', [MajorityController::class, 'show'])->name('show');
         Route::put('/update/{id}', [MajorityController::class, 'update'])->name('update');

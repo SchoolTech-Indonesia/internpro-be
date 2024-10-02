@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MajorResource extends JsonResource
+class KelasResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,8 @@ class MajorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "uuid"=> $this->uuid,
-            'major_code' => $this->major_code,
-            'major_name' => $this->major_name,
+            'class_code' => $this->class_code,
+            'class_name' => $this->class_name,
         ];
     }
 }
