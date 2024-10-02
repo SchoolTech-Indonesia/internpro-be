@@ -137,5 +137,11 @@ Route::middleware('auth:api')->group(function () {
         Route::get('export/pdf', [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
     });
 
-    Route::apiResource('partners', PartnerController::class);
+    Route::prefix('partners')->group(function () {
+        Route::get('/', [PartnerController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [PartnerController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [PartnerController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [PartnerController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [PartnerController::class, 'store'])->name('store');
+    });
 });

@@ -45,6 +45,27 @@ class UserSeeder extends Seeder
             "major" => $major->uuid
         ]);
 
+        $partner = Partner::firstOrCreate([
+            "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
+            "name" => "PT mencari cinta sejati",
+            "address" => "Jalan kebun raya bogor",
+            "logo" => "00xx000x00x",
+            "number_sk" => "3001",
+            "file_sk" => fake()->filePath(),
+            "end_date_sk" => "2024-09-09 10:00:00",
+        ]);
+
+        $major = Major::firstOrCreate([
+            "major_code" => "0987654321",
+            "major_name" => "Rekaya Perangkat Lunak"
+        ]);
+
+        $class = Kelas::firstOrCreate([
+            "class_code" => "TIF2024",
+            "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
+            "major" => $major->uuid
+        ]);
+
         $admin = User::firstOrCreate([
             'nip_nisn' => "987",
             'name' => 'Super Administrator',

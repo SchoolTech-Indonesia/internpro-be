@@ -16,6 +16,7 @@ class Partner extends Model
 
     protected $guarded = [];
     protected $fillable = [
+        'uuid',
         'name',
         'address',
         'logo',
