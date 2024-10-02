@@ -23,10 +23,10 @@ class StudentImport implements ToModel, WithHeadingRow, WithStartRow
             'password' => bcrypt($row['password']),
             'nip_nisn' => $row['nip_nisn'],
             'role' => 'Student',
-            'school_id' => $row['school_id'],
+            'school_id' => $row['school_id'] ?? null,
             'major_id' => $row['major_id'],
             'class_id' => $row['class_id'],
-            'partner_id' => $row['partner_id'],
+            'partner_id' => $row['partner_id'] ?? null,
         ]);
     }
 }
