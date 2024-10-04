@@ -26,7 +26,8 @@ return new class extends Migration
             $table->text('file_sk');
             $table->string('number_sk', 255)->unique();
             $table->dateTime('end_date_sk');
-
+            $table->string('school', 255);
+            $table->foreign('school')->references('uuid')->on('school');
             $table->createdBy();
             $table->timestamps();
             $table->softDeletes();
