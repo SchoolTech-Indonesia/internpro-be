@@ -23,15 +23,16 @@ class UserSeeder extends Seeder
         $class = Kelas::where('class_code', 'TIF2024')->first();
         $partner = Partner::where('name', 'PT mencari cinta sejati')->first();
 
-        // $partner = Partner::firstOrCreate([
-        //     "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
-        //     "name" => "PT mencari cinta sejati",
-        //     "address" => "Jalan kebun raya bogor",
-        //     "logo" => "00xx000x00x",
-        //     "number_sk" => "3001",
-        //     "file_sk" => fake()->filePath(),
-        //     "end_date_sk" => "2024-09-09 10:00:00",
-        // ]);
+        $partner = Partner::firstOrCreate([
+            "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
+            "name" => "PT Partner Alam Sejati",
+            "address" => "Jalan kebun raya bogor",
+            "logo" => "00xx000x00x",
+            "school" => $school->uuid,
+            "number_sk" => "35124",
+            "file_sk" => fake()->filePath(),
+            "end_date_sk" => "2024-09-09 10:00:00",
+        ]);
 
         $major = Major::firstOrCreate([
             "major_code" => "0987654321",
@@ -53,7 +54,7 @@ class UserSeeder extends Seeder
             'school_id' => $school->uuid,
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
-            'partner_id' => $partner->uuid
+            // 'partner_id' => $partner->uuid
         ]);
 
         $guru = User::firstOrCreate([
@@ -65,7 +66,7 @@ class UserSeeder extends Seeder
             'school_id' => $school->uuid,
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
-//            'partner_id' => $partner->uuid
+            //            'partner_id' => $partner->uuid
         ]);
 
         $admin->assignRole(['Super Administrator']);
@@ -84,8 +85,8 @@ class UserSeeder extends Seeder
             'school_id' => $school->uuid,
         ]);
         // $partnerId = '7dcda20c-dc76-4dd6-b427-87dc86d6e0c7';
-        // $user->partners()->attach($partner->uuid);
-        // $user->assignRole(['Mentor']);
+        // $user->partners()->attach($partnerId);
+        $user->assignRole(['Mentor']);
 
     }
 

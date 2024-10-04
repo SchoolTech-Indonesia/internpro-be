@@ -21,6 +21,7 @@ class PartnerSeeder extends Seeder
             "address" => "Jalan kebun raya bogor",
             "logo" => "00xx000x00x",
             "number_sk" => "3001",
+            "file_sk" => "file_sk",
             "end_date_sk" => "2024-09-09 10:00:00",
             "school_id" => $school->uuid
         ]);

@@ -34,23 +34,24 @@ class PartnerRequest extends FormRequest
                 Rule::unique('partners')->ignore($uuid, 'uuid'),
             ],
             'address' => 'required|string',
-            // 'file_sk' => 'required|mimes:jpeg,jpg,png',
-            'logo' => 'required|mimes:jpeg,jpg,png',
-            // 'file_sk' => 'required|mimes:pdf',
-            'file_sk' => 'required|mimes:pdf',
+            //FILE TYPE mimes:jpeg,jpg,png
+            // nullable if no file is being updated
+            'logo' => 'sometimes|required|nullable|mimes:jpeg,jpg,png',
+            //FILE TYPE mimes:pdf
+            // nullable if no file is being updated
+            'file_sk' => 'sometimes|required|nullable|mimes:pdf',
             'number_sk' => [
                 'required',
-                'string',
                 'digits_between:1,255',
-                'numeric',
                 Rule::unique('partners')->ignore($uuid, 'uuid'),
             ],
-            'end_date_sk' => 'required|string|date',
+            'end_date_sk' => 'required|date',
         ];
     }
 
     protected function passedValidation()
     {
+
         // TODO : Image Conversion
 //        $logo = ImageManager::gd()->read($this->file('logo')->getRealPath());
 //        $encoded = $logo->toJpeg(75)->toFilePointer();
