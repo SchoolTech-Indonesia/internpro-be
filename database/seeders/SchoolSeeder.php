@@ -16,19 +16,26 @@ class SchoolSeeder extends Seeder
 
     public function run(): void
     {
-        $uuid = Str::uuid()->toString();
-
         DB::table('school')->insert([
-            'uuid' => $uuid,
-            'school_name' => 'School Tech Indonesia',
-            'school_address' => 'Malang, Indonesia',
-            'phone_number' => '08xxxxx',
+            'uuid' => Str::uuid()->toString(),
+            'school_name' => 'SMK Negeri 1 Twitter',
+            'school_address' => 'Jalan Danau Tamblingan, Sanur, Denpasar Selatan, Denpasar, Bali',
+            'phone_number' => '081222333444',
             'start_member' => now(),
             'end_member' => now()->addYear(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        self::$schoolUuid = $uuid;
+        DB::table('school')->insert([
+            'uuid' => Str::uuid()->toString(),
+            'school_name' => 'SMK Negeri 1 Waze',
+            'school_address' => 'Jalan Merdeka Barat, Waze, Denpasar Selatan, Denpasar, Bali',
+            'phone_number' => '081222444333',
+            'start_member' => '2021-01-01',
+            'end_member' => '2022-01-01',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }
