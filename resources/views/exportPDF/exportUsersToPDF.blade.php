@@ -22,20 +22,24 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>NIP/NISN</th>
-                <th>Phone Number</th>
-                <th>Role</th>
+                <th>NIP</th>
+                <th>NISN</th>
+                <th>Role ID</th>
+                {{-- <th>Created At</th>
+                <th>Updated At</th> --}}
             </tr>
         </thead>
         <tbody>
             @foreach($users as $user)
                 <tr>
-                    <td>{{ $user->uuid }}</td>
+                    <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->nip_nisn }}</td>
-                    <td>{{ $user->phone_number }}</td>
-                    <td>{{ $user->getRoleNames()->implode(', ')}}</td>
+                    <td>{{ $user->nip }}</td>
+                    <td>{{ $user->nisn }}</td>
+                    <td>{{ $user->id_role }}</td>
+                    {{-- <td>{{ $user->created_at }}</td>
+                    <td>{{ $user->updated_at }}</td> --}}
                 </tr>
             @endforeach
         </tbody>

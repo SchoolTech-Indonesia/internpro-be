@@ -35,49 +35,19 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         try {
-            // input validator, default for all roles
+            // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'nullable|email|unique:users,email',
-                'phone_number' => 'nullable|string|unique:users,phone_number',
+                'email' => 'required|email|unique:users,email',
+                'phone_number' => 'required|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student', // list all roles
-                'school_id' => 'nullable|exists:school,uuid',
+                'role' => 'required|string|exists:roles,name',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
             ]);
-
-            // role-based validation
-            switch ($request->role) {
-                case 'Coordinator':
-                    $rules['major_id'] = 'required|exists:majors,uuid';
-                    $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
-                    break;
-
-                case 'Student':
-                    $rules['major_id'] = 'required|exists:majors,uuid';
-                    $rules['class_id'] = 'required|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
-                    break;
-
-                // no additional validation for the roles below, use default rule
-                case 'Super Administrator':
-                case 'Administrator':
-                case 'Teacher':
-                case 'Mentor':
-                    // no special rules, use default rules, or add if any
-                    break;
-
-                default:
-                    // handling invalid role
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Role tidak valid'
-                    ], 400);
-            }
-
-            // validate request with the rules
-            $validatedData = $request->validate($rules);
 
             // create new user
             $user = new User();
@@ -89,9 +59,9 @@ class UsersController extends Controller
             $user->created_by = auth()->id();  // admin id as creator
             $user->assignRole($validatedData['role']);
             $user->school_id = $validatedData['school_id'];
-            $user->major_id = $validatedData['major_id'] ?? null;
-            $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -110,59 +80,32 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
+
         try {
             $rules = [
                 'name' => 'required|string|max:255',
                 'password' => 'nullable|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student',
-                'school_id' => 'nullable|exists:school,uuid',
+                'role' => 'required|string|exists:roles,name',
+                'school_id' => 'required|exists:school,uuid',
+                'major_id' => 'required|exists:majors,uuid',
+                'class_id' => 'required|exists:classes,uuid',
+                'partner_id' => 'required|exists:partners,uuid',
             ];
 
             // find user by id
             $user = User::findOrFail($id);
 
-            // check if email or phone number is updated
             if ($user->email != $request['email']) {
-                $rules['email'] = 'nullable|email|unique:users,email';
+                $rules['email'] = 'required|email|unique:users,email';
             } else {
-                $rules['email'] = 'nullable|email';
+                $rules['email'] = 'required|email';
             }
 
             if ($user->phone_number != $request['phone_number']) {
-                $rules['phone_number'] = 'nullable|string|unique:users,phone_number';
+                $rules['phone_number'] = 'required|string|unique:users,phone_number';
             } else {
-                $rules['phone_number'] = 'nullable|string';
-            }
-
-            // role-based validation
-            switch ($request->role) {
-                case 'Coordinator':
-                    $rules['major_id'] = 'required|exists:majors,uuid';
-                    $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
-                    break;
-
-                case 'Student':
-                    $rules['major_id'] = 'required|exists:majors,uuid';
-                    $rules['class_id'] = 'required|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
-                    break;
-
-                // no additional validation for the roles below, use default rule
-                case 'Super Administrator':
-                case 'Administrator':
-                case 'Teacher':
-                case 'Mentor':
-                    // no special rules, use default rules, or add if any
-                    break;
-
-                default:
-                    // handling invalid role
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Role tidak valid'
-                    ], 400);
+                $rules['phone_number'] = 'required|string';
             }
 
             // input validator
@@ -181,9 +124,9 @@ class UsersController extends Controller
             $user->assignRole($validatedData['role']);
             $user->updated_by = auth()->id(); // admin id as creator
             $user->school_id = $validatedData['school_id'];
-            $user->major_id = $validatedData['major_id'] ?? null;
-            $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
+            $user->major_id = $validatedData['major_id'];
+            $user->class_id = $validatedData['class_id'];
+            $user->partner_id = $validatedData['partner_id'];
             $user->save();
 
             return response()->json([
@@ -210,7 +153,7 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
 
             // set kolom deleted_by dan soft delete
-            $user->deleted_by = auth()->id(); // admin id as deleter
+            $user->deleted_by = auth()->id();
 
             // delete user
             $user->delete();
@@ -226,7 +169,6 @@ class UsersController extends Controller
             // database protection
             DB::rollBack();
 
-            // handling general error
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat menghapus user: ' . $e->getMessage()
@@ -236,6 +178,7 @@ class UsersController extends Controller
 
     public function importUsers(Request $request)
     {
+
         try {
             $request->validate([
                 'file' => 'required|mimes:xlsx'
@@ -249,7 +192,7 @@ class UsersController extends Controller
                 'message' => 'Users Imported Successfully'
             ], 200);
         } catch (\Exception $e) {
-            // handling general error
+            // general handling error
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat mengimpor users: ' . $e->getMessage()
@@ -269,9 +212,9 @@ class UsersController extends Controller
 
     public function exportUsersToPDF()
     {
-        $users = User::all();
+        $users = User::all(['id', 'name', 'email', 'nip_nisn', 'role_id']);
 
-        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users])->setPaper('a4', 'landscape');
+        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
         return $pdf->download('users.pdf');
     }

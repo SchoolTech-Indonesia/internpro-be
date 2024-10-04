@@ -9,7 +9,6 @@ use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthControllers;
 use App\Http\Controllers\GuruControllers;
-use App\Http\Controllers\KoordinatorController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\UsersController;
@@ -22,7 +21,6 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\MentorController;
-use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 
 /*
@@ -67,7 +65,6 @@ Route::middleware('auth:api')->group(function () {
             Route::delete('/{uuid}', [TeacherController::class, 'destroy'])->name('deleteteacher');
         });
 
-        // ADMIN
         Route::prefix('admins')->group(function () {
             Route::get('/', [AdminController::class, 'index'])->name('index');
             Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
@@ -134,15 +131,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
-    
     // ADMIN
-    Route::prefix('admin')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
-        Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
-        Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
-        Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
-    });
 
     //MENTOR
     Route::prefix('mentor')->group(function () {
@@ -156,33 +145,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('export/pdf', [MentorController::class, 'exportMentorsToPDF'])->name('exportPDF');
     });
 
-    // COORDINATOR
-    Route::prefix('coordinators')->group(function () {
-        Route::get('/', [KoordinatorController::class, 'index'])->name('getallcoordinator');
-        Route::get('/{user:uuid}', [KoordinatorController::class, 'show'])->name('getcoordinator');
-        Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
-        Route::patch('/update/{id}', [KoordinatorController::class, 'update'])->name('updatecoordinator');
-        Route::delete('/{id}', [KoordinatorController::class, 'destroy'])->name('deletecoordinator');
-        Route::post('/import', [KoordinatorController::class, 'importKoordinator'])->name('importcoordinators');
-        Route::get('/export/xlsx', [KoordinatorController::class, 'exportKoordinatorToXLSX'])->name('exportcoordinatorstoxlsx');
-        Route::get('/export/csv', [KoordinatorController::class, 'exportKoordinatorToCSV'])->name('exportcoordinatorstocsv');
-        Route::get('/export/pdf', [KoordinatorController::class, 'exportKoordinatorToPDF'])->name('exportcoordinatorstopdf');
-    });
-
-    // STUDENT
-    Route::prefix('students')->group(function () {
-        Route::get('/', [StudentController::class, 'index'])->name('getallstudenet');
-        Route::get('/{user:uuid}', [StudentController::class, 'show'])->name('getstudenet');
-        Route::post('/create', [StudentController::class, 'store'])->name('createstudenet');
-        Route::patch('/update/{id}', [StudentController::class, 'update'])->name('updatestudenet');
-        Route::delete('/{id}', [StudentController::class, 'destroy'])->name('deletestudenet');
-        Route::post('/import', [StudentController::class, 'importStudent'])->name('importstudenets');
-        Route::get('/export/xlsx', [StudentController::class, 'exportStudentToXLSX'])->name('exportstudenetstoxlsx');
-        Route::get('/export/csv', [StudentController::class, 'exportStudentToCSV'])->name('exportstudenetstocsv');
-        Route::get('/export/pdf', [StudentController::class, 'exportStudentToPDF'])->name('exportstudenetstopdf');
-    });
-
-    // PARTNER
     Route::prefix('partners')->group(function () {
         Route::get('/', [PartnerController::class, 'index'])->name('index');
         Route::get('/{uuid}', [PartnerController::class, 'show'])->name('show');

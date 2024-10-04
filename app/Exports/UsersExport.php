@@ -15,7 +15,7 @@ class UsersExport implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        return User::all();
+        return User::all(['id', 'name', 'email', 'nip', 'nisn', 'id_role']);
     }
 
     /**
@@ -29,21 +29,11 @@ class UsersExport implements FromCollection, WithHeadings
             'ID',
             'Name',
             'Email',
-            'NIP/NISN',
-            'Phone Number',
-            'Role',
-        ];
-    }
-
-    public function map($users): array
-    {
-        return [
-            $users->uuid,
-            $users->name,
-            $users->email,
-            $users->nip_nisn,
-            $users->phone_number,
-            $users->getRoleNames()->implode(', '), 
+            'NIP',
+            'NISN',
+            'Role ID',
+            // 'Created At',
+            // 'Updated At',
         ];
     }
 }

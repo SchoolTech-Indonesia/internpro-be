@@ -35,6 +35,8 @@ return new class extends Migration {
                 $table->softDeletes()->after('deleted_by');
             }
 
+
+
             $table->foreign('school_id')->references('uuid')->on('school');
             $table->foreign('major_id')->references('uuid')->on('majors');
             $table->foreign('class_id')->references('uuid')->on('classes');
