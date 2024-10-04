@@ -14,14 +14,14 @@ class PartnerSeeder extends Seeder
      */
     public function run(): void
     {
-        $school = School::where('uuid', SchoolSeeder::$schoolUuid)->first();
+        $school = School::where('school_name', 'SMK Negeri 1 Twitter')->first();
 
         Partner::firstOrCreate([
-            "name" => "PT mencari cinta sejati",
-            "address" => "Jalan kebun raya bogor",
-            "logo" => "00xx000x00x",
+            "name" => "PT Dufan Mega Sejahtera",
+            "address" => "Jalan Ancol Barat, Jakarta Utara",
+            "logo" => fake()->filePath(),
             "number_sk" => "3001",
-            "file_sk" => "file_sk",
+            "file_sk" => fake()->filePath(),
             "end_date_sk" => "2024-09-09 10:00:00",
             "school_id" => $school->uuid
         ]);

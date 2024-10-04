@@ -18,32 +18,32 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $school = School::where('uuid', SchoolSeeder::$schoolUuid)->first();
-        $major = Major::where('major_code', '0987654321')->first();
-        $class = Kelas::where('class_code', 'TIF2024')->first();
-        $partner = Partner::where('name', 'PT mencari cinta sejati')->first();
+        $school = School::where('school_name', 'SMK Negeri 1 Twitter')->first();
+        $major = Major::where('major_name', 'Rekaya Perangkat Lunak')->first();
+        $class = Kelas::where('class_name', 'Rekaya Perangkat Lunak 2024 - RPL 004')->first();
+        // $partner = Partner::where('name', 'PT Dufan Mega Sejahtera')->first();
 
-        $partner = Partner::firstOrCreate([
-            "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
-            "name" => "PT Partner Alam Sejati",
-            "address" => "Jalan kebun raya bogor",
-            "logo" => "00xx000x00x",
-            "school" => $school->uuid,
-            "number_sk" => "35124",
-            "file_sk" => fake()->filePath(),
-            "end_date_sk" => "2024-09-09 10:00:00",
-        ]);
+        // $partner = Partner::firstOrCreate([
+        //     "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
+        //     "name" => "PT Partner Alam Sejati",
+        //     "address" => "Jalan kebun raya bogor",
+        //     "logo" => "00xx000x00x",
+        //     "school" => $school->uuid,
+        //     "number_sk" => "35124",
+        //     "file_sk" => fake()->filePath(),
+        //     "end_date_sk" => "2024-09-09 10:00:00",
+        // ]);
 
-        $major = Major::firstOrCreate([
-            "major_code" => "0987654321",
-            "major_name" => "Rekaya Perangkat Lunak"
-        ]);
+        // $major = Major::firstOrCreate([
+        //     "major_code" => "0987654321",
+        //     "major_name" => "Rekaya Perangkat Lunak"
+        // ]);
 
-        $class = Kelas::firstOrCreate([
-            "class_code" => "TIF2024",
-            "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
-            "major" => $major->uuid
-        ]);
+        // $class = Kelas::firstOrCreate([
+        //     "class_code" => "TIF2024",
+        //     "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
+        //     "major" => $major->uuid
+        // ]);
 
         $admin = User::firstOrCreate([
             'nip_nisn' => "987",
@@ -64,8 +64,8 @@ class UserSeeder extends Seeder
             'phone_number' => "085711986543",
             'password' => bcrypt('password'),
             'school_id' => $school->uuid,
-            'major_id' => $major->uuid,
-            'class_id' => $class->uuid,
+            // 'major_id' => $major->uuid,
+            // 'class_id' => $class->uuid,
             //            'partner_id' => $partner->uuid
         ]);
 
@@ -84,7 +84,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('mentor'),
             'school_id' => $school->uuid,
         ]);
-        // $partnerId = '7dcda20c-dc76-4dd6-b427-87dc86d6e0c7';
+        // $partnerId = $partner->uuid;
         // $user->partners()->attach($partnerId);
         $user->assignRole(['Mentor']);
 
