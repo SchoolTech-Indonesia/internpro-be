@@ -14,7 +14,7 @@ class ClassSeeder extends Seeder
      */
     public function run(): void
     {
-        $major = Major::where('major_code', '0987654321')->first();
+        $major = Major::where('major_name', 'Rekaya Perangkat Lunak')->first();
         Kelas::firstOrCreate([
             "class_code" => "TIF2024",
             "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
