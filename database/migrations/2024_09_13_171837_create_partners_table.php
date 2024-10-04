@@ -31,12 +31,6 @@ return new class extends Migration
             $table->createdBy();
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('school_id')->references('uuid')->on('school');
-        });
-        Schema::table('users', function (Blueprint $table) {
-            $table->uuid('partner_id')->after('class_id');
-            $table->foreign('partner_id')->references('uuid')->on('partners');
         });
     }
 
