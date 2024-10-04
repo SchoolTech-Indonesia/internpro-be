@@ -43,18 +43,22 @@ class UsersController extends Controller
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
                 'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student', // list all roles
-                'school_id' => 'nullable|exists:school,uuid',
             ]);
+
+            // array
+            $rules = [];
 
             // role-based validation
             switch ($request->role) {
                 case 'Coordinator':
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
                     $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 case 'Student':
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
                     $rules['partner_id'] = 'nullable|exists:partners,uuid';
@@ -66,6 +70,10 @@ class UsersController extends Controller
                 case 'Teacher':
                 case 'Mentor':
                     // no special rules, use default rules, or add if any
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['major_id'] = 'nullable|exists:majors,uuid';
+                    $rules['class_id'] = 'nullable|exists:classes,uuid';
+                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 default:
@@ -77,7 +85,10 @@ class UsersController extends Controller
             }
 
             // validate request with the rules
-            $validatedData = $request->validate($rules);
+            $validatedRoleData = $request->validate($rules);
+
+            // merge default validation with role-based rules
+            $validatedData = array_merge($validatedData, $validatedRoleData);
 
             // create new user
             $user = new User();
@@ -116,7 +127,6 @@ class UsersController extends Controller
                 'password' => 'nullable|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
                 'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student',
-                'school_id' => 'nullable|exists:school,uuid',
             ];
 
             // find user by id
@@ -138,12 +148,14 @@ class UsersController extends Controller
             // role-based validation
             switch ($request->role) {
                 case 'Coordinator':
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
                     $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 case 'Student':
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
                     $rules['partner_id'] = 'nullable|exists:partners,uuid';
@@ -155,6 +167,10 @@ class UsersController extends Controller
                 case 'Teacher':
                 case 'Mentor':
                     // no special rules, use default rules, or add if any
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['major_id'] = 'nullable|exists:majors,uuid';
+                    $rules['class_id'] = 'nullable|exists:classes,uuid';
+                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 default:
