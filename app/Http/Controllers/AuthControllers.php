@@ -31,8 +31,7 @@ class AuthControllers extends Controller
             ], 400);
         }
 
-        $user = User::where('nip', $request->nip_nisn)
-            ->orWhere('nisn', $request->nip_nisn)
+        $user = User::where('nip_nisn', $request->nip_nisn)
             ->first();
 
         if (!$user) {
