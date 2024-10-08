@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
 {
@@ -14,20 +18,17 @@ class LoginController extends Controller
      */
     public function __invoke(Request $request)
     {
-        //set validation
         $validator = Validator::make($request->all(), [
             'nip_nisn' => 'required|string|filled',
             'password' => 'required',
         ]);
 
-        // if validation fails
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
         $credentials = $request->only(['nip_nisn', 'password']);
 
-        //if auth failed
         if (!$token = auth()->guard('api')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
@@ -35,11 +36,19 @@ class LoginController extends Controller
             ], 401);
         }
 
-        //if auth success
+        $user = User::where("uuid", auth()->guard('api')->user()->uuid)->first();
+        $permissions = $user->getAllPermissions()->pluck("name");
+
+        $customClaims = [
+            'permissions' => $permissions,
+        ];
+
+        $token = JWTAuth::claims($customClaims)->fromUser($user);
+
         return response()->json([
             'success' => true,
             'user' => new UserResource(auth()->guard('api')->user()),
-            'token' => $token
+            'token' => $token,
         ], 200);
     }
 }
