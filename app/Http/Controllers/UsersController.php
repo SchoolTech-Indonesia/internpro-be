@@ -93,8 +93,8 @@ class UsersController extends Controller
             // create new user
             $user = new User();
             $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone_number = $validatedData['phone_number'];
+            $user->email = $validatedData['email'] ?? null;
+            $user->phone_number = $validatedData['phone_number'] ?? null;
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id();  // admin id as creator
@@ -186,8 +186,8 @@ class UsersController extends Controller
 
             // update user data
             $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone_number = $validatedData['phone_number'];
+            $user->email = $validatedData['email'] ?? null;
+            $user->phone_number = $validatedData['phone_number'] ?? null;
 
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
