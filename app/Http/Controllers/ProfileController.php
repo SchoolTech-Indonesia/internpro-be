@@ -38,6 +38,7 @@ class ProfileController extends Controller
             'phone_number' => [
                 'required',
                 'string',
+                'regex:regex:/^(\+62|62|0)8[1-9][0-9]{6,13}$/',
                 Rule::unique('users', 'phone_number')->ignore(Auth::user()),
             ],
         ]);
