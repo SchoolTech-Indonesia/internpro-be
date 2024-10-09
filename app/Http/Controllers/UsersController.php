@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\CreatedBy;
 use Illuminate\Http\Request;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
@@ -19,7 +20,7 @@ class UsersController extends Controller
         $search = $request->query('name');
         $rows = $request['rows'] != 0 ? $request['rows'] : 5;
         $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
-        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) { 
+        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
             $query->whereHas("roles", function ($query) use ($roles) {
                 $query->whereIn("name", $roles);
             });
@@ -54,14 +55,12 @@ class UsersController extends Controller
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 case 'Student':
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 // no additional validation for the roles below, use default rule
@@ -73,7 +72,6 @@ class UsersController extends Controller
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'nullable|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 default:
@@ -97,12 +95,10 @@ class UsersController extends Controller
             $user->phone_number = $validatedData['phone_number'];
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
-            $user->created_by = auth()->id();  // admin id as creator
             $user->assignRole($validatedData['role']);
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
             $user->save();
 
             return response()->json([
@@ -151,14 +147,12 @@ class UsersController extends Controller
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 case 'Student':
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 // no additional validation for the roles below, use default rule
@@ -170,7 +164,6 @@ class UsersController extends Controller
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'nullable|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 default:
@@ -195,11 +188,9 @@ class UsersController extends Controller
 
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole($validatedData['role']);
-            $user->updated_by = auth()->id(); // admin id as creator
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
             $user->save();
 
             return response()->json([
@@ -226,7 +217,6 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
 
             // set kolom deleted_by dan soft delete
-            $user->deleted_by = auth()->id(); // admin id as deleter
 
             // delete user
             $user->delete();
