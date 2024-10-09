@@ -18,7 +18,7 @@ class AssignPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        $superAdmins = User::role("Super Administrator")->get();
+        $superAdmins = Role::where("name", "Super Administrator")->get();
 
         foreach ($superAdmins as $superAdmin) {
             $superAdmin->givePermissionTo([
