@@ -18,26 +18,16 @@ class AssignPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        $superAdmins = User::role("Super Administrator")->get();
 
-        $school = School::where('school_name', 'School Tech Indonesia')->first();
-        $major = Major::where('major_name', 'Rekaya Perangkat Lunak')->first();
-        $class = Kelas::where('class_name', 'Rekaya Perangkat Lunak 2024 - RPL 004')->first();
-
-        $admin = User::firstOrCreate([
-            'nip_nisn' => "321",
-            'name' => 'Administrator',
-            'email' => 'admin@dev-internpro.schooltech.biz.id',
-            'phone_number' => "085711987659",
-            'password' => bcrypt('password'),
-            'school_id' => $school->uuid,
-            'major_id' => $major->uuid,
-            'class_id' => $class->uuid,
-        ]);
-
-        $admin->assignRole(['Super Administrator']);
-
-        $adminRole = Role::where("name", "Super Administrator")->first();
-
-        $adminRole->givePermissionTo(["create-users", "edit-users", "delete-users", "view-reports", "manage-roles"]);
+        foreach ($superAdmins as $superAdmin) {
+            $superAdmin->givePermissionTo([
+                "create-users",
+                "edit-users",
+                "delete-users",
+                "view-reports",
+                "manage-roles"
+            ]);
+        }
     }
 }
