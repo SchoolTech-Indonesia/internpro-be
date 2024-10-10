@@ -36,7 +36,15 @@ class LoginController extends Controller
             ], 401);
         }
 
-        $user = User::where("uuid", auth()->guard('api')->user()->uuid)->first();
+        $user = User::with('school')->where("uuid", auth()->guard('api')->user()->uuid)->first();
+
+        if ($user->school->end_member < now()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Keanggotaan Anda di sekolah ini sudah berakhir, Anda tidak bisa login.'
+            ], 403);
+        }
+
         $permissions = $user->getAllPermissions()->pluck("name");
 
         $customClaims = [
