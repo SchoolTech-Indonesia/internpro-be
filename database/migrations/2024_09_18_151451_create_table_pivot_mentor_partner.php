@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mentor_partner', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
             $table->uuid('user_id');
             $table->uuid('partner_id');
 

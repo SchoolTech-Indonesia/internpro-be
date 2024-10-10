@@ -112,6 +112,6 @@ class User extends Authenticatable implements JWTSubject
     }
     public function partners()
     {
-        return $this->belongsTo(Partner::class, 'mentor_partner', 'user_id', 'partner_id');
+        return $this->belongsToMany(Partner::class, 'mentor_partner', 'user_id', 'partner_id');
     }
 }
