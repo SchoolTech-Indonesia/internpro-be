@@ -36,46 +36,50 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         try {
-            // input validator, default for all roles
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'nullable|email|unique:users,email',
                 'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student', // list all roles
+                'role_id' => 'required|exists:roles,id',
             ]);
 
-            // array
             $rules = [];
 
             // role-based validation
-            switch ($request->role) {
+            $role = Role::find($request->role_id);
+
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role tidak valid'
+                ], 400);
+            }
+
+            switch ($role->name) {
                 case 'Coordinator':
-                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
-                    $rules['class_id'] = 'nullable|exists:classes,uuid';
+                    $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
 
                 case 'Student':
-                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
                     break;
 
-                // no additional validation for the roles below, use default rule
                 case 'Super Administrator':
                 case 'Administrator':
                 case 'Teacher':
                 case 'Mentor':
-                    // no special rules, use default rules, or add if any
-                    $rules['school_id'] = 'nullable|exists:school,uuid';
-                    $rules['major_id'] = 'nullable|exists:majors,uuid';
-                    $rules['class_id'] = 'nullable|exists:classes,uuid';
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
+                    $rules['major_id'] = 'sometimes|exists:majors,uuid';
+                    $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
 
                 default:
-                    // handling invalid role
                     return response()->json([
                         'status' => false,
                         'message' => 'Role tidak valid'
@@ -95,7 +99,7 @@ class UsersController extends Controller
             $user->phone_number = $validatedData['phone_number'];
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
-            $user->assignRole($validatedData['role']);
+            $user->assignRole($validatedData['role_id']);
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
@@ -103,8 +107,7 @@ class UsersController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'User berhasil dibuat',
-                'data' => $user
+                'message' => 'User berhasil dibuat'
             ], 201);
         } catch (\Exception $e) {
             // handling general error
