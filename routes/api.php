@@ -137,7 +137,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
 
-
     // ADMIN
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
