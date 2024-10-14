@@ -23,17 +23,17 @@ class MentorController extends Controller
      * @return JsonResponse
      * Display a listing of the resource.
      */
-    public function index(Request $request):JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $perPage = request()->get('per_page', 5);
 
         $perPageOptions = [5, 10, 15, 20, 50];
 
-            if (!in_array($perPage, $perPageOptions)) {
-                $perPage = 5;
-            }
+        if (!in_array($perPage, $perPageOptions)) {
+            $perPage = 5;
+        }
         $mentor = User::role('Mentor')->paginate($perPage);
-        if($mentor->isEmpty()){
+        if ($mentor->isEmpty()) {
             return response()->json([
                 'message' => 'Data tidak ditemukan'
             ], 404);
@@ -53,14 +53,13 @@ class MentorController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
             $validateData = $request->validate([
                 'nip_nisn' => 'required|string|max:20',
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|string|max:15|unique:users',
-                'school_id' => 'required|exists:school,uuid',
                 'partner_id' => 'required|exists:partners,uuid'
             ]);
             $user = new User();
@@ -69,7 +68,7 @@ class MentorController extends Controller
             $user->email = $validateData['email'];
             $user->password = bcrypt($validateData['password']);
             $user->phone_number = $validateData['phone_number'];
-            $user->school_id = $validateData['school_id'];
+            $user->school_id = auth()->user()->school_id;
             $user->assignRole(['Mentor']);
             $user->save();
 
@@ -79,8 +78,7 @@ class MentorController extends Controller
                 'status' => true,
                 'message' => 'User berhasil dibuat',
             ], 201);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // handling general error
             return response()->json([
                 'status' => false,
@@ -96,7 +94,7 @@ class MentorController extends Controller
      */
     public function show($uuid)
     {
-        try{
+        try {
             $mentor = User::role('Mentor')->where('uuid', $uuid)->first();
             if (!$mentor) {
                 return response()->json([
@@ -117,7 +115,7 @@ class MentorController extends Controller
                 'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-            
+
     }
 
     /**
@@ -136,7 +134,7 @@ class MentorController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        try{
+        try {
             $validateData = $request->validate([
                 'nip_nisn' => 'required|string|max:20',
                 'name' => 'required|string|max:255',
@@ -162,15 +160,15 @@ class MentorController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data Mentor Berhasil Diupdate',
-                ], Response::HTTP_OK);
-        } catch (\Exception $e){
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
                 'message' => 'Data Mentor Gagal Diupdate',
-                ], Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
-        
+
     }
 
     /**
@@ -187,21 +185,21 @@ class MentorController extends Controller
                 'message' => 'Data Mentor Tidak Ditemukan',
             ], Response::HTTP_NOT_FOUND);
         }
-        try{
-            $mentor->roles()->detach(); 
+        try {
+            $mentor->roles()->detach();
             $mentor->partners()->detach();
-            $mentor->delete(); 
-            
+            $mentor->delete();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Data Mentor Berhasil Dihapus',
-                ], Response::HTTP_OK);
-        } catch (\Exception $e){
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
                 'message' => 'Data Mentor Gagal Dihapus',
-                ], Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -209,17 +207,18 @@ class MentorController extends Controller
     {
         return Excel::download(new MentorExport, 'mentors.xlsx'); // Mengunduh file Excel
     }
-    
+
     public function exportMentorsToCSV()
     {
         return Excel::download(new MentorExport, 'mentors.csv', \Maatwebsite\Excel\Excel::CSV); // Mengunduh file Excel
     }
 
-    public function exportMentorsToPDF(){
-        
+    public function exportMentorsToPDF()
+    {
+
         $mentors = User::Role('Mentor')->get();
-        $pdf = Pdf::loadView('exportPDF.ExportMentorsToPDF', ['mentors' =>$mentors])->setPaper('a4', 'landscape');
+        $pdf = Pdf::loadView('exportPDF.ExportMentorsToPDF', ['mentors' => $mentors])->setPaper('a4', 'landscape');
         return $pdf->download('mentors.pdf');
     }
-    
+
 }
