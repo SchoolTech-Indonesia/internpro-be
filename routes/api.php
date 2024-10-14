@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\UsersExport;
+use App\Http\Controllers\ActivityController;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -127,21 +128,12 @@ Route::middleware('auth:api')->group(function () {
     // MAJORITY
     Route::prefix('majority')->group(function () {
         Route::get('/', [MajorityController::class, 'index'])->name('majority.index');
-        Route::get('/getmajor', [MajorityController::class,'majorityShow'])->name('majorityshow');
+        Route::get('/getmajor', [MajorityController::class, 'majorityShow'])->name('majorityshow');
         Route::get('/{id}', [MajorityController::class, 'show'])->name('majority.show');
         Route::put('/update/{id}', [MajorityController::class, 'update'])->name('majority.update');
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
-    });
-    
-    // ADMIN
-    Route::prefix('admin')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
-        Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
-        Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
-        Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
     });
 
     //MENTOR
@@ -189,5 +181,11 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/update/{uuid}', [PartnerController::class, 'update'])->name('update');
         Route::delete('/{uuid}', [PartnerController::class, 'destroy'])->name('destroy');
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
+    });
+
+    Route::prefix('program-activities')->group(function () {
+        Route::get('/', [ActivityController::class, 'index'])->name('index');
+        Route::post('/create', [ActivityController::class, 'store'])->name('store');
+
     });
 });
