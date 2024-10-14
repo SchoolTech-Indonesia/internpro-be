@@ -14,6 +14,7 @@ class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $partner = $this->partners->first();
         $role = $this->getRoleNames()->first();
         return [
             'name' => $this->name,
@@ -39,13 +40,11 @@ class ProfileResource extends JsonResource
                     'name' => $this->class->class_name,
                 ];
             }),
-            'partner' => $this->whenLoaded('partners', function () {
-                return $this->partners->map(function ($partner) {
-                    return [
-                        'uuid' => $partner->uuid,
-                        'name' => $partner->name,
-                    ];
-                });
+            'partner' => $this->when($partner, function () use ($partner) {
+                return [
+                    'uuid' => $partner->uuid,
+                    'name' => $partner->name,
+                ];
             }),
            
         ];

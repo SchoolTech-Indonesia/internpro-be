@@ -81,8 +81,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('mentor'),
             'school_id' => $school->uuid,
         ]);
-        $partnerId = $partner->uuid;
-        $mentor->partners()->attach($partnerId);
+        $mentor->partners()->attach($partner->uuid);
         $mentor->assignRole(['Mentor']);
 
         $teacher = User::firstOrCreate([
