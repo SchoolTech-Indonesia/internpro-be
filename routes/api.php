@@ -18,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\MajorityController;
 use App\Http\Controllers\ClassControllers;
+use App\Http\Controllers\InternshipController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
@@ -133,6 +134,8 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
+        Route::post('/classes', [MajorityController::class, 'getClassesByMajors']); // for internship management needs
+        Route::post('/coordinators', [MajorityController::class, 'getCoordinatorsByMajors']); // for internship management needs
     });
     
     // ADMIN
@@ -189,5 +192,14 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/update/{uuid}', [PartnerController::class, 'update'])->name('update');
         Route::delete('/{uuid}', [PartnerController::class, 'destroy'])->name('destroy');
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
+    });
+
+    // INTERNSHIP PROGRAM
+    Route::prefix('internships')->group(function () {
+        Route::get('/', [InternshipController::class, 'index'])->name('getallinternships');
+        Route::get('/{internship:uuid}', [InternshipController::class, 'show'])->name('getinternship');
+        Route::post('/create', [InternshipController::class, 'store'])->name('createinternship');
+        Route::patch('/update/{internship:uuid}', [InternshipController::class, 'update'])->name('updateinternship');
+        Route::delete('/{internship:uuid}', [InternshipController::class, 'destroy'])->name('deleteinternship');
     });
 });

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MajorResource;
+use App\Models\Kelas;
 use App\Models\Major;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -223,5 +225,46 @@ class MajorityController extends Controller
                 'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // for internship management needs
+    public function getClassesByMajors(Request $request)
+    {
+        // input validator
+        $validatedData = $request->validate([
+            'major_ids' => 'required|array',
+            'major_ids.*' => 'exists:majors,uuid', // major id validator
+        ]);
+
+        // get classes based on the majors chosen
+        $classes = Kelas::whereIn('major_id', $validatedData['major_ids'])->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Classes retrieved successfully',
+            'data' => $classes,
+        ], 200);
+    }
+
+    // for internship management needs
+    public function getCoordinatorsByMajors(Request $request)
+    {
+        // input validator
+        $validatedData = $request->validate([
+            'major_ids' => 'required|array',
+            'major_ids.*' => 'exists:majors,uuid', // major id validator
+        ]);
+
+        // get coordinators based on the majors chosen
+        $coordinators = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Coordinator')
+                ->orWhere('id', '9d3571e1-bcb9-440f-9173-6c3a9519aa48');
+        })->whereIn('major_id', $validatedData['major_ids'])->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Coordinators retrieved successfully',
+            'data' => $coordinators,
+        ], 200);
     }
 }
