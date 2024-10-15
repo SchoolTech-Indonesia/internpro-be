@@ -227,4 +227,13 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/search', [ClassControllers::class, 'search'])->name('search');
         Route::post('/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
     });
+
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
+    });
 });
