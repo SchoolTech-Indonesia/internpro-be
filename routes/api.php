@@ -22,6 +22,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\OpportunityController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 
@@ -134,7 +135,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
-    
+
     // ADMIN
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
@@ -189,5 +190,14 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/update/{uuid}', [PartnerController::class, 'update'])->name('update');
         Route::delete('/{uuid}', [PartnerController::class, 'destroy'])->name('destroy');
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
+    });
+
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
     });
 });
