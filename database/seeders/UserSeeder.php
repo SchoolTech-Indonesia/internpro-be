@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
         $school = School::where('school_name', 'SMK Negeri 1 Twitter')->first();
         $major = Major::where('major_name', 'Rekaya Perangkat Lunak')->first();
         $class = Kelas::where('class_name', 'Rekaya Perangkat Lunak 2024 - RPL 004')->first();
-        // $partner = Partner::where('name', 'PT Dufan Mega Sejahtera')->first();
+        $partner = Partner::where('name', 'PT Dufan Mega Sejahtera')->first();
 
         // $partner = Partner::firstOrCreate([
         //     "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
@@ -72,11 +72,8 @@ class UserSeeder extends Seeder
         $admin->assignRole(['Super Administrator']);
         $guru->assignRole(['Teacher']);
 
-        $role = Role::firstOrCreate([
-            'name' => 'Mentor'
-        ]);
 
-        $user = User::firstOrCreate([
+        $mentor = User::firstOrCreate([
             'nip_nisn' => "111",
             'name' => 'Test Mentor',
             'email' => 'mentor@dev-internpro.schooltech.biz.id',
@@ -84,9 +81,41 @@ class UserSeeder extends Seeder
             'password' => bcrypt('mentor'),
             'school_id' => $school->uuid,
         ]);
-        // $partnerId = $partner->uuid;
-        // $user->partners()->attach($partnerId);
-        $user->assignRole(['Mentor']);
+        $mentor->partners()->attach($partner->uuid);
+        $mentor->assignRole(['Mentor']);
+
+        $teacher = User::firstOrCreate([
+            'nip_nisn' => "1111",
+            'name' => 'Test Teacher',
+            'email' => 'teacher@dev-internpro.schooltech.biz.id',
+            'phone_number' => "085511122222",
+            'password' => bcrypt('teacher'),
+            'school_id' => $school->uuid,
+        ]);
+        $teacher->assignRole(['Teacher']);
+
+        $student = User::firstOrCreate([
+            'nip_nisn' => "1234",
+            'name' => 'Test Student',
+            'email' => 'student@dev-internpro.schooltech.biz.id',
+            'phone_number' => "0855111123332",
+            'password' => bcrypt('student'),
+            'school_id' => $school->uuid,
+            'major_id' => $major->uuid,
+            'class_id' => $class->uuid,
+        ]);
+        $student->assignRole(['Student']);
+        
+        $koordinator = User::firstOrCreate([
+            'nip_nisn' => "123456",
+            'name' => 'Test Koordinator',
+            'email' => 'koordinator@dev-internpro.schooltech.biz.id',
+            'phone_number' => "08551111232",
+            'password' => bcrypt('koordinator'),
+            'school_id' => $school->uuid,
+            'major_id' => $major->uuid,
+        ]);
+        $koordinator->assignRole(['Koordinator']);
 
     }
 
