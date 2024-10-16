@@ -41,8 +41,7 @@ class InternshipController extends Controller
 
         // get valid coordinators based on role id or 'Coordinator'
         $validCoordinatorIds = User::whereHas('roles', function($query) {
-            $query->where('id', '9d3571e1-bcb9-440f-9173-6c3a9519aa48')
-                ->orWhere('name', 'Coordinator');
+            $query->where('name', 'Coordinator');
         })->pluck('uuid', 'name')->toArray();
 
         return response()->json([
@@ -86,8 +85,7 @@ class InternshipController extends Controller
 
             // filter for users with coordinator role
             $validCoordinatorIds = User::whereHas('roles', function($query) {
-                $query->where('id', '9d3571e1-bcb9-440f-9173-6c3a9519aa48')
-                    ->orWhere('name', 'Coordinator');
+                $query->where('name', 'Coordinator');
             })->pluck('uuid')->toArray();
 
             // only get valid coordinator_ids
@@ -151,8 +149,7 @@ class InternshipController extends Controller
 
             // filter for users with coordinator role
             $validCoordinatorIds = User::whereHas('roles', function($query) {
-                $query->where('id', '9d3571e1-bcb9-440f-9173-6c3a9519aa48')
-                    ->orWhere('name', 'Coordinator');
+                $query->where('name', 'Coordinator');
             })->pluck('uuid')->toArray();
 
             // only get valid coordinator_ids

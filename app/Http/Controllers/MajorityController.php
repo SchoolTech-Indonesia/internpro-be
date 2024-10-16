@@ -257,8 +257,7 @@ class MajorityController extends Controller
 
         // get coordinators based on the majors chosen
         $coordinators = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Coordinator')
-                ->orWhere('id', '9d3571e1-bcb9-440f-9173-6c3a9519aa48');
+            $query->where('name', 'Coordinator');
         })->whereIn('major_id', $validatedData['major_ids'])->get();
 
         return response()->json([
