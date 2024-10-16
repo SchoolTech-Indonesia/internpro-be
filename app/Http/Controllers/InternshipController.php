@@ -91,13 +91,17 @@ class InternshipController extends Controller
             // only get valid coordinator_ids
             $filteredCoordinatorIds = array_intersect($validatedData['coordinator_ids'], $validCoordinatorIds);
 
+            // get school_id from auth user
+            $user = auth()->user();
+            $schoolId = $user->school_id;
+
             // create new internship program
             $internship = new Internship();
             $internship->name = $validatedData['name'];
             $internship->start_date = $validatedData['start_date'];
             $internship->end_date = $validatedData['end_date'];
             $internship->description = $validatedData['description'];
-            $internship->school_id = $validatedData['school_id'];
+            $internship->school_id = $schoolId;
             $internship->save();
 
             // sync class with internship
@@ -155,13 +159,16 @@ class InternshipController extends Controller
             // only get valid coordinator_ids
             $filteredCoordinatorIds = array_intersect($validatedData['coordinator_ids'], $validCoordinatorIds);
             
+            // get school_id from auth user
+            $user = auth()->user();
+            $schoolId = $user->school_id;
 
             // create new internship program
             $internship->name = $validatedData['name'];
             $internship->start_date = $validatedData['start_date'];
             $internship->end_date = $validatedData['end_date'];
             $internship->description = $validatedData['description'];
-            $internship->school_id = $validatedData['school_id'];
+            $internship->school_id = $schoolId;
             $internship->save();
 
             // sync major with internship
