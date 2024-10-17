@@ -19,31 +19,10 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $school = School::where('school_name', 'SMK Negeri 1 Twitter')->first();
+        $school_exp = School::where('school_name', 'SMK Negeri 1 Waze')->first();
         $major = Major::where('major_name', 'Rekaya Perangkat Lunak')->first();
         $class = Kelas::where('class_name', 'Rekaya Perangkat Lunak 2024 - RPL 004')->first();
         $partner = Partner::where('name', 'PT Dufan Mega Sejahtera')->first();
-
-        // $partner = Partner::firstOrCreate([
-        //     "uuid" => "7dcda20c-dc76-4dd6-b427-87dc86d6e0c7",
-        //     "name" => "PT Partner Alam Sejati",
-        //     "address" => "Jalan kebun raya bogor",
-        //     "logo" => "00xx000x00x",
-        //     "school" => $school->uuid,
-        //     "number_sk" => "35124",
-        //     "file_sk" => fake()->filePath(),
-        //     "end_date_sk" => "2024-09-09 10:00:00",
-        // ]);
-
-        // $major = Major::firstOrCreate([
-        //     "major_code" => "0987654321",
-        //     "major_name" => "Rekaya Perangkat Lunak"
-        // ]);
-
-        // $class = Kelas::firstOrCreate([
-        //     "class_code" => "TIF2024",
-        //     "class_name" => "Rekaya Perangkat Lunak 2024 - RPL 004",
-        //     "major" => $major->uuid
-        // ]);
 
         $admin = User::firstOrCreate([
             'nip_nisn' => "987",
@@ -54,7 +33,17 @@ class UserSeeder extends Seeder
             'school_id' => $school->uuid,
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
-            // 'partner_id' => $partner->uuid
+        ]);
+
+        $admin_exp = User::firstOrCreate([
+            'nip_nisn' => "565",
+            'name' => 'Super Administrator Expired',
+            'email' => 'expired@dev-internpro.schooltech.biz.id',
+            'phone_number' => "085746587654",
+            'password' => bcrypt('password'),
+            'school_id' => $school_exp->uuid,
+            'major_id' => $major->uuid,
+            'class_id' => $class->uuid,
         ]);
 
         $guru = User::firstOrCreate([
@@ -64,12 +53,10 @@ class UserSeeder extends Seeder
             'phone_number' => "085711986543",
             'password' => bcrypt('password'),
             'school_id' => $school->uuid,
-            // 'major_id' => $major->uuid,
-            // 'class_id' => $class->uuid,
-            //            'partner_id' => $partner->uuid
         ]);
 
         $admin->assignRole(['Super Administrator']);
+        $admin_exp->assignRole(['Super Administrator']);
         $guru->assignRole(['Teacher']);
 
 
