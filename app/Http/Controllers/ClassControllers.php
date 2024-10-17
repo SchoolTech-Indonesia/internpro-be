@@ -178,4 +178,23 @@ class ClassControllers extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    // for internship management needs
+    public function getClassesByMajors(Request $request)
+    {
+        // input validator
+        $validatedData = $request->validate([
+            'major_ids' => 'required|array',
+            'major_ids.*' => 'exists:majors,uuid', // major id validator
+        ]);
+
+        // get classes based on the selected majors
+        $classes = Kelas::whereIn('major_id', $validatedData['major_ids'])->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Classes retrieved successfully',
+            'data' => $classes,
+        ], 200);
+    }
 }

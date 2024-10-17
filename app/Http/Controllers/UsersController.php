@@ -95,10 +95,11 @@ class UsersController extends Controller
             // create new user
             $user = new User();
             $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone_number = $validatedData['phone_number'];
+            $user->email = $validatedData['email'] ?? null;
+            $user->phone_number = $validatedData['phone_number'] ?? null;
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
+            $user->created_by = auth()->id();  // admin id as creator
             $user->assignRole($validatedData['role_id']);
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
@@ -182,8 +183,8 @@ class UsersController extends Controller
 
             // update user data
             $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone_number = $validatedData['phone_number'];
+            $user->email = $validatedData['email'] ?? null;
+            $user->phone_number = $validatedData['phone_number'] ?? null;
 
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
@@ -191,6 +192,7 @@ class UsersController extends Controller
 
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole($validatedData['role']);
+            $user->updated_by = auth()->id(); // admin id as creator
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;

@@ -18,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SchoolControllers;
 use App\Http\Controllers\MajorityController;
 use App\Http\Controllers\ClassControllers;
+use App\Http\Controllers\InternshipController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
@@ -167,6 +168,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/xlsx', [KoordinatorController::class, 'exportKoordinatorToXLSX'])->name('exportcoordinatorstoxlsx');
         Route::get('/export/csv', [KoordinatorController::class, 'exportKoordinatorToCSV'])->name('exportcoordinatorstocsv');
         Route::get('/export/pdf', [KoordinatorController::class, 'exportKoordinatorToPDF'])->name('exportcoordinatorstopdf');
+        Route::post('/major', [KoordinatorController::class, 'getCoordinatorsByMajors']); // for internship management needs
     });
 
     // STUDENT
@@ -191,6 +193,15 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
     });
 
+    // INTERNSHIP PROGRAM
+    Route::prefix('internships')->group(function () {
+        Route::get('/', [InternshipController::class, 'index'])->name('getallinternships');
+        Route::get('/{internship:uuid}', [InternshipController::class, 'show'])->name('getinternship');
+        Route::post('/create', [InternshipController::class, 'store'])->name('createinternship');
+        Route::patch('/update/{internship:uuid}', [InternshipController::class, 'update'])->name('updateinternship');
+        Route::delete('/{internship:uuid}', [InternshipController::class, 'destroy'])->name('deleteinternship');
+    });
+
     // CLASS
     Route::prefix('classes')->group(function () {
         Route::get('/', [ClassControllers::class, 'index'])->name('index');
@@ -199,5 +210,6 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/update/{uuid}', [ClassControllers::class, 'update'])->name('update');
         Route::delete('/{uuid}', [ClassControllers::class, 'destroy'])->name('destroy');
         Route::post('/search', [ClassControllers::class, 'search'])->name('search');
+        Route::post('/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
     });
 });
