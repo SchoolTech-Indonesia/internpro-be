@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\CreatedBy;
 use Illuminate\Http\Request;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
@@ -19,7 +20,7 @@ class UsersController extends Controller
         $search = $request->query('name');
         $rows = $request['rows'] != 0 ? $request['rows'] : 5;
         $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
-        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) { 
+        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
             $query->whereHas("roles", function ($query) use ($roles) {
                 $query->whereIn("name", $roles);
             });
@@ -35,49 +36,50 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         try {
-            // input validator, default for all roles
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'nullable|email|unique:users,email',
                 'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student', // list all roles
+                'role_id' => 'required|exists:roles,id',
             ]);
 
-            // array
             $rules = [];
 
             // role-based validation
-            switch ($request->role) {
+            $role = Role::find($request->role_id);
+
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role tidak valid'
+                ], 400);
+            }
+
+            switch ($role->name) {
                 case 'Coordinator':
-                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
-                    $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
+                    $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
 
                 case 'Student':
-                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
-                // no additional validation for the roles below, use default rule
                 case 'Super Administrator':
                 case 'Administrator':
                 case 'Teacher':
                 case 'Mentor':
-                    // no special rules, use default rules, or add if any
-                    $rules['school_id'] = 'nullable|exists:school,uuid';
-                    $rules['major_id'] = 'nullable|exists:majors,uuid';
-                    $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
+                    $rules['major_id'] = 'sometimes|exists:majors,uuid';
+                    $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
 
                 default:
-                    // handling invalid role
                     return response()->json([
                         'status' => false,
                         'message' => 'Role tidak valid'
@@ -98,17 +100,15 @@ class UsersController extends Controller
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id();  // admin id as creator
-            $user->assignRole($validatedData['role']);
-            $user->school_id = $validatedData['school_id'] ?? null;
+            $user->assignRole($validatedData['role_id']);
+            $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
             $user->save();
 
             return response()->json([
                 'status' => true,
-                'message' => 'User berhasil dibuat',
-                'data' => $user
+                'message' => 'User berhasil dibuat'
             ], 201);
         } catch (\Exception $e) {
             // handling general error
@@ -151,14 +151,12 @@ class UsersController extends Controller
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 case 'Student':
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 // no additional validation for the roles below, use default rule
@@ -170,7 +168,6 @@ class UsersController extends Controller
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'nullable|exists:majors,uuid';
                     $rules['class_id'] = 'nullable|exists:classes,uuid';
-                    $rules['partner_id'] = 'nullable|exists:partners,uuid';
                     break;
 
                 default:
@@ -196,10 +193,9 @@ class UsersController extends Controller
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole($validatedData['role']);
             $user->updated_by = auth()->id(); // admin id as creator
-            $user->school_id = $validatedData['school_id'] ?? null;
+            $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
             $user->save();
 
             return response()->json([
@@ -226,7 +222,6 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
 
             // set kolom deleted_by dan soft delete
-            $user->deleted_by = auth()->id(); // admin id as deleter
 
             // delete user
             $user->delete();

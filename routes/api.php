@@ -135,7 +135,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
-    
+
     // ADMIN
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
@@ -202,6 +202,14 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{internship:uuid}', [InternshipController::class, 'destroy'])->name('deleteinternship');
     });
 
-    // CLASS ()
-    Route::post('/classes/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
+    // CLASS
+    Route::prefix('classes')->group(function () {
+        Route::get('/', [ClassControllers::class, 'index'])->name('index');
+        Route::get('/{uuid}', [ClassControllers::class, 'show'])->name('show');
+        Route::post('/create', [ClassControllers::class, 'store'])->name('store');
+        Route::put('/update/{uuid}', [ClassControllers::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [ClassControllers::class, 'destroy'])->name('destroy');
+        Route::post('/search', [ClassControllers::class, 'search'])->name('search');
+        Route::post('/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
+    });
 });

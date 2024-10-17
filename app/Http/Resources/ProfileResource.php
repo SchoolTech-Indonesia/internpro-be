@@ -14,15 +14,39 @@ class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $partner = $this->partners->first();
+        $role = $this->getRoleNames()->first();
         return [
             'name' => $this->name,
             'nip_nisn' => $this->nip_nisn,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'school' => new SchoolResource($this->whenLoaded('school')),
-            'major' => new MajorResource($this->whenLoaded('major')),
-            'role' => "Koordinator",
-            'class' => "SMK Tadika Mesra 2"
+            'role' => $role,
+            'school' => $this->whenLoaded('school', function () {
+                return [
+                    'uuid' => $this->school->uuid,
+                    'name' => $this->school->school_name,
+                ];
+            }),
+            'major' => $this->whenLoaded('major', function () {
+                return [
+                    'uuid' => $this->major->uuid,
+                    'name' => $this->major->major_name,
+                ];
+            }),
+            'class' => $this->whenLoaded('class', function () {
+                return [
+                    'uuid' => $this->class->uuid,
+                    'name' => $this->class->class_name,
+                ];
+            }),
+            'partner' => $this->when($partner, function () use ($partner) {
+                return [
+                    'uuid' => $partner->uuid,
+                    'name' => $partner->name,
+                ];
+            }),
+           
         ];
     }
 }
