@@ -101,7 +101,7 @@ class UsersController extends Controller
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id();  // admin id as creator
             $user->assignRole($validatedData['role_id']);
-            $user->school_id = $validatedData['school_id'];
+            $user->school_id = auth()->user()->school_id;
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
             $user->save();
