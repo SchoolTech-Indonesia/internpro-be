@@ -59,13 +59,11 @@ class UsersController extends Controller
 
             switch ($role->name) {
                 case 'Coordinator':
-                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
 
                 case 'Student':
-                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
                     break;
@@ -74,7 +72,6 @@ class UsersController extends Controller
                 case 'Administrator':
                 case 'Teacher':
                 case 'Mentor':
-                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'sometimes|exists:majors,uuid';
                     $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
