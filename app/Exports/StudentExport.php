@@ -6,16 +6,16 @@ use App\Models\User;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class UsersExport implements FromCollection, WithHeadings
+class StudentExport implements FromCollection, WithHeadings
 {
     /**
-    * Return a collection of users.
+    * Return a collection of Student.
     *
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return User::all();
+        return User::where('role', 'Student')->get();
     }
 
     /**
@@ -31,7 +31,7 @@ class UsersExport implements FromCollection, WithHeadings
             'Email',
             'NIP/NISN',
             'Phone Number',
-            'Role',
+            // 'Role',
         ];
     }
 
@@ -43,7 +43,8 @@ class UsersExport implements FromCollection, WithHeadings
             $users->email,
             $users->nip_nisn,
             $users->phone_number,
-            $users->getRoleNames()->implode(', '), 
+            // $users->getRoleNames()->implode(', '), 
         ];
     }
+
 }

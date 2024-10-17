@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\CreatedBy;
 use Illuminate\Http\Request;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
@@ -19,7 +20,7 @@ class UsersController extends Controller
         $search = $request->query('name');
         $rows = $request['rows'] != 0 ? $request['rows'] : 5;
         $roles = $request->query("roles") ? explode(',', $request->query("roles")) : [];
-        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) { 
+        $users = User::where('name', 'LIKE', "%$search%")->when(count($roles) != 0, function ($query) use ($roles) {
             $query->whereHas("roles", function ($query) use ($roles) {
                 $query->whereIn("name", $roles);
             });
@@ -35,19 +36,61 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         try {
-            // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'phone_number' => 'required|string|unique:users,phone_number',
+                'email' => 'nullable|email|unique:users,email',
+                'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|exists:roles,name',
-                'school_id' => 'required|exists:school,uuid',
-                'major_id' => 'required|exists:majors,uuid',
-                'class_id' => 'required|exists:classes,uuid',
-                'partner_id' => 'required|exists:partners,uuid',
+                'role_id' => 'required|exists:roles,id',
             ]);
+
+            $rules = [];
+
+            // role-based validation
+            $role = Role::find($request->role_id);
+
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role tidak valid'
+                ], 400);
+            }
+
+            switch ($role->name) {
+                case 'Coordinator':
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
+                    $rules['major_id'] = 'required|exists:majors,uuid';
+                    $rules['class_id'] = 'sometimes|exists:classes,uuid';
+                    break;
+
+                case 'Student':
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
+                    $rules['major_id'] = 'required|exists:majors,uuid';
+                    $rules['class_id'] = 'required|exists:classes,uuid';
+                    break;
+
+                case 'Super Administrator':
+                case 'Administrator':
+                case 'Teacher':
+                case 'Mentor':
+                    $rules['school_id'] = 'sometimes|exists:school,uuid';
+                    $rules['major_id'] = 'sometimes|exists:majors,uuid';
+                    $rules['class_id'] = 'sometimes|exists:classes,uuid';
+                    break;
+
+                default:
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Role tidak valid'
+                    ], 400);
+            }
+
+            // validate request with the rules
+            $validatedRoleData = $request->validate($rules);
+
+            // merge default validation with role-based rules
+            $validatedData = array_merge($validatedData, $validatedRoleData);
 
             // create new user
             $user = new User();
@@ -56,18 +99,15 @@ class UsersController extends Controller
             $user->phone_number = $validatedData['phone_number'];
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
-            $user->created_by = auth()->id();  // admin id as creator
-            $user->assignRole($validatedData['role']);
+            $user->assignRole($validatedData['role_id']);
             $user->school_id = $validatedData['school_id'];
-            $user->major_id = $validatedData['major_id'];
-            $user->class_id = $validatedData['class_id'];
-            $user->partner_id = $validatedData['partner_id'];
+            $user->major_id = $validatedData['major_id'] ?? null;
+            $user->class_id = $validatedData['class_id'] ?? null;
             $user->save();
 
             return response()->json([
                 'status' => true,
-                'message' => 'User berhasil dibuat',
-                'data' => $user
+                'message' => 'User berhasil dibuat'
             ], 201);
         } catch (\Exception $e) {
             // handling general error
@@ -80,32 +120,61 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
-
         try {
             $rules = [
                 'name' => 'required|string|max:255',
                 'password' => 'nullable|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|exists:roles,name',
-                'school_id' => 'required|exists:school,uuid',
-                'major_id' => 'required|exists:majors,uuid',
-                'class_id' => 'required|exists:classes,uuid',
-                'partner_id' => 'required|exists:partners,uuid',
+                'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student',
             ];
 
             // find user by id
             $user = User::findOrFail($id);
 
+            // check if email or phone number is updated
             if ($user->email != $request['email']) {
-                $rules['email'] = 'required|email|unique:users,email';
+                $rules['email'] = 'nullable|email|unique:users,email';
             } else {
-                $rules['email'] = 'required|email';
+                $rules['email'] = 'nullable|email';
             }
 
             if ($user->phone_number != $request['phone_number']) {
-                $rules['phone_number'] = 'required|string|unique:users,phone_number';
+                $rules['phone_number'] = 'nullable|string|unique:users,phone_number';
             } else {
-                $rules['phone_number'] = 'required|string';
+                $rules['phone_number'] = 'nullable|string';
+            }
+
+            // role-based validation
+            switch ($request->role) {
+                case 'Coordinator':
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['major_id'] = 'required|exists:majors,uuid';
+                    $rules['class_id'] = 'nullable|exists:classes,uuid';
+                    break;
+
+                case 'Student':
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['major_id'] = 'required|exists:majors,uuid';
+                    $rules['class_id'] = 'required|exists:classes,uuid';
+                    break;
+
+                // no additional validation for the roles below, use default rule
+                case 'Super Administrator':
+                case 'Administrator':
+                case 'Teacher':
+                case 'Mentor':
+                    // no special rules, use default rules, or add if any
+                    $rules['school_id'] = 'nullable|exists:school,uuid';
+                    $rules['major_id'] = 'nullable|exists:majors,uuid';
+                    $rules['class_id'] = 'nullable|exists:classes,uuid';
+                    break;
+
+                default:
+                    // handling invalid role
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Role tidak valid'
+                    ], 400);
             }
 
             // input validator
@@ -122,11 +191,9 @@ class UsersController extends Controller
 
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole($validatedData['role']);
-            $user->updated_by = auth()->id(); // admin id as creator
             $user->school_id = $validatedData['school_id'];
-            $user->major_id = $validatedData['major_id'];
-            $user->class_id = $validatedData['class_id'];
-            $user->partner_id = $validatedData['partner_id'];
+            $user->major_id = $validatedData['major_id'] ?? null;
+            $user->class_id = $validatedData['class_id'] ?? null;
             $user->save();
 
             return response()->json([
@@ -153,7 +220,6 @@ class UsersController extends Controller
             $user = User::findOrFail($id);
 
             // set kolom deleted_by dan soft delete
-            $user->deleted_by = auth()->id();
 
             // delete user
             $user->delete();
@@ -169,6 +235,7 @@ class UsersController extends Controller
             // database protection
             DB::rollBack();
 
+            // handling general error
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat menghapus user: ' . $e->getMessage()
@@ -178,7 +245,6 @@ class UsersController extends Controller
 
     public function importUsers(Request $request)
     {
-
         try {
             $request->validate([
                 'file' => 'required|mimes:xlsx'
@@ -192,7 +258,7 @@ class UsersController extends Controller
                 'message' => 'Users Imported Successfully'
             ], 200);
         } catch (\Exception $e) {
-            // general handling error
+            // handling general error
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat mengimpor users: ' . $e->getMessage()
@@ -212,9 +278,9 @@ class UsersController extends Controller
 
     public function exportUsersToPDF()
     {
-        $users = User::all(['id', 'name', 'email', 'nip_nisn', 'role_id']);
+        $users = User::all();
 
-        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
+        $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users])->setPaper('a4', 'landscape');
 
         return $pdf->download('users.pdf');
     }

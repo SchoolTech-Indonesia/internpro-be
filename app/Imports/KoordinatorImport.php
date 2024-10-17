@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class UsersImport implements ToModel, WithHeadingRow, WithStartRow
+class KoordinatorImport implements ToModel, WithHeadingRow, WithStartRow
 {
     public function startRow(): int
     {
@@ -22,9 +22,9 @@ class UsersImport implements ToModel, WithHeadingRow, WithStartRow
             'phone_number' => $row['phone_number'],
             'password' => bcrypt($row['password']),
             'nip_nisn' => $row['nip_nisn'],
-            'role' => $row['role'],
+            'role' => 'Coordinator',
             'school_id' => $row['school_id'] ?? null,
-            'major_id' => $row['major_id'] ?? null,
+            'major_id' => $row['major_id'],
             'class_id' => $row['class_id'] ?? null,
             'partner_id' => $row['partner_id'] ?? null,
         ]);

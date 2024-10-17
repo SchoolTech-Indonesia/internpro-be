@@ -16,13 +16,37 @@ class ProfileController extends Controller
 
     public function getProfile(Request $request)
     {
-        $user = $request->user()->load('school', 'major');
-
+        $user = $request->user();
+        $role = $user->getRoleNames()->first();
+        // Load common relationship first
+        $user->load('school');
+    
+        // Add conditional loading based on role
+        switch ($role) {
+            case 'Administrator':
+            case 'Teacher':
+                // No additional relationships needed for these roles
+                break;
+            case 'Koordinator':
+                $user->load('major');
+                break;
+            case 'Student':
+                $user->load('major', 'class');
+                break;
+            case 'Mentor':
+                $user->load('partners');
+                break;
+            default:
+                break;
+        }
+    
         return response()->json([
             "success" => true,
-            "data" => new ProfileResource($user)
+            "data" => new ProfileResource($user),
         ], 200);
     }
+    
+
 
     public function updateProfile(Request $request)
     {
@@ -38,6 +62,7 @@ class ProfileController extends Controller
             'phone_number' => [
                 'required',
                 'string',
+                'regex:/^(\+62|62|0)8[1-9][0-9]{6,13}$/',
                 Rule::unique('users', 'phone_number')->ignore(Auth::user()),
             ],
         ]);
