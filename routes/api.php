@@ -105,7 +105,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{uuid}', [SchoolControllers::class, 'show'])->name('getspecificschool');
         Route::patch('/update/{uuid}', [SchoolControllers::class, 'update'])->name('updateschool');
         Route::delete('/{uuid}', [SchoolControllers::class, 'destroy'])->name('deleteschool');
-        Route::post('/search', [SchoolControllers::class, 'search'])->name('searchschool');
     });
 
     // ROLE

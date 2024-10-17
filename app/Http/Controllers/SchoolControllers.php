@@ -24,6 +24,7 @@ class SchoolControllers extends Controller
     {
         try {
             $perPage = request()->get('per_page', 5);
+            $search = request()-> get('search');
 
             $perPageOptions = [5, 10, 15, 20, 50];
 
@@ -31,8 +32,16 @@ class SchoolControllers extends Controller
                 $perPage = 5;
             }
 
-            $schools = School::latest()->paginate($perPage);
-
+            $schools = School::latest()
+            ->where('school_name', 'like', '%' . $search . '%')
+            ->paginate($perPage);
+            
+            if ($schools->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data Sekolah Tidak Ditemukan!'
+                ], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
                 'success' => true,
@@ -72,7 +81,7 @@ class SchoolControllers extends Controller
 
         try {
             $school = School::create([
-                'uuid' => Str::uuid()->toString(),
+                 
                 'school_name' => $request->school_name,
                 'school_address' => $request->school_address,
                 'phone_number' => $request->phone_number,
@@ -225,45 +234,4 @@ class SchoolControllers extends Controller
         }
     }
     
-    /**
-     * Search school records.
-     */
-    public function search(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'search' => 'required|string|max:255',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validasi Gagal',
-                    'errors' => $validator->errors(),
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            $school = School::where('school_name', 'like', '%' . $request->search . '%')->get();
-
-            if ($school->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data Sekolah Tidak Ditemukan!'
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Data Sekolah Ditemukan!',
-                'data' => SchoolResource::collection($school),
-            ], Response::HTTP_OK);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat mencari data sekolah',
-                'error' => $e->getMessage(),
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
 }
