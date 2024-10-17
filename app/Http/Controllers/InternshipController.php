@@ -27,29 +27,6 @@ class InternshipController extends Controller
         return response()->json($internship);
     }
 
-    public function getClassesAndCoordinators(Request $request)
-    {
-        $validatedData = $request->validate([
-            'major_ids' => 'required|array',
-            'major_ids.*' => 'exists:majors,uuid',
-        ]);
-
-        // get valid classes based on major
-        $validClasses = Kelas::whereIn('major', $validatedData['major_ids'])
-            ->pluck('uuid', 'name')
-            ->toArray();
-
-        // get valid coordinators based on role id or 'Coordinator'
-        $validCoordinatorIds = User::whereHas('roles', function($query) {
-            $query->where('name', 'Coordinator');
-        })->pluck('uuid', 'name')->toArray();
-
-        return response()->json([
-            'classes' => $validClasses,
-            'coordinators' => $validCoordinatorIds
-        ]);
-    }
-
     public function store(Request $request)
     {
         try {

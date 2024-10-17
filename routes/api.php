@@ -134,8 +134,6 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
         Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
-        Route::post('/classes', [MajorityController::class, 'getClassesByMajors']); // for internship management needs
-        Route::post('/coordinators', [MajorityController::class, 'getCoordinatorsByMajors']); // for internship management needs
     });
     
     // ADMIN
@@ -170,6 +168,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/xlsx', [KoordinatorController::class, 'exportKoordinatorToXLSX'])->name('exportcoordinatorstoxlsx');
         Route::get('/export/csv', [KoordinatorController::class, 'exportKoordinatorToCSV'])->name('exportcoordinatorstocsv');
         Route::get('/export/pdf', [KoordinatorController::class, 'exportKoordinatorToPDF'])->name('exportcoordinatorstopdf');
+        Route::post('/major', [KoordinatorController::class, 'getCoordinatorsByMajors']); // for internship management needs
     });
 
     // STUDENT
@@ -202,4 +201,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/update/{internship:uuid}', [InternshipController::class, 'update'])->name('updateinternship');
         Route::delete('/{internship:uuid}', [InternshipController::class, 'destroy'])->name('deleteinternship');
     });
+
+    // CLASS ()
+    Route::post('/classes/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
 });
