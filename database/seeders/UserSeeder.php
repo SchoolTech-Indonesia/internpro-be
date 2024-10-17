@@ -81,8 +81,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('mentor'),
             'school_id' => $school->uuid,
         ]);
-        $partnerId = $partner->uuid;
-        $mentor->partners()->attach($partnerId);
+        $mentor->partners()->attach($partner->uuid);
         $mentor->assignRole(['Mentor']);
 
         $teacher = User::firstOrCreate([
@@ -106,17 +105,17 @@ class UserSeeder extends Seeder
             'class_id' => $class->uuid,
         ]);
         $student->assignRole(['Student']);
-        
+
         $koordinator = User::firstOrCreate([
             'nip_nisn' => "123456",
             'name' => 'Test Koordinator',
             'email' => 'koordinator@dev-internpro.schooltech.biz.id',
             'phone_number' => "08551111232",
-            'password' => bcrypt('koordinator'),
+            'password' => bcrypt('Coordinator'),
             'school_id' => $school->uuid,
             'major_id' => $major->uuid,
         ]);
-        $koordinator->assignRole(['Koordinator']);
+        $koordinator->assignRole(['Coordinator']);
 
     }
 

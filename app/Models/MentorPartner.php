@@ -12,6 +12,7 @@ class MentorPartner extends Model
 
     protected $table = 'mentor_partner';
     protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
 
     protected $fillable = ['user_id', 'partner_id'];
 

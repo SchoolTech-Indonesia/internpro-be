@@ -55,16 +55,16 @@ class KoordinatorController extends Controller
             // create new Koordinator
             $user = new User();
             $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone_number = $validatedData['phone_number'];
+            $user->email = $validatedData['email'] ?? null;
+            $user->phone_number = $validatedData['phone_number'] ?? null;
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id(); // admin id as creator
             $user->assignRole('Coordinator');
-            $user->school_id = $validatedData['school_id'];
+            $user->school_id = $validatedData['school_id'] ?? null;
             $user->major_id = $validatedData['major_id'];
-            $user->class_id = $validatedData['class_id'];
-            $user->partner_id = $validatedData['partner_id'];
+            $user->class_id = $validatedData['class_id'] ?? null;
+            $user->partner_id = $validatedData['partner_id'] ?? null;
             $user->save();
 
             return response()->json([
@@ -101,8 +101,8 @@ class KoordinatorController extends Controller
 
             // update Koordinator data
             $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->phone_number = $validatedData['phone_number'];
+            $user->email = $validatedData['email'] ?? null;
+            $user->phone_number = $validatedData['phone_number'] ?? null;
 
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
@@ -111,10 +111,10 @@ class KoordinatorController extends Controller
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole('Coordinator');
             $user->updated_by = auth()->id(); // admin id as updater
-            $user->school_id = $validatedData['school_id'];
+            $user->school_id = $validatedData['school_id'] ?? null;
             $user->major_id = $validatedData['major_id'];
-            $user->class_id = $validatedData['class_id'];
-            $user->partner_id = $validatedData['partner_id'];
+            $user->class_id = $validatedData['class_id'] ?? null;
+            $user->partner_id = $validatedData['partner_id'] ?? null;
             $user->save();
 
             return response()->json([
@@ -205,5 +205,26 @@ class KoordinatorController extends Controller
         $pdf = Pdf::loadView('exportPDF.exportUsersToPDF', ['users' => $users]);
 
         return $pdf->download('coordinator.pdf');
+    }
+
+    // for internship management needs
+    public function getCoordinatorsByMajors(Request $request)
+    {
+        // input validator
+        $validatedData = $request->validate([
+            'major_ids' => 'required|array',
+            'major_ids.*' => 'exists:majors,uuid', // major id validator
+        ]);
+
+        // get coordinators based on the selected majors
+        $coordinators = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Coordinator');
+        })->whereIn('major_id', $validatedData['major_ids'])->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Coordinators retrieved successfully',
+            'data' => $coordinators,
+        ], 200);
     }
 }
