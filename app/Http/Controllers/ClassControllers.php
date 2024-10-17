@@ -94,7 +94,7 @@ class ClassControllers extends Controller
             "class_code" => [
                 "required",
                 "max:255",
-                Rule::unique('majors')->ignore($id, 'uuid')
+                Rule::unique('majors')->ignore($id, 'uuid'),
             ],
             "class_name" => "required|string|max:255",
         ]);
@@ -105,7 +105,6 @@ class ClassControllers extends Controller
                 'message' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;
