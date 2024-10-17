@@ -81,7 +81,7 @@ class SchoolControllers extends Controller
 
         try {
             $school = School::create([
-                 
+                'uuid' => Str::uuid()->toString(),
                 'school_name' => $request->school_name,
                 'school_address' => $request->school_address,
                 'phone_number' => $request->phone_number,
