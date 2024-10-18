@@ -54,7 +54,7 @@ class AdminController extends Controller
         $admin = User::where('uuid', $uuid)->firstOrFail();
 
         // Pastikan user memiliki role Admin
-        if ($admin->hasRole('Admin')) {
+        if ($admin->hasRole('Administrator')) {
             return response()->json([
                 "success" => true,
                 "data" => new AdminResource($admin),
