@@ -22,7 +22,7 @@ class AdminController extends Controller
         $perPage = $request->query('per_page', 10);
 
         // Query dasar untuk mengambil admin berdasarkan peran
-        $query = User::role('Admin');
+        $query = User::role('Administrator');
 
         // Jika ada keyword, tambahkan kondisi pencarian berdasarkan nama
         if ($keyword) {
