@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\CreatedBy;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -113,5 +114,12 @@ class User extends Authenticatable implements JWTSubject
     public function partners()
     {
         return $this->belongsTo(Partner::class, 'mentor_partner', 'user_id', 'partner_id');
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            $model->school_id = Auth::user()->school_id;
+        });
     }
 }

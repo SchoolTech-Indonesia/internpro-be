@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Major extends Model
 {
@@ -46,6 +47,13 @@ class Major extends Model
             } else {
                 $model->major_code = 'MJ-001';
             }
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            $model->school_id = Auth::user()->school_id;
         });
     }
 }
