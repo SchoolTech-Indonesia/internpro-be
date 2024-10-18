@@ -59,13 +59,11 @@ class UsersController extends Controller
 
             switch ($role->name) {
                 case 'Coordinator':
-                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
 
                 case 'Student':
-                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
                     $rules['class_id'] = 'required|exists:classes,uuid';
                     break;
@@ -74,7 +72,6 @@ class UsersController extends Controller
                 case 'Administrator':
                 case 'Teacher':
                 case 'Mentor':
-                    $rules['school_id'] = 'sometimes|exists:school,uuid';
                     $rules['major_id'] = 'sometimes|exists:majors,uuid';
                     $rules['class_id'] = 'sometimes|exists:classes,uuid';
                     break;
@@ -101,7 +98,7 @@ class UsersController extends Controller
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id();  // admin id as creator
             $user->assignRole($validatedData['role_id']);
-            $user->school_id = $validatedData['school_id'];
+            $user->school_id = auth()->user()->school_id;
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
             $user->save();
