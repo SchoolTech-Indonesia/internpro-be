@@ -13,6 +13,16 @@ use Illuminate\Http\JsonResponse;
  */
 class RoleControllers extends Controller
 {
+    public function __construct()
+    {
+        // Permission Middleware
+        $this->middleware(['permission:view-roles'])->only('index');
+        $this->middleware(['permission:view-roles'])->only('show');
+        $this->middleware(['permission:create-roles'])->only('store');
+        $this->middleware(['permission:update-roles'])->only('update');
+        $this->middleware(['permission:delete-roles'])->only('destroy');
+    }
+
     /**
      * @return JsonResponse
      *
