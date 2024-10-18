@@ -60,7 +60,6 @@ class MajorityController extends Controller
         }
         try {
             $data = $validator->validated();
-            $data['created_by'] = Auth::user()->name;
             Major::create($data);
             return response()->json([
                 'success' => true,
@@ -134,7 +133,6 @@ class MajorityController extends Controller
 
         try {
             $data = $validator->validated();
-            $data['updated_by'] = Auth::user()->name;
 
             Major::where('uuid', $id)->update($data);
 

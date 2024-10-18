@@ -3,11 +3,18 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PermissionSeeder extends Seeder
 {
+    private function createPermissions(array $permissions): void
+    {
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
+    }
     /**
      * Run the database seeds.
      */
@@ -18,11 +25,30 @@ class PermissionSeeder extends Seeder
             'edit-users',
             'delete-users',
             'view-reports',
-            'manage-roles',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
-        }
+        $this->createPermissions($permissions);
+
+        $rolesPermissions = [
+            'view-roles',
+            'create-roles',
+            'update-roles',
+            'delete-roles'
+        ];
+
+        $this->createPermissions($rolesPermissions);
+
+        $permissionsPermissions = [
+            'view-permissions',
+            'create-permissions',
+            'update-permissions',
+            'delete-permissions'
+        ];
+
+        $this->createPermissions($permissionsPermissions);
+
+        $role = Role::where('name', 'Super Administrator')->first();
+        $role->givePermissionTo($permissions, $rolesPermissions, $permissionsPermissions);
+//        $role->revokePermissionTo($rolesPermissions);
     }
 }
