@@ -22,7 +22,7 @@ class AdminController extends Controller
         $perPage = $request->query('per_page', 10);
 
         // Query dasar untuk mengambil admin berdasarkan peran
-        $query = User::role('Admin');
+        $query = User::role('Administrator');
 
         // Jika ada keyword, tambahkan kondisi pencarian berdasarkan nama
         if ($keyword) {
@@ -54,7 +54,7 @@ class AdminController extends Controller
         $admin = User::where('uuid', $uuid)->firstOrFail();
 
         // Pastikan user memiliki role Admin
-        if ($admin->hasRole('Admin')) {
+        if ($admin->hasRole('Administrator')) {
             return response()->json([
                 "success" => true,
                 "data" => new AdminResource($admin),
@@ -72,7 +72,7 @@ class AdminController extends Controller
         $admin = User::where('uuid', $uuid)->firstOrFail();
 
         // Pastikan user memiliki role Admin
-        if ($admin->hasRole('Admin')) {
+        if ($admin->hasRole('Administrator')) {
             // Hapus admin
             $admin->delete();
 
@@ -125,7 +125,7 @@ class AdminController extends Controller
         $admin = User::where('uuid', $uuid)->firstOrFail();
 
         // Pastikan user memiliki role Admin
-        if (!$admin->hasRole('Admin')) {
+        if (!$admin->hasRole('Administrator')) {
             return response()->json([
                 "success" => false,
                 "message" => "User is not an admin"
@@ -181,7 +181,7 @@ class AdminController extends Controller
         ]);
 
         // Assign role admin
-        $role = Role::findByName('Admin');
+        $role = Role::findByName('Administrator');
         $user->assignRole($role);
 
         return response()->json([
