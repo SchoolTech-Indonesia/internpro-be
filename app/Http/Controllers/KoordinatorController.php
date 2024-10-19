@@ -23,7 +23,7 @@ class KoordinatorController extends Controller
             $query->where("name", "Coordinator");
         })
         ->where('name', 'LIKE', "%$search%")
-        ->when(count($classes) != 0, function ($query) use ($classes) { 
+        ->when(count($classes) != 0, function ($query) use ($classes) {
                 $query->whereIn("class_id", $classes);
         })
         ->paginate($rows);
@@ -138,11 +138,11 @@ class KoordinatorController extends Controller
             DB::beginTransaction();
 
             // find Koordinator by id
-            $user = User::where('id', $id)->where('role', 'Coordinator')->firstOrFail();
-            
+            $user = User::where('uuid', $id)->where('role', 'Coordinator')->firstOrFail();
+
             // set kolom deleted_by dan soft delete
             $user->deleted_by = auth()->id(); // admin id as deleter
-            
+
             // delete Koordinator
             $user->delete();
 
@@ -171,7 +171,7 @@ class KoordinatorController extends Controller
             $request->validate([
                 'file' => 'required|mimes:xlsx'
             ]);
-    
+
             // import process
             Excel::import(new KoordinatorImport(), $request->file('file'));
 
