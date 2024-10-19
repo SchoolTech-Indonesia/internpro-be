@@ -34,6 +34,7 @@ class UserSeeder extends Seeder
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
         ]);
+        $admin->assignRole(['Super Administrator']);
 
         $admin_exp = User::firstOrCreate([
             'nip_nisn' => "565",
@@ -45,6 +46,29 @@ class UserSeeder extends Seeder
             'major_id' => $major->uuid,
             'class_id' => $class->uuid,
         ]);
+
+        $school = School::where('school_name', 'SMK Negeri 1 SchoolTech')->first();
+        $admin = User::firstOrCreate([
+            'nip_nisn' => "001",
+            'name' => 'Johantius Armando',
+            'email' => 'johan@schooltechindonesia.com',
+            'phone_number' => "081444666332",
+            'password' => bcrypt('password'),
+            'school_id' => $school->uuid,
+            'major_id' => $major->uuid,
+            'class_id' => $class->uuid,
+        ]);
+        $coorSTI = User::firstOrCreate([
+            'nip_nisn' => "002",
+            'name' => 'Johantius Coordinator',
+            'email' => 'coord@schooltechindonesia.com',
+            'phone_number' => "081444666132",
+            'password' => bcrypt('password'),
+            'school_id' => $school->uuid,
+            'major_id' => $major->uuid,
+            'class_id' => $class->uuid,
+        ]);
+        @$coorSTI->assignRole(['Coordinator']);
 
         $guru = User::firstOrCreate([
             'nip_nisn' => "789",
