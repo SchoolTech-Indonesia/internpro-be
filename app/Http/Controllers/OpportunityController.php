@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Opportunity;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class OpportunityController extends Controller
 {
@@ -48,7 +48,7 @@ class OpportunityController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -98,7 +98,29 @@ class OpportunityController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $opportunity = Opportunity::where('opportunity_id', $id)->first();
+
+            if (!$opportunity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Opportunity Tidak Ditemukan',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail Opportunity Jurusan',
+                'data' => $opportunity,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data jurusan',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
