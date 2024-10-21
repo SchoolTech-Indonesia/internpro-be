@@ -83,7 +83,6 @@ class ActivityController extends Controller
                 'success' => true,
                 'message' => 'Data added successfully'
             ], 201);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Tangkap ValidationException dan kembalikan respons error yang disesuaikan
             return response()->json([

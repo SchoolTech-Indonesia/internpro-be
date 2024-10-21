@@ -203,6 +203,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
     });
 
+    // ACTIVITY
     Route::prefix('program-activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index'])->name('index');
         Route::post('/create', [ActivityController::class, 'store'])->name('store');
