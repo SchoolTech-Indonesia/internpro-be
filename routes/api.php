@@ -24,6 +24,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\OpportunityController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 
@@ -184,6 +185,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/pdf', [StudentController::class, 'exportStudentToPDF'])->name('exportstudenetstopdf');
     });
 
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
+    });
+
     // PARTNER
     Route::prefix('partners')->group(function () {
         Route::get('/', [PartnerController::class, 'index'])->name('index');
@@ -193,6 +203,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
     });
 
+    // ACTIVITY
     Route::prefix('program-activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index'])->name('index');
         Route::post('/create', [ActivityController::class, 'store'])->name('store');
@@ -216,5 +227,14 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{uuid}', [ClassControllers::class, 'destroy'])->name('destroy');
         Route::post('/search', [ClassControllers::class, 'search'])->name('search');
         Route::post('/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
+    });
+
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
     });
 });
