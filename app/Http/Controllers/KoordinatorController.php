@@ -171,7 +171,6 @@ class KoordinatorController extends Controller
             $request->validate([
                 'file' => 'required|mimes:xlsx'
             ]);
-
             // import process
             Excel::import(new KoordinatorImport(), $request->file('file'));
 
