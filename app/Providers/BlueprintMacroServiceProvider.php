@@ -20,10 +20,10 @@ class BlueprintMacroServiceProvider extends ServiceProvider
         });
 
         Blueprint::macro('dropCreatedBy', function () {
-            $this->dropColumn(['created_by', 'updated_by', 'deleted_by']);
             $this->dropForeign(['created_by']);
             $this->dropForeign(['updated_by']);
             $this->dropForeign(['deleted_by']);
+            $this->dropColumn(['created_by', 'updated_by', 'deleted_by']);
         });
     }
 }
