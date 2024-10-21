@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TeacherResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\TeacherResource;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -68,21 +69,20 @@ class TeacherController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
                 'phone_number' => 'required|string|unique:users,phone_number',
-                'password' => 'required|string|min:8',
-                'school_id' => 'required|exists:school,uuid'
+                'password' => 'required|string|min:8'
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
             }
-
+            $school_id = Auth::user()->school_id;
             $teacher = User::create([
                 'nip_nisn' => $request->nip_nisn,
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
                 'password' => bcrypt($request->password),
-                'school_id' => $request->school_id,
+                'school_id' => $school_id,
             ]);
 
             $teacher->assignRole('Teacher');
@@ -90,7 +90,6 @@ class TeacherController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Teacher Data Created Successfully",
-                "data" => $teacher
             ]);
         } catch (\Exception $e) {
             return response()->json([
