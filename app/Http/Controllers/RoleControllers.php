@@ -66,8 +66,7 @@ class RoleControllers extends Controller
             if ($Role->delete()) {
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data berhasil dihapus',
-                    'deleted_at' => $Role->deleted_at
+                    'message' => 'Data berhasil dihapus'
                 ], 200);
             } else {
                 return response()->json([
