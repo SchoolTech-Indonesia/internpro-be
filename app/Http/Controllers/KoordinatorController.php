@@ -46,7 +46,7 @@ class KoordinatorController extends Controller
                 'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'nullable|string|max:20',
-                'role' => 'required|string|in:Coordinator',
+                'role' => 'required|string',
                 'school_id' => 'nullable|exists:school,uuid',
                 'major_id' => 'required|exists:majors,uuid',
                 'class_id' => 'nullable|exists:classes,uuid',
@@ -128,7 +128,7 @@ class KoordinatorController extends Controller
             DB::beginTransaction();
 
             // find Koordinator by id
-            $user = User::where('id', $id)->where('role', 'Coordinator')->firstOrFail();
+            $user = User::where('uuid', $id)->where('role', 'Coordinator')->firstOrFail();
 
             // set kolom deleted_by dan soft delete
             $user->deleted_by = auth()->id(); // admin id as deleter

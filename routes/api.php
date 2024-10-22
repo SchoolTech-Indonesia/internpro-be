@@ -79,6 +79,11 @@ Route::middleware('auth:api')->group(function () {
             Route::put('/update/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
         });
 
+        // Create Coordinators
+        Route::prefix('coordinator')->group(function(){
+            Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
+        });
+
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
         Route::get('/{user:uuid}', [UsersController::class, 'show'])->name('getuser');
         Route::post('/create', [UsersController::class, 'store'])->name('createuser');
@@ -161,7 +166,6 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('coordinators')->group(function () {
         Route::get('/', [KoordinatorController::class, 'index'])->name('getallcoordinator');
         Route::get('/{user:uuid}', [KoordinatorController::class, 'show'])->name('getcoordinator');
-        Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
         Route::patch('/update/{id}', [KoordinatorController::class, 'update'])->name('updatecoordinator');
         Route::delete('/{id}', [KoordinatorController::class, 'destroy'])->name('deletecoordinator');
         Route::post('/import', [KoordinatorController::class, 'importKoordinator'])->name('importcoordinators');
@@ -206,6 +210,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('program-activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index'])->name('index');
         Route::post('/create', [ActivityController::class, 'store'])->name('store');
+        Route::put('{uuid}',[ActivityController::class, 'update'])->name('update.activity');
+        Route::delete('{uuid}',[ActivityController::class, 'destroy'])->name('destroy.activity');
     });
 
     // INTERNSHIP PROGRAM
