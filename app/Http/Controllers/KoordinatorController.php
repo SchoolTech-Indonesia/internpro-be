@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Exports\KoordinatorExport;
@@ -19,14 +20,14 @@ class KoordinatorController extends Controller
         $rows = $request['rows'] != 0 ? $request['rows'] : 5;
         $classes = $request->query("classes") ? explode(',', $request->query("classes")) : [];
 
-        $users = User::whereHas("roles", function($query) {
+        $users = User::whereHas("roles", function ($query) {
             $query->where("name", "Coordinator");
         })
-        ->where('name', 'LIKE', "%$search%")
-        ->when(count($classes) != 0, function ($query) use ($classes) {
+            ->where('name', 'LIKE', "%$search%")
+            ->when(count($classes) != 0, function ($query) use ($classes) {
                 $query->whereIn("class_id", $classes);
-        })
-        ->paginate($rows);
+            })
+            ->paginate($rows);
         return response()->json($users);
     }
 
@@ -84,46 +85,35 @@ class KoordinatorController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'password' => 'nullable|string|min:8|confirmed',
-                'nip_nisn' => 'nullable|string|max:20',
-                'role' => 'required|string|in:Coordinator',
-                'school_id' => 'nullable|exists:school,uuid',
-                'major_id' => 'required|exists:majors,uuid',
-                'class_id' => 'nullable|exists:classes,uuid',
-                'partner_id' => 'nullable|exists:partners,uuid',
+                'password' => 'sometimes|nullable|string|min:8|confirmed',
+                'nip_nisn' => 'sometimes|nullable|string|max:20',
+                'school_id' => 'sometimes|nullable|exists:school,uuid',
+                'major_id' => 'sometimes|nullable|exists:majors,uuid',
+                'class_id' => 'sometimes|nullable|exists:classes,uuid',
+                'partner_id' => 'sometimes|nullable|exists:partners,uuid',
             ]);
 
-            // find Koordinator by id
-            $user = User::where('id', $id)->where('role', 'Coordinator')->firstOrFail();
+            $user = User::role('Coordinator')->where('uuid', $id)->firstOrFail();
 
-            // update Koordinator data
-            $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'] ?? null;
-            $user->phone_number = $validatedData['phone_number'] ?? null;
+            $user->fill($validatedData);
 
             if ($request->filled('password')) {
                 $user->password = bcrypt($validatedData['password']);
             }
 
-            $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole('Coordinator');
-            $user->updated_by = auth()->id(); // admin id as updater
-            $user->school_id = $validatedData['school_id'] ?? null;
-            $user->major_id = $validatedData['major_id'];
-            $user->class_id = $validatedData['class_id'] ?? null;
-            $user->partner_id = $validatedData['partner_id'] ?? null;
+
+            $user->updated_by = auth()->id();
+
             $user->save();
 
             return response()->json([
                 'status' => true,
                 'message' => 'User Koordinator berhasil diperbarui',
-                'data' => $user
             ], 200);
         } catch (\Exception $e) {
-            // handling general error
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat memperbarui user Koordinator: ' . $e->getMessage()
