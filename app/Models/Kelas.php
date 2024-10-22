@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 
 class Kelas extends Model
 {
@@ -44,13 +43,6 @@ class Kelas extends Model
                 $majorCode = $major->major_code;
                 $kelas->class_code = "{$majorCode}-" . str_pad(($major->classes()->count() + 1), 2, '0', STR_PAD_LEFT);
             }
-        });
-    }
-
-    protected static function booted(): void
-    {
-        static::creating(function ($model) {
-            $model->school_id = Auth::user()->school_id;
         });
     }
 }

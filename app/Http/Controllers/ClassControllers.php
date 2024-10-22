@@ -108,6 +108,7 @@ class ClassControllers extends Controller
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;
+            $data["school_id"] = Auth::user()->school_id;
             Kelas::where('uuid', $id)->update($data);
             return response()->json([
                 'success' => true,
