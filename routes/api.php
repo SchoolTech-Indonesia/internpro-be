@@ -134,7 +134,6 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/update/{id}', [MajorityController::class, 'update'])->name('majority.update');
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
-        Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
 
 
@@ -204,6 +203,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
     });
 
+    // ACTIVITY
     Route::prefix('program-activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index'])->name('index');
         Route::post('/create', [ActivityController::class, 'store'])->name('store');
@@ -227,5 +227,14 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{uuid}', [ClassControllers::class, 'destroy'])->name('destroy');
         Route::post('/search', [ClassControllers::class, 'search'])->name('search');
         Route::post('/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
+    });
+
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
     });
 });

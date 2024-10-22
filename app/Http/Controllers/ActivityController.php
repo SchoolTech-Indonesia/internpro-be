@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use App\Models\Activity;
 use Illuminate\Support\Str;
@@ -17,11 +16,19 @@ class ActivityController extends Controller
         // Ambil keyword dari parameter query
         $keyword = $request->get('keyword');
 
+        $perPage = request()->get('per_page', 5);
+
+        $perPageOptions = [5, 10, 15, 20, 50];
+
+        if (!in_array($perPage, $perPageOptions)) {
+            $perPage = 5;
+        }
         // Ambil data activities, dengan pencarian jika ada keyword
         $activities = Activity::when($keyword, function ($query, $keyword) {
             return $query->where('name', 'like', "%{$keyword}%");
-        })->get();
-
+        })
+            ->latest()
+            ->paginate($perPage);
         // Mengembalikan response JSON menggunakan ActivityResource
         return response()->json([
             'success' => true,
@@ -76,7 +83,6 @@ class ActivityController extends Controller
                 'success' => true,
                 'message' => 'Data added successfully'
             ], 201);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Tangkap ValidationException dan kembalikan respons error yang disesuaikan
             return response()->json([
@@ -93,10 +99,6 @@ class ActivityController extends Controller
             ], 500);
         }
     }
-
-    /*
-     * Update Activity
-     */
     public function update(Request $request,string $id)
     {
         // Validasi data input
