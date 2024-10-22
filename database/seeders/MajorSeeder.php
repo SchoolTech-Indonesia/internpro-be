@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Major;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\School;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class MajorSeeder extends Seeder
 {
@@ -15,7 +16,8 @@ class MajorSeeder extends Seeder
     {
         $major = Major::firstOrCreate([
             "major_code" => "0987654321",
-            "major_name" => "Rekaya Perangkat Lunak"
+            "major_name" => "Rekaya Perangkat Lunak",
+            "school_id" => School::where("school_name", "SMK Negeri 1 Twitter")->first()->uuid,
         ]);
 
         Major::firstOrCreate([

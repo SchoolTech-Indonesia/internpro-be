@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::table('classes', function (Blueprint $table) {
             $table->uuid('school_id')->after('class_name');
             $table->foreign('school_id')->references('uuid')->on('school');
-            $table->createdBy();
+            // $table->createdBy();
         });
         Schema::table('majors', function (Blueprint $table) {
             $table->dropColumn('created_by');
