@@ -17,9 +17,11 @@ class InternshipController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $search = $request->query('name');
+        $rows = $request['rows'] != 0 ? $request['rows'] : 5;
+        return response()->json(Internship::with(['majors', 'classes', 'coordinators'])->where('name', 'LIKE', "%$search%")->paginate($rows));
     }
 
     public function show(Internship $internship): JsonResponse
@@ -31,7 +33,7 @@ class InternshipController extends Controller
     {
         try {
             DB::beginTransaction();
-   
+
             // input validator
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
@@ -49,9 +51,9 @@ class InternshipController extends Controller
 
             // validator for class in selected major
             $validClasses = Kelas::whereIn('major', $validatedData['major_ids'])
-            ->whereIn('uuid', $validatedData['class_ids'])
-            ->pluck('uuid')
-            ->toArray();
+                ->whereIn('uuid', $validatedData['class_ids'])
+                ->pluck('uuid')
+                ->toArray();
 
             if (count($validatedData['class_ids']) !== count($validClasses)) {
                 return response()->json([
@@ -61,7 +63,7 @@ class InternshipController extends Controller
             }
 
             // filter for users with coordinator role
-            $validCoordinatorIds = User::whereHas('roles', function($query) {
+            $validCoordinatorIds = User::whereHas('roles', function ($query) {
                 $query->where('name', 'Coordinator');
             })->pluck('uuid')->toArray();
 
@@ -83,7 +85,7 @@ class InternshipController extends Controller
 
             // sync class with internship
             $internship->classes()->sync($validatedData['class_ids']);
-            
+
             // sync major with internship
             $internship->majors()->sync($validatedData['major_ids']);
 
@@ -91,7 +93,7 @@ class InternshipController extends Controller
             $internship->coordinators()->sync($filteredCoordinatorIds);
 
             DB::commit();
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data internship berhasil ditambahkan',
@@ -129,13 +131,13 @@ class InternshipController extends Controller
             ]);
 
             // filter for users with coordinator role
-            $validCoordinatorIds = User::whereHas('roles', function($query) {
+            $validCoordinatorIds = User::whereHas('roles', function ($query) {
                 $query->where('name', 'Coordinator');
             })->pluck('uuid')->toArray();
 
             // only get valid coordinator_ids
             $filteredCoordinatorIds = array_intersect($validatedData['coordinator_ids'], $validCoordinatorIds);
-            
+
             // get school_id from auth user
             $user = auth()->user();
             $schoolId = $user->school_id;
@@ -158,9 +160,9 @@ class InternshipController extends Controller
                         ->whereIn('major', $validatedData['major_ids']) // Filter berdasarkan major
                         ->pluck('uuid')
                         ->toArray();
-                    
+
                     $internship->classes()->sync($validClassIds);
-                }    
+                }
             }
 
             // sync coordinator with internship
@@ -169,7 +171,7 @@ class InternshipController extends Controller
             }
 
             DB::commit();
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data internship berhasil diubah',
