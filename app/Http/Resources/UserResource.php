@@ -18,8 +18,7 @@ class UserResource extends JsonResource
             'nip/nisn' => $this->nip_nisn,
             'name' => $this->name,
             'email' => $this->email,
-            'phone_number' => $this->phone_number,
-            'roles' => $this->roles->pluck('name')->first(),
+            'roles' => $this->roles->select(['id', 'name'])->first(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

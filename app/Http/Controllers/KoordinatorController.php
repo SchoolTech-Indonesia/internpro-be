@@ -46,7 +46,7 @@ class KoordinatorController extends Controller
                 'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'nullable|string|max:20',
-                'role' => 'required|string|in:Coordinator',
+                'role' => 'required|string',
                 'school_id' => 'nullable|exists:school,uuid',
                 'major_id' => 'required|exists:majors,uuid',
                 'class_id' => 'nullable|exists:classes,uuid',

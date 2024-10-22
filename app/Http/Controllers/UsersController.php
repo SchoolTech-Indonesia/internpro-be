@@ -26,6 +26,7 @@ class UsersController extends Controller
                 $query->whereIn("name", $roles);
             });
         })->paginate($rows);
+        
         return response()->json([
             'success' => true,
             'message' => 'List of users',
