@@ -46,7 +46,7 @@ class SchoolControllers extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Daftar Data Sekolah',
-                'data' => $schools
+                'data' => SchoolResource::collection($schools),
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {
@@ -233,5 +233,5 @@ class SchoolControllers extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
 }
