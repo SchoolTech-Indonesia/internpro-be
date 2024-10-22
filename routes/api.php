@@ -141,7 +141,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
     });
 
-
     // ADMIN
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');

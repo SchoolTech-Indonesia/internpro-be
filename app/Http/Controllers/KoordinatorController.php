@@ -128,7 +128,7 @@ class KoordinatorController extends Controller
             DB::beginTransaction();
 
             // find Koordinator by id
-            $user = User::where('id', $id)->where('role', 'Coordinator')->firstOrFail();
+            $user = User::where('uuid', $id)->where('role', 'Coordinator')->firstOrFail();
 
             // set kolom deleted_by dan soft delete
             $user->deleted_by = auth()->id(); // admin id as deleter
