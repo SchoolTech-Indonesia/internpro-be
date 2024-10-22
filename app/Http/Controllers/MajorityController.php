@@ -18,6 +18,8 @@ class MajorityController extends Controller
     public function index()
     {
         try {
+            $searchName = request()->get('major_name');
+
             $perPage = request()->get('per_page', 5);
 
             $perPageOptions = [5, 10, 15, 20, 50];
@@ -25,14 +27,25 @@ class MajorityController extends Controller
             if (!in_array($perPage, $perPageOptions)) {
                 $perPage = 5;
             }
+            $query = Major::query();
 
-            $major = Major::latest()->paginate($perPage);
+            if (!empty($searchName)) {
+                $query->where('major_name', 'like', '%' . $searchName . '%');
+            }
 
+            $majors = $query->latest()->paginate($perPage);
+
+            if ($majors->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No Major data found",
+                ], 404);
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Daftar Data Major',
-                'data' => $major
+                'data' => $majors
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {
@@ -167,55 +180,15 @@ class MajorityController extends Controller
         }
     }
 
-    // Search Major by Name
-    public function search(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'search' => 'required|string|max:255',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validasi Gagal',
-                    'errors' => $validator->errors(),
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            $major = Major::where('major_name', 'like', '%' . $request->search . '%')->get();
-
-            if ($major->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data Major Tidak Ditemukan!'
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Major Sekolah Ditemukan!',
-                'data' => MajorResource::collection($major),
-            ], Response::HTTP_OK);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi Kesalahan Saat Mencari Major',
-                'error' => $e->getMessage(),
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     // Show All Majority Without Paginate
     public function majorityShow()
     {
-        try{
+        try {
             $major = Major::all();
-                return response()->json([
-                    'success'=> true,
-                    'message'=> 'Daftar Data All Jurusan',
-                    'data'=> MajorResource::collection($major),
+            return response()->json([
+                'success' => true,
+                'message' => 'Daftar Data All Jurusan',
+                'data' => MajorResource::collection($major),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([

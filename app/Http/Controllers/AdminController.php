@@ -6,10 +6,10 @@ use App\Http\Resources\AdminResource;
 use App\Http\Resources\ProfileResource;
 use App\Models\Role;
 use App\Models\User;
-use Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Validator;
 
 class AdminController extends Controller
 {

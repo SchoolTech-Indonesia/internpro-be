@@ -24,6 +24,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\OpportunityController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 
@@ -76,6 +77,11 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
             Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
             Route::put('/update/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
+        });
+
+        // Create Coordinators
+        Route::prefix('coordinator')->group(function(){
+            Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
         });
 
         Route::get('/', [UsersController::class, 'index'])->name('getallusers');
@@ -133,7 +139,6 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/update/{id}', [MajorityController::class, 'update'])->name('majority.update');
         Route::delete('/{id}', [MajorityController::class, 'destroy'])->name('majority.destroy');
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
-        Route::post('/search', [MajorityController::class, 'search'])->name('majority.search');
     });
 
     // ADMIN
@@ -161,7 +166,6 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('coordinators')->group(function () {
         Route::get('/', [KoordinatorController::class, 'index'])->name('getallcoordinator');
         Route::get('/{user:uuid}', [KoordinatorController::class, 'show'])->name('getcoordinator');
-        Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
         Route::patch('/update/{id}', [KoordinatorController::class, 'update'])->name('updatecoordinator');
         Route::delete('/{id}', [KoordinatorController::class, 'destroy'])->name('deletecoordinator');
         Route::post('/import', [KoordinatorController::class, 'importKoordinator'])->name('importcoordinators');
@@ -184,6 +188,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/export/pdf', [StudentController::class, 'exportStudentToPDF'])->name('exportstudenetstopdf');
     });
 
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
+    });
+
     // PARTNER
     Route::prefix('partners')->group(function () {
         Route::get('/', [PartnerController::class, 'index'])->name('index');
@@ -193,9 +206,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [PartnerController::class, 'store'])->name('store');
     });
 
+    // ACTIVITY
     Route::prefix('program-activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index'])->name('index');
         Route::post('/create', [ActivityController::class, 'store'])->name('store');
+        Route::put('{uuid}',[ActivityController::class, 'update'])->name('update.activity');
+        Route::delete('{uuid}',[ActivityController::class, 'destroy'])->name('destroy.activity');
     });
 
     // INTERNSHIP PROGRAM
@@ -216,5 +232,14 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{uuid}', [ClassControllers::class, 'destroy'])->name('destroy');
         Route::post('/search', [ClassControllers::class, 'search'])->name('search');
         Route::post('/major', [ClassControllers::class, 'getClassesByMajors']); // for internship management needs
+    });
+
+    // OPPORTUNITY
+    Route::prefix('opportunities')->group(function () {
+        Route::get('/', [OpportunityController::class, 'index'])->name('index');
+        Route::get('/{uuid}', [OpportunityController::class, 'show'])->name('show');
+        Route::post('/update/{uuid}', [OpportunityController::class, 'update'])->name('update');
+        Route::delete('/{uuid}', [OpportunityController::class, 'destroy'])->name('destroy');
+        Route::post('/create', [OpportunityController::class, 'store'])->name('store');
     });
 });

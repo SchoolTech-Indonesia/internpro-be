@@ -24,7 +24,10 @@ class ClassControllers extends Controller
             if (!in_array($perPage, $perPageOptions)) {
                 $perPage = 5;
             }
-            $kelas = Kelas::latest()->paginate($perPage);
+            $kelas = Kelas::latest()
+                ->paginate($perPage)
+                ->makeHidden(['created_at', 'updated_at', 'deleted_at']);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Daftar Data Kelas',
@@ -56,7 +59,7 @@ class ClassControllers extends Controller
         }
         try {
             $data = $validator->validated();
-            $data['created_by'] = Auth::user()->name;
+            $data['created_by'] = Auth::user()->uuid;
             Kelas::create($data);
             return response()->json([
                 'success' => true,
@@ -105,6 +108,7 @@ class ClassControllers extends Controller
                 'message' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
         try {
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->name;

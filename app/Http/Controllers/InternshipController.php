@@ -60,10 +60,10 @@ class InternshipController extends Controller
                 ], 422);
             }
 
-            // filter for users with coordinator role
+            // filter for users with coordinator role, based on selected major
             $validCoordinatorIds = User::whereHas('roles', function($query) {
                 $query->where('name', 'Coordinator');
-            })->pluck('uuid')->toArray();
+            })->whereIn('major_id', $validatedData['major_ids'])->pluck('uuid', 'name')->toArray();
 
             // only get valid coordinator_ids
             $filteredCoordinatorIds = array_intersect($validatedData['coordinator_ids'], $validCoordinatorIds);
@@ -119,12 +119,12 @@ class InternshipController extends Controller
                 'description' => 'required|string|max:255',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after:start_date',
-                'school_id' => 'nullable|string|exists:school,uuid',
-                'major_ids' => 'nullable|array',
+                'school_id' => 'required|string|exists:school,uuid',
+                'major_ids' => 'required|array',
                 'major_ids.*' => 'exists:majors,uuid',
-                'class_ids' => 'nullable|array',
+                'class_ids' => 'required|array',
                 'class_ids.*' => 'exists:classes,uuid',
-                'coordinator_ids' => 'nullable|array',
+                'coordinator_ids' => 'required|array',
                 'coordinator_ids.*' => 'exists:users,uuid',
             ]);
 

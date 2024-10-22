@@ -18,24 +18,24 @@ use Illuminate\Validation\Rule;
 class SchoolControllers extends Controller
 {
     /**
-     * Show all school data with pagination.
+     * Show all school data with pagination & searching.
      */
     public function index()
     {
         try {
-            $perPage = request()->get('per_page', 5);
-            $search = request()-> get('search');
+            $perPage = request()->query('per_page', 5);
+            $search = request()-> query('search');
 
             $perPageOptions = [5, 10, 15, 20, 50];
-
+            $schools = School::query();
             if (!in_array($perPage, $perPageOptions)) {
                 $perPage = 5;
             }
+            if($search){
+                $schools->where('school_name', 'like', '%' . $search . '%');
+            }
 
-            $schools = School::latest()
-            ->where('school_name', 'like', '%' . $search . '%')
-            ->paginate($perPage);
-            
+            $schools = $schools->latest()->paginate($perPage);
             if ($schools->isEmpty()) {
                 return response()->json([
                     'success' => true,

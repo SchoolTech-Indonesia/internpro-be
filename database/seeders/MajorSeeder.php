@@ -18,5 +18,30 @@ class MajorSeeder extends Seeder
             "major_name" => "Rekaya Perangkat Lunak"
         ]);
 
+        Major::firstOrCreate([
+            "major_code" => "AK",
+            "major_name" => "Akuntansi"
+        ]);
+
+        Major::firstOrCreate([
+            "major_code" => "OTKP",
+            "major_name" => "Otomaasi Tata Kelola Perkantoran"
+        ]);
+
+        Major::firstOrCreate([
+            "major_code" => "TKJ",
+            "major_name" => "Teknik Komputer dan Jaringan"
+        ]);
+
+        Major::firstOrCreate([
+            "major_code" => "MM",
+            "major_name" => "Multimedia"
+        ]);
+
+        Major::firstOrCreate([
+            "major_code" => "BDP",
+            "major_name" => "Bisnis Daring dan Pemasaran"
+        ]);
+
     }
 }

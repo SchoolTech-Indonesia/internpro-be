@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Traits\CreatedBy;
-use Illuminate\Http\Request;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Http\Resources\UserResource;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UsersController extends Controller
 {
@@ -25,7 +26,12 @@ class UsersController extends Controller
                 $query->whereIn("name", $roles);
             });
         })->paginate($rows);
-        return response()->json($users);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'List of users',
+            'data' => UserResource::collection($users)
+        ], 200);
     }
 
     public function show(User $user): JsonResponse
@@ -189,7 +195,6 @@ class UsersController extends Controller
 
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->assignRole($validatedData['role']);
-            $user->updated_by = auth()->id(); // admin id as creator
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
