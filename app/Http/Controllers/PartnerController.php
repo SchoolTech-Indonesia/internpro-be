@@ -76,6 +76,8 @@ class PartnerController extends Controller
             $validatedData = $request->validated();
 
             $validatedData['uuid'] = $uuid;
+            $validatedData['school_id'] = $request->user()->school_id;
+
             if ($request->hasFile('logo')) {
                 $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/' . $uuid . '/', 'logo');
             }
