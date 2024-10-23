@@ -80,7 +80,7 @@ Route::middleware('auth:api')->group(function () {
         });
 
         // Create Coordinators
-        Route::prefix('coordinator')->group(function(){
+        Route::prefix('coordinator')->group(function () {
             Route::post('/create', [KoordinatorController::class, 'store'])->name('createcoordinator');
         });
 
@@ -141,14 +141,14 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/create', [MajorityController::class, 'store'])->name('majority.store');
     });
 
-    // ADMIN
-    Route::prefix('admin')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
-        Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
-        Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
-        Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
-    });
+    // ADMIN (dicomment karena duplikat)
+    // Route::prefix('admin')->group(function () {
+    //     Route::get('/', [AdminController::class, 'index'])->name('index');
+    //     Route::get('/{uuid}', [AdminController::class, 'showAdmin'])->name('showadmin');
+    //     Route::post('/create', [AdminController::class, 'createAdmin'])->name('createadmin');
+    //     Route::delete('/{uuid}', [AdminController::class, 'deleteAdmin'])->name('deleteadmin');
+    //     Route::put('/{uuid}', [AdminController::class, 'updateAdmin'])->name('updateAdmin');
+    // });
 
     //MENTOR
     Route::prefix('mentor')->group(function () {
@@ -210,8 +210,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('program-activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index'])->name('index');
         Route::post('/create', [ActivityController::class, 'store'])->name('store');
-        Route::put('{uuid}',[ActivityController::class, 'update'])->name('update.activity');
-        Route::delete('{uuid}',[ActivityController::class, 'destroy'])->name('destroy.activity');
+        Route::put('{uuid}', [ActivityController::class, 'update'])->name('update.activity');
+        Route::delete('{uuid}', [ActivityController::class, 'destroy'])->name('destroy.activity');
     });
 
     // INTERNSHIP PROGRAM
