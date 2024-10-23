@@ -18,7 +18,7 @@ class MajorityController extends Controller
     public function index()
     {
         try {
-            $searchName = request()->get('major_name');
+            $searchName = request()->get('name');
 
             $perPage = request()->get('per_page', 5);
 

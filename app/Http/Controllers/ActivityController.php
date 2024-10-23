@@ -171,7 +171,7 @@ class ActivityController extends Controller
     /*
      * Delete Activity
      */
-    public function delete(string $id)
+    public function destroy(string $id)
     {
         $activity = Activity::where('uuid', $id)->first();
         if (!$activity) {
