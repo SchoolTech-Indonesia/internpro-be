@@ -23,7 +23,7 @@ class PartnerSeeder extends Seeder
             "number_sk" => "3001",
             "file_sk" => fake()->filePath(),
             "end_date_sk" => "2024-09-09 10:00:00",
-            "school" => $school->uuid
+            "school_id" => $school->uuid
         ]);
     }
 }

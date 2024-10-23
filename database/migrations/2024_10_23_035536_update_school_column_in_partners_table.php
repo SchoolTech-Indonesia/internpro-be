@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->dropForeign(['school']);
             $table->dropColumn('school');
 
-            $table->uuid('school_id')->after('end_date_sk');
-            $table->foreign('school_id')->references('uuid')->on('schools')->onDelete('cascade');
+            $table->string('school_id')->after('end_date_sk');
+            $table->foreign('school_id')->references('uuid')->on('school')->onDelete('cascade');
         });
 
     }
