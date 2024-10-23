@@ -23,6 +23,7 @@ class Partner extends Model
         'file_sk',
         'number_sk',
         'end_date_sk',
+        'school_id',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -32,7 +33,8 @@ class Partner extends Model
         'end_date_sk' => 'datetime',
     ];
 
-    public function mentors() {
+    public function mentors()
+    {
         return $this->hasMany(MentorPartner::class, 'partner_id', 'uuid');
     }
 
