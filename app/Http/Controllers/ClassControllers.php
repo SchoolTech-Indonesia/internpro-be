@@ -49,7 +49,7 @@ class ClassControllers extends Controller
     {
         $validator = Validator::make($request->all(), [
             "class_name" => "required|string|max:255",
-            "major" => "required|exists:majors,uuid",
+            "major_id" => "required|exists:majors,uuid",
         ]);
         if ($validator->fails()) {
             return response()->json([
