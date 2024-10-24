@@ -18,7 +18,7 @@ class MajorityController extends Controller
     public function index()
     {
         try {
-            $searchName = request()->get('major_name');
+            $searchName = request()->get('name');
 
             $perPage = request()->get('per_page', 5);
 
@@ -73,7 +73,7 @@ class MajorityController extends Controller
         }
         try {
             $data = $validator->validated();
-            $data['created_by'] = Auth::user()->name;
+            $data['created_by'] = Auth::user()->uuid;
             Major::create($data);
             return response()->json([
                 'success' => true,
@@ -116,8 +116,6 @@ class MajorityController extends Controller
         }
     }
 
-
-    // UPDATE MAJORITY
     public function update(Request $request, $id)
     {
         $major = Major::where('uuid', $id)->first();
@@ -147,9 +145,9 @@ class MajorityController extends Controller
 
         try {
             $data = $validator->validated();
-            $data['updated_by'] = Auth::user()->name;
-
-            Major::where('uuid', $id)->update($data);
+            $major->fill($data);
+            $major->updated_by = Auth::user()->uuid;
+            $major->save();
 
             return response()->json([
                 'success' => true,

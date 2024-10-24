@@ -27,6 +27,8 @@ class KoordinatorController extends Controller
             ->when(count($classes) != 0, function ($query) use ($classes) {
                 $query->whereIn("class_id", $classes);
             })
+            ->with('major')
+            ->select('uuid', 'nip_nisn', 'name', 'email', 'phone_number', 'school_id', 'major_id', 'class_id')
             ->paginate($rows);
         return response()->json($users);
     }

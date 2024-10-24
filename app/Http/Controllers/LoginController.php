@@ -55,6 +55,7 @@ class LoginController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Login success',
             'user' => new UserResource(auth()->guard('api')->user()),
             'token' => $token,
         ], 200);

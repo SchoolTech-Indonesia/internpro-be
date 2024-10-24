@@ -99,7 +99,7 @@ class AdminController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($admin), // Abaikan email user saat ini
+                Rule::unique('users', 'nip_nisn')->ignore($admin), // Abaikan email user saat ini
             ],
             'email' => [
                 'nullable',

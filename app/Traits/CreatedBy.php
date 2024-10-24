@@ -39,6 +39,7 @@ trait CreatedBy
                 && !$model->isDirty('deleted_by')
             ) {
                 $model->deleted_by = auth()->id();
+                $model->save();
             }
         });
     }

@@ -37,16 +37,14 @@ class Major extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (empty($model->major_code)) {
-                $lastMajor = Major::withTrashed()->orderBy('major_code', 'desc')->first();
-                if ($lastMajor) {
-                    $lastCode = $lastMajor->major_code;
-                    $number = (int) substr($lastCode, 3);
-                    $newNumber = $number + 1;
-                    $model->major_code = 'MJ-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT); // Generate kode baru
-                } else {
-                    $model->major_code = 'MJ-001';
-                }
+            if (strpos($model->major_code, 'MJ-') !== 0) {
+                $model->major_code = 'MJ-' . strtoupper($model->major_code);
+            }
+        });
+
+        static::updating(function ($model) {
+            if (strpos($model->major_code, 'MJ-') !== 0) {
+                $model->major_code = 'MJ-' . strtoupper($model->major_code);
             }
         });
     }
