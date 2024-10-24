@@ -218,13 +218,19 @@ class UsersController extends Controller
     public function destroy($id)
     {
         try {
-            // database protection
-            DB::beginTransaction();
-
             // find user by id
             $user = User::findOrFail($id);
 
-            // set kolom deleted_by dan soft delete
+            // check if the auth user has the same school_id
+            if (auth()->user()->school_id !== $user->school_id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Forbidden: You are not authorized to delete this user.'
+                ], 403);
+            }
+
+            // database protection
+            DB::beginTransaction();
 
             // delete user
             $user->delete();

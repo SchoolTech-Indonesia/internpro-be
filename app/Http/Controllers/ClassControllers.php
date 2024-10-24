@@ -94,11 +94,7 @@ class ClassControllers extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            "class_code" => [
-                "required",
-                "max:255",
-                Rule::unique('majors')->ignore($id, 'uuid'),
-            ],
+            // Hapus validasi untuk 'class_code'
             "class_name" => "required|string|max:255",
         ]);
 
@@ -110,14 +106,27 @@ class ClassControllers extends Controller
         }
 
         try {
+            // Ambil data yang telah divalidasi
             $data = $validator->validated();
-            $data['updated_by'] = Auth::user()->name;
+            $data['updated_by'] = Auth::user()->uuid;
             $data["school_id"] = Auth::user()->school_id;
-            Kelas::where('uuid', $id)->update($data);
-            return response()->json([
-                'success' => true,
-                'message' => 'Data Kelas Berhasil Diperbarui!',
-            ], Response::HTTP_OK);
+
+            // Jika 'class_code' masih perlu diambil dari database, bisa ambil sebelum update
+            $kelas = Kelas::where('uuid', $id)->first();
+            if ($kelas) {
+                // Menjaga class_code yang ada tanpa mengubahnya
+                $data['class_code'] = $kelas->class_code;
+                Kelas::where('uuid', $id)->update($data);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data Kelas Berhasil Diperbarui!',
+                ], Response::HTTP_OK);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data Kelas tidak ditemukan!',
+                ], Response::HTTP_NOT_FOUND);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -134,6 +143,8 @@ class ClassControllers extends Controller
         $kelas = Kelas::where('uuid', $id)->first();
         if ($kelas) {
             $kelas->delete();
+            $kelas->deleted_by = Auth::user()->uuid; // Mengambil pengguna yang menghapus
+            $kelas->save();
             return response()->json([
                 'success' => true,
                 'message' => 'Kelas berhasil dihapus!',

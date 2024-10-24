@@ -66,6 +66,20 @@ class PartnerController extends Controller
      */
     public function store(PartnerRequest $request): JsonResponse
     {
+        // Menimpa validasi 'logo' dan 'file_sk' untuk membuatnya wajib saat 'store'
+        if (!$request->hasFile('logo') || !$request->hasFile('file_sk')) {
+            $missingFields = [];
+            if (!$request->hasFile('logo')) {
+                $missingFields[] = 'logo';
+            }
+            if (!$request->hasFile('file_sk')) {
+                $missingFields[] = 'file_sk';
+            }
+            return (new MessageResource(null, false, 'Wajib untuk melampirkan file: ' . implode(', ', $missingFields)))
+                ->response()
+                ->setStatusCode(400);
+        }
+
         if (isset($request->validator) && $request->validator->fails()) {
             return (new MessageResource(null, false, 'Validation failed', $request->validator->messages()))->response()->setStatusCode(400);
         }
@@ -76,6 +90,8 @@ class PartnerController extends Controller
             $validatedData = $request->validated();
 
             $validatedData['uuid'] = $uuid;
+            $validatedData['school_id'] = $request->user()->school_id;
+
             if ($request->hasFile('logo')) {
                 $validatedData['logo'] = S3Service::store($request->file('logo'), 'partners/' . $uuid . '/', 'logo');
             }
