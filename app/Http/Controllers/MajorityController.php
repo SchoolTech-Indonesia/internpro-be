@@ -74,6 +74,7 @@ class MajorityController extends Controller
         try {
             $data = $validator->validated();
             $data['created_by'] = Auth::user()->uuid;
+            $data["school_id"] = Auth::user()->school_id;
             Major::create($data);
             return response()->json([
                 'success' => true,

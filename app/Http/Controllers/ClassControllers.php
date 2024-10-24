@@ -109,6 +109,7 @@ class ClassControllers extends Controller
             // Ambil data yang telah divalidasi
             $data = $validator->validated();
             $data['updated_by'] = Auth::user()->uuid;
+            $data["school_id"] = Auth::user()->school_id;
 
             // Jika 'class_code' masih perlu diambil dari database, bisa ambil sebelum update
             $kelas = Kelas::where('uuid', $id)->first();
@@ -133,7 +134,6 @@ class ClassControllers extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     /**
      * Delete Kelas

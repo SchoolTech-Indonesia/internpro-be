@@ -15,6 +15,16 @@ use Illuminate\Http\JsonResponse;
  */
 class PermissionController extends Controller
 {
+    public function __construct()
+    {
+        // Permission Middleware
+        $this->middleware(['permission:view-permission'])->only('index');
+        $this->middleware(['permission:view-permission'])->only('show');
+        $this->middleware(['permission:create-permission'])->only('store');
+        $this->middleware(['permission:update-permission'])->only('update');
+        $this->middleware(['permission:delete-permission'])->only('destroy');
+    }
+
     /**
      * @return JsonResponse
      *
