@@ -48,7 +48,7 @@ class KoordinatorController extends Controller
                 'phone_number' => 'nullable|string|unique:users,phone_number',
                 'password' => 'required|string|min:8',
                 'nip_nisn' => 'nullable|string|max:20',
-                'role' => 'required|string',
+                'role' => 'required|string|exists:roles,id',
                 'school_id' => 'nullable|exists:school,uuid',
                 'major_id' => 'required|exists:majors,uuid',
                 'class_id' => 'nullable|exists:classes,uuid',
@@ -63,7 +63,7 @@ class KoordinatorController extends Controller
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id(); // admin id as creator
-            $user->assignRole('Coordinator');
+            $user->assignRole($validatedData['role']);
             $user->school_id = $validatedData['school_id'] ?? null;
             $user->major_id = $validatedData['major_id'];
             $user->class_id = $validatedData['class_id'] ?? null;
