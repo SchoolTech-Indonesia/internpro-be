@@ -26,7 +26,7 @@ class UsersController extends Controller
                 $query->whereIn("name", $roles);
             });
         })->paginate($rows);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'List of users',
@@ -103,7 +103,7 @@ class UsersController extends Controller
             $user->password = bcrypt($validatedData['password']);
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
             $user->created_by = auth()->id();  // admin id as creator
-            $user->assignRole($validatedData['role_id']);
+            $user->syncRoles($validatedData['role_id']);
             $user->school_id = auth()->user()->school_id;
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
@@ -129,11 +129,12 @@ class UsersController extends Controller
                 'name' => 'required|string|max:255',
                 'password' => 'nullable|string|min:8',
                 'nip_nisn' => 'required|string|max:20',
-                'role' => 'required|string|in:Super Administrator,Administrator,Coordinator,Teacher,Mentor,Student',
+                'role_id' => 'required|exists:roles,id',
             ];
 
             // find user by id
             $user = User::findOrFail($id);
+            $role = Role::findOrFail($request->role_id);
 
             // check if email or phone number is updated
             if ($user->email != $request['email']) {
@@ -149,7 +150,7 @@ class UsersController extends Controller
             }
 
             // role-based validation
-            switch ($request->role) {
+            switch ($role->name) {
                 case 'Coordinator':
                     $rules['school_id'] = 'nullable|exists:school,uuid';
                     $rules['major_id'] = 'required|exists:majors,uuid';
@@ -194,7 +195,7 @@ class UsersController extends Controller
             }
 
             $user->nip_nisn = $validatedData['nip_nisn'] ?? null;
-            $user->assignRole($validatedData['role']);
+            $user->syncRoles($validatedData['role_id']);
             $user->school_id = $validatedData['school_id'];
             $user->major_id = $validatedData['major_id'] ?? null;
             $user->class_id = $validatedData['class_id'] ?? null;
